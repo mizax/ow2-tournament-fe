@@ -7,7 +7,7 @@ import TheFooter from '@/components/TheFooter.vue'
 <template>
   <TheHeader />
 
-  <main class="container mx-auto p-4 mt-16 mb-16">
+  <main class="container mx-auto p-4 mt-16 mb-16 flex flex-col items-center">
     <slot />
   </main>
 
