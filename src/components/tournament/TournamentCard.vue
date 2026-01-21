@@ -19,20 +19,19 @@ defineProps<{
     <CardHeader>
       <CardTitle>{{ tournament.title }}</CardTitle>
     </CardHeader>
-    <CardContent>
+    <CardContent class="flex flex-row justify-between gap-4">
       <div class="flex flex-wrap gap-2">
-        <Badge
-          v-for="date in tournament.dates"
-          :key="date"
-          variant="secondary"
-        >
+        <Badge v-for="date in tournament.dates" :key="date" variant="secondary">
           {{ format(date, 'dd.MM.yyyy') }}
         </Badge>
       </div>
+      <p v-if="tournament.prize_pool" class="font-bold">
+        {{ t('tournament.hero.prize_pool') }}: {{ tournament.prize_pool }}
+      </p>
     </CardContent>
-    <CardFooter>
+    <CardFooter class="flex justify-end">
       <Button
-        class="cursor-pointer"
+        class="cursor-pointer underline hover:text-muted-foreground"
         :as="RouterLink"
         variant="link"
         :to="`/tournament/${tournament.uri}`"

@@ -18,5 +18,54 @@
   },
   "tournament_card": {
     "details": "Подробнее"
+  },
+  "tournament": {
+    "tabs": {
+      "overview": "Общее",
+      "participation": "Участие",
+      "schedule": "Расписание",
+      "rules": "Правила",
+      "prizes": "Награды",
+      "stream": "Трансляция"
+    },
+    "hero": {
+      "prize_pool": "Призовой фонд"
+    },
+    "overview": {
+      "organizers": "Организаторы"
+    },
+    "participation": {
+      "eligibility": "Требования к участникам",
+      "registration": "Регистрация",
+      "checkin": "Чек-ин",
+      "deadline": "Дедлайн регистрации",
+      "min_rank": "Минимальный ранг",
+      "min_hours": "Минимально соревновательных часов",
+      "min_seasons": "Минимально откалиброванных сезонов",
+      "wins_current_season": "Побед в текущем сезоне (основная роль)",
+      "subscription": "Подписка",
+      "twitch_channel": "Twitch канал",
+      "donation": "Донат (при отсутствии сабки)",
+      "verification_btag": "BattleTag для верификации",
+      "check-in-platform": "Платформа"
+    },
+    "schedule": {
+      "day": "День",
+      "stage": "Этап",
+      "date": "Дата",
+      "start": "Начало"
+    },
+    "rules": {
+      "full_rules": "Полный регламент (Google Docs)",
+      "version": "Версия",
+      "last_update": "Последнее обновление"
+    },
+    "prizes": {
+      "place": "Место",
+      "prize": "Приз"
+    },
+    "stream": {
+      "watch_on_twitch": "Смотреть на Twitch"
+    }
   }
 }
