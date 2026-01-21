@@ -9,12 +9,36 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('@/components/HomeComponent.vue'),
+      component: () => import('@/views/HomeView.vue'),
     },
     {
-      path: '/full-regulation',
-      name: 'full-regulation',
-      component: () => import('@/components/FullRegulation.vue'),
+      path: '/tournament',
+      name: 'tournament',
+      component: () => import('@/views/TournamentView.vue'),
+      children: [
+        {
+          path: '',
+          name: 'tournament-list',
+          component: () => import('@/components/tournament/TournamentList.vue')
+        },
+        {
+          path: ':tournamentSef',
+          name: 'tournament-details',
+          component: () => import('@/components/tournament/TournamentDetailsParent.vue'),
+          children: [
+            {
+              path: '',
+              name: 'tournament-details-home',
+              component: () => import('@/components/tournament/TournamentDetails.vue'),
+            },
+            {
+              path: 'regulation',
+              name: 'tournament-regulation',
+              component: () => import('@/components/tournament/FullRegulation.vue'),
+            }
+          ]
+        }
+      ]
     },
     {
       path: '/auth/callback',

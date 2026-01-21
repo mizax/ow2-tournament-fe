@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { NavigationMenuLink } from '@/components/ui/navigation-menu'
-import { useAuthStore } from '@/stores/authStore'
+import { useAuthStore } from '@/stores/authStore.ts'
 import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
@@ -33,15 +32,14 @@ const userInitials = computed(() => {
       </DropdownMenuContent>
     </DropdownMenu>
   </div>
-  <NavigationMenuLink v-else as-child>
-    <Button
-      variant="default"
-      class="bg-(--bnet-color) hover:bg-(--bnet-color) cursor-pointer"
-      @click="authorize"
-    >
-      {{ t('nav.login') }}
-    </Button>
-  </NavigationMenuLink>
+  <Button
+    v-else
+    variant="default"
+    class="bg-(--bnet-color) hover:bg-(--bnet-color) cursor-pointer"
+    @click="authorize"
+  >
+    {{ t('nav.login') }}
+  </Button>
 </template>
 
 <style scoped>

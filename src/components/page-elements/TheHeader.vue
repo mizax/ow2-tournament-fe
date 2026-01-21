@@ -5,9 +5,10 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
 } from '@/components/ui/navigation-menu'
+import { Button } from '@/components/ui/button'
 import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import UserNav from '@/components/UserNav.vue'
+import UserNav from '@/components/page-elements/UserNav.vue'
 
 const { t } = useI18n()
 </script>
@@ -20,7 +21,7 @@ const { t } = useI18n()
           <NavigationMenuItem>
             <RouterLink to="/" class="h-8" v-slot="{ navigate }" custom>
               <img
-                src="@/assets/img/ow2t-logo-sm.png"
+                src="../../assets/img/ow2t-logo-sm.png"
                 alt="OW2T Logo"
                 class="cursor-pointer"
                 @click.prevent="navigate()"
@@ -29,7 +30,7 @@ const { t } = useI18n()
           </NavigationMenuItem>
           <NavigationMenuItem>
             <NavigationMenuLink as-child>
-              <Button class="cursor-pointer" :as="RouterLink" variant="link" to="/full-regulation">
+              <Button class="cursor-pointer" :as="RouterLink" variant="link" to="/tournament">
                 {{ t('nav.past_tournaments') }}
               </Button>
             </NavigationMenuLink>

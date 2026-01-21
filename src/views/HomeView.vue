@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { fetchWithoutAuth } from '@/services/apiService'
 import type { Tournament } from '@/types/tournament'
-import TournamentCard from '@/components/TournamentCard.vue'
+import TournamentCard from '@/components/tournament/TournamentCard.vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
