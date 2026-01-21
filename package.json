@@ -22,6 +22,7 @@
     "@vueuse/core": "^14.1.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "lucide-vue-next": "^0.562.0",
     "pinia": "^3.0.4",
     "rehype-slug": "^6.0.0",
@@ -31,6 +32,7 @@
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.18",
     "vue": "^3.5.26",
+    "vue-i18n": "^11.2.8",
     "vue-router": "^4.6.4"
   },
   "devDependencies": {

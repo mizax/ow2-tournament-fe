@@ -1,0 +1,5 @@
+export interface Tournament {
+  title: string
+  uri: string
+  dates: string[]
+}

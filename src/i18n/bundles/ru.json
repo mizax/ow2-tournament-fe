@@ -1,0 +1,22 @@
+{
+  "nav": {
+    "past_tournaments": "Прошлые турниры",
+    "login": "Войти через Battle.net",
+    "logout": "Выйти"
+  },
+  "errors": {
+    "forbidden": "Доступ запрещен",
+    "not_found": "Страница не найдена"
+  },
+  "auth_callback": {
+    "title": "Аутентификация...",
+    "message": "Пожалуйста, подождите, пока мы завершим вашу аутентификацию.",
+    "authentication_failed": "Ошибка аутентификации"
+  },
+  "home": {
+    "title": "Ближайшие турниры"
+  },
+  "tournament_card": {
+    "details": "Подробнее"
+  }
+}
