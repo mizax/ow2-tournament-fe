@@ -14,8 +14,11 @@ const i18n = createI18n({
   messages
 })
 
-createApp(App)
+const pinia = createPinia()
+const app = createApp(App)
+
+app
   .use(i18n)
-  .use(createPinia())
+  .use(pinia)
   .use(router)
   .mount('#app')

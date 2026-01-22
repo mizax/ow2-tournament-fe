@@ -56,6 +56,22 @@ export const useAuthStore = defineStore('auth', {
             this.user = user
         },
 
+        async restoreSession(): Promise<{ success: boolean, errorCode?: string } | null> {
+            if (!this.token) {
+                return null
+            }
+
+            if (this.user) {
+                return { success: true }
+            }
+
+            if (this.fetchingUser) {
+                return this.fetchingUser
+            }
+
+            return await this.fetchUser()
+        },
+
         async authorize(): Promise<string | null> {
             const result = await fetchAuthUrlAndRedirect();
 

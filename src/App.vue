@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import DefaultLayout from '@/layout/DefaultLayout.vue'
+import AuthProvider from '@/components/providers/AuthProvider.vue'
 </script>
 
 <template>
   <RouterView v-slot="{ Component }">
     <template v-if="Component">
       <Suspense>
-        <DefaultLayout>
-          <component :is="Component"></component>
-        </DefaultLayout>
+        <AuthProvider>
+          <DefaultLayout>
+            <component :is="Component"></component>
+          </DefaultLayout>
+        </AuthProvider>
         <template #fallback>
           <div class="flex justify-center items-center h-screen">
             <div
