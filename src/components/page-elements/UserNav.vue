@@ -21,7 +21,7 @@ const userInitials = computed(() => {
 </script>
 
 <template>
-  <template v-if="authReady">
+  <div v-if="authReady">
     <div v-if="isAuthenticated && user" class="flex items-center gap-2">
       <DropdownMenu>
         <DropdownMenuTrigger class="cursor-pointer ml-5 flex items-center gap-1">
@@ -43,7 +43,7 @@ const userInitials = computed(() => {
     >
       {{ t('nav.login') }}
     </Button>
-  </template>
+  </div>
 </template>
 
 <style scoped>
