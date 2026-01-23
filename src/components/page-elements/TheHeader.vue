@@ -28,13 +28,13 @@ const { t } = useI18n()
               />
             </RouterLink>
           </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuLink as-child>
-              <Button class="cursor-pointer" :as="RouterLink" variant="link" to="/tournament">
-                {{ t('nav.past_tournaments') }}
-              </Button>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
+<!--          <NavigationMenuItem>-->
+<!--            <NavigationMenuLink as-child>-->
+<!--              <Button class="cursor-pointer" :as="RouterLink" variant="link" to="/tournament">-->
+<!--                {{ t('nav.past_tournaments') }}-->
+<!--              </Button>-->
+<!--            </NavigationMenuLink>-->
+<!--          </NavigationMenuItem>-->
         </NavigationMenuList>
       </NavigationMenu>
       <UserNav class="m-4" />

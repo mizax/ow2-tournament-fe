@@ -27,7 +27,7 @@ onMounted(async () => {
       {{ t('home.title') }}
     </h1>
 
-    <div v-if="tournaments.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div v-if="tournaments.length > 0" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <TournamentCard
         v-for="tournament in tournaments"
         :key="tournament.uri"

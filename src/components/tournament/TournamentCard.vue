@@ -6,32 +6,39 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { DATE_FORMAT } from '@/util/date.ts'
 
 const { t } = useI18n()
 
-defineProps<{
+const props = defineProps<{
   tournament: Tournament
 }>()
+
+const startDate = props.tournament.dates[0]!
+const endDate = props.tournament.dates[props.tournament.dates.length - 1]!
 </script>
 
 <template>
   <Card class="overflow-hidden hover:shadow-md transition-shadow">
     <CardHeader>
-      <CardTitle>{{ tournament.title }}</CardTitle>
+      <CardTitle class="text-2xl">{{ tournament.title }}</CardTitle>
     </CardHeader>
-    <CardContent class="flex flex-row justify-between gap-4">
+    <CardContent class="flex flex-col justify-between gap-4">
       <div class="flex flex-wrap gap-2">
-        <Badge v-for="date in tournament.dates" :key="date" variant="secondary">
-          {{ format(date, 'dd.MM.yyyy') }}
+        <Badge
+          variant="default"
+          class="bg-[#ee8934] text-lg rounded-md"
+        >
+          {{ format(startDate, DATE_FORMAT) }} - {{ format(endDate, DATE_FORMAT) }}
         </Badge>
       </div>
-      <p v-if="tournament.prize_pool" class="font-bold">
+      <p v-if="tournament.prize_pool" class="text-md font-bold">
         {{ t('tournament.hero.prize_pool') }}: {{ tournament.prize_pool }}
       </p>
     </CardContent>
     <CardFooter class="flex justify-end">
       <Button
-        class="cursor-pointer underline hover:text-muted-foreground"
+        class="cursor-pointer underline hover:text-muted-foreground px-0"
         :as="RouterLink"
         variant="link"
         :to="`/tournament/${tournament.uri}`"
