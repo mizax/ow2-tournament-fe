@@ -35,7 +35,7 @@ onMounted(async () => {
       />
     </div>
     <div v-else class="text-center py-12">
-      <p class="text-muted-foreground">No tournaments found.</p>
+      <p class="text-muted-foreground">{{ t('home.noTournaments') }}</p>
     </div>
   </div>
 </template>

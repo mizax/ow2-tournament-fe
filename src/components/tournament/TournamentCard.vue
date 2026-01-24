@@ -22,13 +22,14 @@ const endDate = props.tournament.dates[props.tournament.dates.length - 1]!
   <Card class="overflow-hidden hover:shadow-md transition-shadow">
     <CardHeader>
       <CardTitle class="text-2xl">{{ tournament.title }}</CardTitle>
+      <div class="flex gap-2">
+        <Badge variant="outline" class="text-md">{{ tournament.discipline }}</Badge>
+        <Badge variant="outline" class="text-md">{{ tournament.format }}</Badge>
+      </div>
     </CardHeader>
     <CardContent class="flex flex-col justify-between gap-4">
       <div class="flex flex-wrap gap-2">
-        <Badge
-          variant="default"
-          class="bg-[#ee8934] text-lg rounded-md"
-        >
+        <Badge variant="default" class="bg-[#ee8934] text-lg rounded-md">
           {{ format(startDate, DATE_FORMAT) }} - {{ format(endDate, DATE_FORMAT) }}
         </Badge>
       </div>

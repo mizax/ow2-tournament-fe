@@ -14,12 +14,16 @@
     "authentication_failed": "Ошибка аутентификации"
   },
   "home": {
-    "title": "Ближайшие турниры"
+    "title": "Ближайшие турниры",
+    "noTournaments": "Нет ближайших турниров 😢"
   },
   "tournament_card": {
     "details": "Подробнее"
   },
   "tournament": {
+    "error": {
+      "loading": "Ошибка загрузки турнира"
+    },
     "tabs": {
       "overview": "Общее",
       "participation": "Участие",

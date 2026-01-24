@@ -87,7 +87,7 @@ onMounted(async () => {
     tournament.value = response.data!
   } catch (err) {
     console.error('Error fetching tournament details:', err)
-    error.value = 'Failed to load tournament details'
+    error.value = t('tournament.error.loading')
   } finally {
     isLoading.value = false
   }
