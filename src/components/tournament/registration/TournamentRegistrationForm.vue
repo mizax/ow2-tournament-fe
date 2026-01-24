@@ -28,8 +28,8 @@ const defaultValues: RegistrationFormValues = {
   rulesAccepted: false,
 }
 
-const emit = defineEmits<{
-  (event: 'submit', payload: RegistrationFormValues): void
+const props = defineProps<{
+  onSubmit?: (payload: RegistrationFormValues) => Promise<void> | void
 }>()
 
 const form = useForm({
@@ -40,7 +40,7 @@ const form = useForm({
   },
   onSubmit: async ({ value, formApi }) => {
     console.log(formApi)
-    emit('submit', value)
+    await props.onSubmit?.(value)
   },
 })
 

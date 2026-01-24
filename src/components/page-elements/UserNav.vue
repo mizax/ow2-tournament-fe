@@ -45,9 +45,3 @@ const userInitials = computed(() => {
     </Button>
   </div>
 </template>
-
-<style scoped>
-* {
-  --bnet-color: oklch(0.5672 0.186074 254.8927);
-}
-</style>

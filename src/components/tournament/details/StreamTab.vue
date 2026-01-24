@@ -19,7 +19,7 @@ defineProps<Props>()
 <template>
   <Card>
     <CardHeader>
-      <CardTitle>{{ t('tournament.tabs.stream') }}</CardTitle>
+      <CardTitle class="text-xl">{{ t('tournament.tabs.stream') }}</CardTitle>
     </CardHeader>
     <CardContent>
       <div v-if="stream?.channel" class="flex flex-col items-center justify-center py-12">

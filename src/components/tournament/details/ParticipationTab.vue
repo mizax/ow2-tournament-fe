@@ -43,7 +43,7 @@ defineProps<Props>()
   <div class="space-y-6">
     <Card v-if="eligibility">
       <CardHeader>
-        <CardTitle>{{ t('tournament.participation.eligibility') }}</CardTitle>
+        <CardTitle class="text-xl">{{ t('tournament.participation.eligibility') }}</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
@@ -111,7 +111,7 @@ defineProps<Props>()
 
     <Card v-if="registration">
       <CardHeader>
-        <CardTitle>{{ t('tournament.participation.registration') }}</CardTitle>
+        <CardTitle class="text-xl">{{ t('tournament.participation.registration') }}</CardTitle>
       </CardHeader>
       <CardContent class="space-y-4">
         <div v-if="registration.deadline">

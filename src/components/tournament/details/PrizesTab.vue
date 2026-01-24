@@ -23,7 +23,7 @@ defineProps<Props>()
 <template>
   <Card>
     <CardHeader>
-      <CardTitle>{{ t('tournament.tabs.prizes') }}</CardTitle>
+      <CardTitle class="text-xl">{{ t('tournament.tabs.prizes') }}</CardTitle>
     </CardHeader>
     <CardContent>
       <Table>

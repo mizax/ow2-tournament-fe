@@ -21,7 +21,7 @@ defineProps<Props>()
   <Card>
     <CardHeader>
       <div class="flex justify-between items-center">
-        <CardTitle>{{ t('tournament.tabs.rules') }}</CardTitle>
+        <CardTitle class="text-xl">{{ t('tournament.tabs.rules') }}</CardTitle>
         <div class="text-sm text-muted-foreground space-x-4">
           <span v-if="rules.version">{{ t('tournament.rules.version') }}: {{ rules.version }}</span>
           <span v-if="rules.last_update">{{ t('tournament.rules.last_update') }}: {{ rules.last_update }}</span>

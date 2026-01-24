@@ -41,9 +41,9 @@ const isALink = (text: string) =>
 </script>
 
 <template>
-  <Card>
+  <Card class="gap-2">
     <CardHeader>
-      <CardTitle>{{ t('tournament.tabs.overview') }}</CardTitle>
+      <CardTitle class="text-xl">{{ t('tournament.tabs.overview') }}</CardTitle>
     </CardHeader>
     <CardContent class="space-y-6">
       <div v-if="description" class="prose dark:prose-invert max-w-none">
@@ -53,7 +53,7 @@ const isALink = (text: string) =>
       <Separator />
 
       <div>
-        <h3 class="text-lg font-semibold mb-3">{{ t('tournament.overview.organizers') }}</h3>
+        <h3 class="text-xl font-semibold mb-3">{{ t('tournament.overview.organizers') }}</h3>
         <ul class="space-y-2">
           <li v-for="org in organizers" :key="org.name" class="flex flex-col">
             <span class="font-medium">{{ org.role }}: {{ org.name }}</span>

@@ -1,9 +1,10 @@
 import { useAuthStore } from '@/stores/authStore'
 
-export interface ApiResponse<T> {
+export interface ApiResponse<T, E = unknown> {
   success: boolean;
   data?: T;
   errorCode?: string;
+  errorData?: E;
 }
 
 /**
@@ -36,9 +37,12 @@ async function parseResponse<T>(response: Response): Promise<T> {
  * @param response The fetch response object
  * @returns A standardized response object
  */
-export async function handleApiResponse<T>(response: Response): Promise<ApiResponse<T>> {
+export async function handleApiResponse<T, E = unknown>(
+  response: Response
+): Promise<ApiResponse<T, E>> {
   if (!response.ok) {
     let errorCode = 'unknown_error';
+    let errorData: unknown = undefined;
 
     // Check for specific HTTP status codes
     if (response.status === 400) {
@@ -56,9 +60,9 @@ export async function handleApiResponse<T>(response: Response): Promise<ApiRespo
     // Try to get more detailed error information from the response if it's JSON
     if (shouldParseAsJson(response)) {
       try {
-        const errorData = await response.json();
-        if (errorData.code) {
-          errorCode = errorData.code;
+        errorData = await response.json();
+        if (errorData && typeof errorData === 'object' && 'code' in errorData) {
+          errorCode = (errorData as { code?: string }).code || errorCode;
         }
       } catch (parseError) {
         // If we can't parse the error response, use the default error code
@@ -66,7 +70,7 @@ export async function handleApiResponse<T>(response: Response): Promise<ApiRespo
       }
     }
 
-    return { success: false, errorCode };
+    return { success: false, errorCode, errorData: errorData as E };
   }
 
   // Parse the successful response based on content type
@@ -80,10 +84,10 @@ export async function handleApiResponse<T>(response: Response): Promise<ApiRespo
  * @param options Fetch options
  * @returns A standardized response object
  */
-export async function fetchWithAuth<T>(
+export async function fetchWithAuth<T, E = unknown>(
   url: string,
   options: RequestInit = {}
-): Promise<ApiResponse<T>> {
+): Promise<ApiResponse<T, E>> {
   const authStore = useAuthStore();
 
   // Add authorization header if token exists and headers object doesn't already have Authorization
@@ -102,7 +106,7 @@ export async function fetchWithAuth<T>(
       await authStore.logout();
     }
 
-    return await handleApiResponse<T>(response);
+    return await handleApiResponse<T, E>(response);
   } catch (e) {
     console.error(`Error while making API request to ${url}`, e);
 
@@ -119,13 +123,13 @@ export async function fetchWithAuth<T>(
  * @param options Fetch options
  * @returns A standardized response object
  */
-export async function fetchWithoutAuth<T>(
+export async function fetchWithoutAuth<T, E = unknown>(
   url: string,
   options: RequestInit = {}
-): Promise<ApiResponse<T>> {
+): Promise<ApiResponse<T, E>> {
   try {
     const response = await fetch(url, options);
-    return await handleApiResponse<T>(response);
+    return await handleApiResponse<T, E>(response);
   } catch (e) {
     console.error(`Error while making API request to ${url}`, e);
 
@@ -143,12 +147,12 @@ export async function fetchWithoutAuth<T>(
  * @param method The HTTP method to use (default: 'POST')
  * @returns A standardized response object
  */
-export async function fetchWithFormData<T>(
+export async function fetchWithFormData<T, E = unknown>(
   url: string,
   formData: FormData,
   method: string = 'POST'
-): Promise<ApiResponse<T>> {
-  return fetchWithAuth<T>(url, {
+): Promise<ApiResponse<T, E>> {
+  return fetchWithAuth<T, E>(url, {
     method,
     body: formData,
     // Don't set the Content-Type header as the browser will set it with the boundary parameter

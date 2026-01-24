@@ -2,6 +2,13 @@ import { createRouter, createWebHistory } from 'vue-router'
 import ForbiddenView from '@/views/ForbiddenView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 import AuthCallbackView from '@/views/AuthCallbackView.vue'
+import { useAuthStore } from '@/stores/authStore'
+import { toast } from 'vue-sonner'
+import { useI18n } from 'vue-i18n'
+
+const defaultMeta = {
+  requiresAuth: false,
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,6 +47,17 @@ const router = createRouter({
               path: 'register',
               name: 'tournament-registration',
               component: () => import('@/components/tournament/SubmitRequest.vue'),
+              meta: {
+                requiresAuth: true,
+              },
+            },
+            {
+              path: 'register/:registrationId',
+              name: 'tournament-registration-status',
+              component: () => import('@/components/tournament/RegistrationStatus.vue'),
+              meta: {
+                requiresAuth: true,
+              },
             }
           ]
         }
@@ -65,6 +83,24 @@ const router = createRouter({
       redirect: '/404-not-found',
     },
   ],
+})
+
+router.beforeEach(async (to, from, next) => {
+  const authStore = useAuthStore()
+  await authStore.waitForUser()
+  const { requiresAuth } = { ...defaultMeta, ...to.meta }
+
+  if (requiresAuth && !authStore.isAuthenticated) {
+    toast.error("Not authenticated")
+    if (from) {
+      next(from)
+    } else {
+      next('/')
+    }
+    return
+  }
+
+  next()
 })
 
 export default router

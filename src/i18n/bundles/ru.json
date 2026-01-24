@@ -6,7 +6,27 @@
   },
   "errors": {
     "forbidden": "Доступ запрещен",
-    "not_found": "Страница не найдена"
+    "not_found": "Страница не найдена",
+    "already_registered": "Вы уже подали заявку на этот турнир",
+    "unknown": "Произошла ошибка. Попробуйте еще раз позже"
+  },
+  "validation": {
+    "twitch": {
+      "required": "Укажите Twitch"
+    },
+    "discord": {
+      "required": "Укажите Discord"
+    },
+    "primary_role": {
+      "required": "Выберите основную роль"
+    },
+    "secondary_role": {
+      "required": "Выберите второстепенную роль",
+      "same_as_primary": "Основная и второстепенная роли должны отличаться"
+    },
+    "rules_accepted": {
+      "required": "Необходимо подтвердить согласие с правилами"
+    }
   },
   "auth_callback": {
     "title": "Аутентификация...",
@@ -19,6 +39,21 @@
   },
   "tournament_card": {
     "details": "Подробнее"
+  },
+  "registration": {
+    "button": {
+      "login_to_register": "Войдите, чтобы подать заявку"
+    },
+    "smart_button": {
+      "register": "Подать заявку",
+      "already_registered": "Заявка одобрена",
+      "declined": "Заявка отклонена",
+      "pending": "Заявка ожидает рассмотрения",
+      "processing": "Заявка на рассмотрении",
+      "action_required": "Требуется ваше участие",
+      "status_error": "Ошибка при загрузке статуса заявки",
+      "loading": "Загрузка..."
+    }
   },
   "tournament": {
     "error": {
@@ -138,6 +173,10 @@
       },
       "tooltip_label": "Информация о поле",
       "submit": "Отправить заявку"
+    },
+    "registration_status": {
+      "title": "Заявка отправлена",
+      "message": "Мы получили вашу заявку. Номер заявки: {id}"
     }
   }
 }
