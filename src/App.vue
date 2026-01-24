@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import 'vue-sonner/style.css'
+import { Toaster } from '@/components/ui/sonner'
+
 import DefaultLayout from '@/layout/DefaultLayout.vue'
 import AuthProvider from '@/components/providers/AuthProvider.vue'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -25,6 +28,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
       </Suspense>
     </template>
   </RouterView>
+  <Toaster />
 </template>
 
 <style scoped></style>

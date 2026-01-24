@@ -23,7 +23,7 @@ const endDate = props.tournament.dates[props.tournament.dates.length - 1]!
     <CardHeader>
       <CardTitle class="text-2xl">{{ tournament.title }}</CardTitle>
       <div class="flex gap-2">
-        <Badge variant="outline" class="text-md">{{ tournament.discipline }}</Badge>
+        <Badge variant="secondary" class="text-md">{{ tournament.discipline }}</Badge>
         <Badge variant="outline" class="text-md">{{ tournament.format }}</Badge>
       </div>
     </CardHeader>
