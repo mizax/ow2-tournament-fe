@@ -1,33 +1,51 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from "vue"
 import { computed } from "vue"
+import { useI18n } from "vue-i18n"
 import { cn } from "@/lib/utils"
+
+type ErrorMessage =
+  | string
+  | { message?: string; params?: Record<string, unknown> }
+  | undefined
 
 const props = defineProps<{
   class?: HTMLAttributes["class"]
-  errors?: Array<string | { message: string | undefined } | undefined>
+  errors?: ErrorMessage[]
 }>()
+
+const { t } = useI18n()
+
+const resolveMessage = (error: ErrorMessage) => {
+  if (!error)
+    return null
+
+  if (typeof error === "string") {
+    return t(error)
+  }
+
+  if (!error.message) {
+    return null
+  }
+
+  return t(error.message, error.params!)
+}
 
 const content = computed(() => {
   if (!props.errors || props.errors.length === 0)
     return null
 
-  const uniqueErrors = [
-    ...new Map(
-      props.errors
-        .filter(Boolean)
-        .map((error) => {
-          const message = typeof error === "string" ? error : error?.message
-          return [message, error]
-        }),
-    ).values(),
-  ]
+  const resolvedErrors = props.errors
+    .map(resolveMessage)
+    .filter((message): message is string => Boolean(message))
 
-  if (uniqueErrors.length === 1 && uniqueErrors[0]) {
-    return typeof uniqueErrors[0] === "string" ? uniqueErrors[0] : uniqueErrors[0].message
+  const uniqueErrors = [...new Set(resolvedErrors)]
+
+  if (uniqueErrors.length === 1) {
+    return uniqueErrors[0]
   }
 
-  return uniqueErrors.map(error => typeof error === "string" ? error : error?.message)
+  return uniqueErrors
 })
 </script>
 

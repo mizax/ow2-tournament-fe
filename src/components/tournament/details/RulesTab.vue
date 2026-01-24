@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { type CustomAttrs, VueMarkdown } from '@crazydos/vue-markdown'
 import { useI18n } from 'vue-i18n'
-import FullRegulation from '@/components/tournament/FullRegulation.vue'
+import MarkdownRenderer from '@/components/common/MarkdownRenderer.vue'
 
 const { t } = useI18n()
 
@@ -37,7 +36,7 @@ defineProps<Props>()
       </div>
 
       <div v-if="regulation" class="prose dark:prose-invert max-w-none">
-        <FullRegulation :markdown="regulation" />
+        <MarkdownRenderer :markdown="regulation" />
       </div>
     </CardContent>
   </Card>

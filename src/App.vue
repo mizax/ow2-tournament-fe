@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DefaultLayout from '@/layout/DefaultLayout.vue'
 import AuthProvider from '@/components/providers/AuthProvider.vue'
+import { TooltipProvider } from '@/components/ui/tooltip'
 </script>
 
 <template>
@@ -8,9 +9,11 @@ import AuthProvider from '@/components/providers/AuthProvider.vue'
     <template v-if="Component">
       <Suspense>
         <AuthProvider>
-          <DefaultLayout>
-            <component :is="Component"></component>
-          </DefaultLayout>
+          <TooltipProvider>
+            <DefaultLayout>
+              <component :is="Component"></component>
+            </DefaultLayout>
+          </TooltipProvider>
         </AuthProvider>
         <template #fallback>
           <div class="flex justify-center items-center h-screen">

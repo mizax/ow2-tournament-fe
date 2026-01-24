@@ -66,6 +66,74 @@
     },
     "stream": {
       "watch_on_twitch": "Смотреть на Twitch"
+    },
+    "registration_form": {
+      "battletag": {
+        "label": "BattleTag",
+        "empty": "Не указан",
+        "errors": {
+          "format": "Введите корректный BattleTag"
+        }
+      },
+      "alt_accounts": {
+        "label": "Другие аккаунты",
+        "placeholder": "Введите BattleTag и нажмите Enter",
+        "tooltip": "BattleTag'и дополнительных аккаунтов (Смурфы)"
+      },
+      "guarantors": {
+        "label": "Поручители",
+        "placeholder": "Введите BattleTag и нажмите Enter",
+        "tooltip": "BattleTag'и поручителей"
+      },
+      "twitch": {
+        "label": "Twitch",
+        "prefix": "https://twitch.tv/",
+        "placeholder": "Введите никнейм",
+        "errors": {
+          "min": "Минимум 4 символа",
+          "max": "Максимум 25 символов",
+          "allowed": "Допустимы только латинские буквы, цифры и _",
+          "starts_with_underscore": "Ник не может начинаться с _"
+        }
+      },
+      "discord": {
+        "label": "Discord",
+        "placeholder": "Введите имя пользователя Discord",
+        "errors": {
+          "format": "Введите корректное имя пользователя Discord"
+        }
+      },
+      "roles": {
+        "primary": "Основная роль",
+        "secondary": "Второстепенная роль",
+        "placeholder": "Выберите роль",
+        "options": {
+          "tank": "Танк",
+          "damage": "Урон",
+          "support": "Поддержка",
+          "flex": "Флекс"
+        },
+        "errors": {
+          "required": "Выберите роль",
+          "duplicate": "Основная и второстепенная роли должны отличаться"
+        }
+      },
+      "additional_info": {
+        "label": "Дополнительная информация",
+        "placeholder": "Напишите дополнительную информацию",
+        "count": "Символов: {current} из {max}",
+        "errors": {
+          "max": "Не более {max} символов"
+        }
+      },
+      "rules": {
+        "label": "Подтверждаю свое согласие с правилами проведения турнира",
+        "errors": {
+          "required": "Необходимо подтвердить согласие с правилами"
+        }
+      },
+      "tooltip_label": "Информация о поле",
+      "submit": "Отправить заявку"
     }
   }
 }
