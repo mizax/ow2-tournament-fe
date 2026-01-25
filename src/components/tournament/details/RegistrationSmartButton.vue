@@ -96,14 +96,14 @@ const buttonConfig = computed(() => {
         return {
           is: Button,
           text: t('registration.smart_button.already_registered'),
-          classes: 'bg-muted-foreground/80 text-lg cursor-pointer',
+          classes: 'bg-[oklch(0.5_0.1751_141.88)] text-lg cursor-pointer',
           action: navigateToRequestStatusPage,
         }
       case 'DECLINED':
         return {
           is: Button,
           text: t('registration.smart_button.declined'),
-          classes: 'bg-black text-lg text-foreground cursor-pointer',
+          classes: 'bg-black text-lg text-white cursor-pointer',
           action: navigateToRequestStatusPage,
         }
       case 'PENDING':

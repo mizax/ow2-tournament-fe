@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useTournamentStore } from '@/stores/tournamentStore'
@@ -15,8 +15,31 @@ import StreamTab from './details/StreamTab.vue'
 
 const { t } = useI18n()
 const route = useRoute()
+const router = useRouter()
 const tournamentStore = useTournamentStore()
 const tournamentSef = computed(() => String(route.params.tournamentSef ?? ''))
+const tabValues = ['overview', 'participation', 'schedule', 'rules', 'prizes', 'stream'] as const
+const defaultTab = 'overview'
+const activeTab = computed({
+  get: () => {
+    const queryValue = String(route.query.tab ?? '')
+    return tabValues.includes(queryValue as (typeof tabValues)[number]) ? queryValue : defaultTab
+  },
+  set: (value) => {
+    const nextValue = tabValues.includes(value as (typeof tabValues)[number])
+      ? value
+      : defaultTab
+
+    if (route.query.tab !== nextValue) {
+      router.replace({
+        query: {
+          ...route.query,
+          tab: nextValue,
+        },
+      })
+    }
+  },
+})
 
 const tournament = computed(() =>
   tournamentSef.value ? tournamentStore.tournaments[tournamentSef.value] ?? null : null,
@@ -66,7 +89,7 @@ watch(tournamentSef, loadTournament)
   <div v-else-if="tournament" class="container mx-auto py-8">
     <TournamentHero :tournament="tournament" />
 
-    <Tabs default-value="overview" class="w-full">
+    <Tabs v-model="activeTab" class="w-full">
       <TabsList class="grid w-full grid-cols-3 md:grid-cols-6 mb-8 h-auto">
         <TabsTrigger value="overview" class="py-2">
           {{ t('tournament.tabs.overview') }}

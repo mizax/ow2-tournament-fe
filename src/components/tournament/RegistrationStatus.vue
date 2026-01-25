@@ -90,7 +90,7 @@ const statusLabel = computed(() => {
 const statusBadgeClasses = computed(() => {
   switch (registrationDetails.value?.status) {
     case 'ACCEPTED':
-      return 'bg-muted-foreground/80 text-white'
+      return 'bg-[oklch(0.5_0.1751_141.88)]'
     case 'DECLINED':
       return 'bg-black text-white'
     case 'PENDING':
