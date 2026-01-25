@@ -7,10 +7,14 @@ import {
 } from '@/components/ui/navigation-menu'
 import { Button } from '@/components/ui/button'
 import { RouterLink } from 'vue-router'
-import { useI18n } from 'vue-i18n'
 import UserNav from '@/components/page-elements/UserNav.vue'
+import { useAuthStore } from '@/stores/authStore'
+import UserRole from '@/types/UserRole'
+import { computed } from 'vue'
 
-const { t } = useI18n()
+const authStore = useAuthStore()
+const managerRoles = [UserRole.ADMIN, UserRole.TOURNAMENT_MANAGER]
+const showManagerLink = computed(() => managerRoles.some((role) => authStore.hasRole(role)))
 </script>
 
 <template>
@@ -28,13 +32,13 @@ const { t } = useI18n()
               />
             </RouterLink>
           </NavigationMenuItem>
-<!--          <NavigationMenuItem>-->
-<!--            <NavigationMenuLink as-child>-->
-<!--              <Button class="cursor-pointer" :as="RouterLink" variant="link" to="/tournament">-->
-<!--                {{ t('nav.past_tournaments') }}-->
-<!--              </Button>-->
-<!--            </NavigationMenuLink>-->
-<!--          </NavigationMenuItem>-->
+          <NavigationMenuItem v-if="showManagerLink">
+            <NavigationMenuLink as-child>
+              <Button class="cursor-pointer" :as="RouterLink" variant="ghost" to="/manager">
+                Manager
+              </Button>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
       <UserNav class="m-4" />

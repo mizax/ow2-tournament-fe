@@ -4,10 +4,15 @@ import NotFoundView from '@/views/NotFoundView.vue'
 import AuthCallbackView from '@/views/AuthCallbackView.vue'
 import { useAuthStore } from '@/stores/authStore'
 import { toast } from 'vue-sonner'
-import { useI18n } from 'vue-i18n'
+import UserRole from '@/types/UserRole'
 
 const defaultMeta = {
   requiresAuth: false,
+  allowedRoles: [] as UserRole[],
+}
+
+const hasRequiredRoles = (authStore: ReturnType<typeof useAuthStore>, roles: UserRole[]) => {
+  return roles.length === 0 || roles.some((role) => authStore.hasRole(role))
 }
 
 const router = createRouter({
@@ -64,6 +69,24 @@ const router = createRouter({
       component: AuthCallbackView,
     },
     {
+      path: '/manager',
+      name: 'manager-dashboard',
+      component: () => import('@/views/ManagerDashboardView.vue'),
+      meta: {
+        requiresAuth: true,
+        allowedRoles: [UserRole.ADMIN, UserRole.TOURNAMENT_MANAGER],
+      },
+    },
+    {
+      path: '/manager/tournaments/:tournamentId/registrations',
+      name: 'manager-registrations',
+      component: () => import('@/views/ManagerRegistrationsView.vue'),
+      meta: {
+        requiresAuth: true,
+        allowedRoles: [UserRole.ADMIN, UserRole.TOURNAMENT_MANAGER],
+      },
+    },
+    {
       path: '/401-forbidden',
       name: 'forbidden',
       component: ForbiddenView,
@@ -82,8 +105,9 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
+  await authStore.restoreSession()
   await authStore.waitForUser()
-  const { requiresAuth } = { ...defaultMeta, ...to.meta }
+  const { requiresAuth, allowedRoles } = { ...defaultMeta, ...to.meta }
 
   if (requiresAuth && !authStore.isAuthenticated) {
     toast.error("Not authenticated")
@@ -92,6 +116,12 @@ router.beforeEach(async (to, from, next) => {
     } else {
       next('/')
     }
+    return
+  }
+
+  if (requiresAuth && !hasRequiredRoles(authStore, allowedRoles)) {
+    toast.error('Access denied')
+    next('/401-forbidden')
     return
   }
 
