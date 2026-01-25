@@ -20,9 +20,11 @@ import RegistrationDetailsSheet from '@/components/manager/RegistrationDetailsSh
 import { RoleValue } from '@/components/tournament/registration/types'
 import type { RegistrationStatus } from '@/types/registrationManager'
 import { Copyable } from '@/components/ui/copyable'
+import { useI18n } from 'vue-i18n'
 
 const route = useRoute()
 const managerStore = useRegistrationManagerStore()
+const { t } = useI18n()
 
 const tournamentId = computed(() => Number(route.params.tournamentId))
 const tournament = computed(() =>
@@ -43,11 +45,11 @@ const selectedRegistrationId = ref<number | null>(null)
 
 const formatDate = (value?: string) => {
   if (!value) {
-    return 'N/A'
+    return t('manager.common.not_available')
   }
   const parsed = new Date(value)
   if (Number.isNaN(parsed.getTime())) {
-    return 'N/A'
+    return t('manager.common.not_available')
   }
   return format(parsed, DATE_FORMAT_EXTENDED)
 }
@@ -55,15 +57,15 @@ const formatDate = (value?: string) => {
 const roleLabel = (role?: RoleValue | null) => {
   switch (role) {
     case RoleValue.TANK:
-      return 'Tank'
+      return t('tournament.registration_form.roles.options.tank')
     case RoleValue.DAMAGE:
-      return 'Damage'
+      return t('tournament.registration_form.roles.options.damage')
     case RoleValue.SUPPORT:
-      return 'Support'
+      return t('tournament.registration_form.roles.options.support')
     case RoleValue.FLEX:
-      return 'Flex'
+      return t('tournament.registration_form.roles.options.flex')
     default:
-      return 'N/A'
+      return t('manager.common.not_available')
   }
 }
 
@@ -86,16 +88,35 @@ const statusBadgeClasses = (status?: RegistrationStatus) => {
   }
 }
 
+const statusLabel = (status?: RegistrationStatus) => {
+  switch (status) {
+    case 'PENDING':
+      return t('manager.statuses.pending')
+    case 'PROCESSING':
+      return t('manager.statuses.processing')
+    case 'ACCEPTED':
+      return t('manager.statuses.accepted')
+    case 'ACTION_REQUIRED':
+      return t('manager.statuses.action_required')
+    case 'DECLINED':
+      return t('manager.statuses.declined')
+    case 'DELETED':
+      return t('manager.statuses.deleted')
+    default:
+      return t('manager.common.not_available')
+  }
+}
+
 const loadRegistrations = async () => {
   errorMessage.value = null
   if (!tournamentId.value || Number.isNaN(tournamentId.value)) {
-    errorMessage.value = 'Invalid tournament id.'
+    errorMessage.value = t('manager.registrations.invalid_tournament')
     return
   }
 
   const response = await managerStore.loadRegistrations(tournamentId.value)
   if (!response.success) {
-    errorMessage.value = 'Unable to load registrations.'
+    errorMessage.value = t('manager.registrations.load_error')
   }
 }
 
@@ -119,18 +140,20 @@ onMounted(async () => {
     <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <Button variant="link" :as="RouterLink" to="/manager" class="p-0">
-          Back to dashboard
+          {{ t('manager.registrations.back') }}
         </Button>
         <h1 class="text-2xl font-semibold tracking-tight">
-          {{ tournament?.title || 'Registration management' }}
+          {{ tournament?.title || t('manager.registrations.title') }}
         </h1>
-        <p class="text-sm text-muted-foreground">Tournament ID: {{ tournamentId }}</p>
+        <p class="text-sm text-muted-foreground">
+          {{ t('manager.registrations.tournament_id', { id: tournamentId }) }}
+        </p>
       </div>
     </div>
 
     <div v-if="loading" class="flex items-center justify-center gap-2 text-muted-foreground">
       <Spinner class="animate-spin" />
-      <span>Loading registrations...</span>
+      <span>{{ t('manager.registrations.loading') }}</span>
     </div>
 
     <div
@@ -144,12 +167,12 @@ onMounted(async () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>BattleTag</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Roles</TableHead>
-            <TableHead>Created</TableHead>
-            <TableHead>Updated</TableHead>
+            <TableHead>{{ t('manager.registrations.table.id') }}</TableHead>
+            <TableHead>{{ t('manager.registrations.table.battletag') }}</TableHead>
+            <TableHead>{{ t('manager.registrations.table.status') }}</TableHead>
+            <TableHead>{{ t('manager.registrations.table.roles') }}</TableHead>
+            <TableHead>{{ t('manager.registrations.table.created') }}</TableHead>
+            <TableHead>{{ t('manager.registrations.table.updated') }}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -163,7 +186,7 @@ onMounted(async () => {
             <Copyable :as="TableCell" :value="registration.battletag">{{ registration.battletag }}</Copyable>
             <TableCell>
               <Badge :class="statusBadgeClasses(registration.status)">
-                {{ registration.status }}
+                {{ statusLabel(registration.status) }}
               </Badge>
             </TableCell>
             <TableCell>
@@ -178,7 +201,7 @@ onMounted(async () => {
             <TableCell>{{ formatDate(registration.updated_at) }}</TableCell>
           </TableRow>
           <TableEmpty v-if="!registrations.length" :colspan="6">
-            No registrations found.
+            {{ t('manager.registrations.empty') }}
           </TableEmpty>
         </TableBody>
       </Table>

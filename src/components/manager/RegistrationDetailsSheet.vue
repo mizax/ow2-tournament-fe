@@ -31,11 +31,13 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Copyable } from '@/components/ui/copyable'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{ open: boolean; registrationId: number | null }>()
 const emit = defineEmits<{ (e: 'update:open', value: boolean): void }>()
 
 const managerStore = useRegistrationManagerStore()
+const { t } = useI18n()
 const localStatus = ref<RegistrationStatus | ''>('')
 const declineReason = ref('')
 const requestedActionDescription = ref('')
@@ -75,11 +77,11 @@ const statusOptions: RegistrationStatus[] = [
 
 const formatDate = (value?: string) => {
   if (!value) {
-    return 'N/A'
+    return t('manager.common.not_available')
   }
   const parsed = new Date(value)
   if (Number.isNaN(parsed.getTime())) {
-    return 'N/A'
+    return t('manager.common.not_available')
   }
   return format(parsed, DATE_FORMAT_EXTENDED)
 }
@@ -87,19 +89,47 @@ const formatDate = (value?: string) => {
 const roleLabel = (role?: RoleValue | null) => {
   switch (role) {
     case RoleValue.TANK:
-      return 'Tank'
+      return t('tournament.registration_form.roles.options.tank')
     case RoleValue.DAMAGE:
-      return 'Damage'
+      return t('tournament.registration_form.roles.options.damage')
     case RoleValue.SUPPORT:
-      return 'Support'
+      return t('tournament.registration_form.roles.options.support')
     case RoleValue.FLEX:
-      return 'Flex'
+      return t('tournament.registration_form.roles.options.flex')
     default:
-      return 'N/A'
+      return t('manager.common.not_available')
   }
 }
 
-const statusLabel = (status?: RegistrationStatus) => status ?? 'Unknown'
+const statusLabel = (status?: RegistrationStatus) => {
+  switch (status) {
+    case 'PENDING':
+      return t('manager.statuses.pending')
+    case 'PROCESSING':
+      return t('manager.statuses.processing')
+    case 'ACCEPTED':
+      return t('manager.statuses.accepted')
+    case 'ACTION_REQUIRED':
+      return t('manager.statuses.action_required')
+    case 'DECLINED':
+      return t('manager.statuses.declined')
+    case 'DELETED':
+      return t('manager.statuses.deleted')
+    default:
+      return t('manager.common.not_available')
+  }
+}
+
+const actionStatusLabel = (status?: 'PENDING' | 'RESOLVED') => {
+  switch (status) {
+    case 'PENDING':
+      return t('manager.action_statuses.pending')
+    case 'RESOLVED':
+      return t('manager.action_statuses.resolved')
+    default:
+      return t('manager.common.not_available')
+  }
+}
 
 const statusBadgeClasses = (status?: RegistrationStatus) => {
   switch (status) {
@@ -143,7 +173,7 @@ const initializeFormState = (details: RegistrationDetailResponse) => {
 const ensureDetailsLoaded = async (registrationId: number) => {
   const response = await managerStore.loadRegistrationDetails(registrationId)
   if (!response.success) {
-    toast.error('Unable to load registration details.')
+    toast.error(t('manager.details.toasts.load_error'))
   }
 }
 
@@ -192,9 +222,9 @@ const submitStatusUpdate = async () => {
 
   const response = await managerStore.updateRegistrationStatus(props.registrationId, payload)
   if (response.success) {
-    toast.success('Status updated')
+    toast.success(t('manager.details.toasts.status_updated'))
   } else {
-    toast.error('Unable to update status')
+    toast.error(t('manager.details.toasts.status_update_error'))
   }
 }
 
@@ -210,9 +240,9 @@ const submitComment = async () => {
 
   if (response.success) {
     commentText.value = ''
-    toast.success('Comment added')
+    toast.success(t('manager.details.toasts.comment_added'))
   } else {
-    toast.error('Unable to add comment')
+    toast.error(t('manager.details.toasts.comment_error'))
   }
 }
 
@@ -221,7 +251,6 @@ const submitRoleRankings = async () => {
     return
   }
 
-  console.log(roleRankingDraft.value)
   const assignments: RoleRankingAssignment[] = roleValues
     .map((role) => {
       let rawValue: string | null = null
@@ -242,15 +271,15 @@ const submitRoleRankings = async () => {
     .filter((assignment): assignment is RoleRankingAssignment => assignment !== null)
 
   if (!assignments.length) {
-    toast.error('Provide at least one ranking')
+    toast.error(t('manager.details.role_rankings.validation'))
     return
   }
 
   const response = await managerStore.updateRoleRankings(props.registrationId, assignments)
   if (response.success) {
-    toast.success('Rankings updated')
+    toast.success(t('manager.details.toasts.rankings_updated'))
   } else {
-    toast.error('Unable to update rankings')
+    toast.error(t('manager.details.toasts.rankings_error'))
   }
 }
 
@@ -261,9 +290,9 @@ const resolveAction = async (actionId: number) => {
 
   const response = await managerStore.resolveRequestedAction(props.registrationId, actionId)
   if (response.success) {
-    toast.success('Action resolved')
+    toast.success(t('manager.details.toasts.action_resolved'))
   } else {
-    toast.error('Unable to resolve action')
+    toast.error(t('manager.details.toasts.action_resolve_error'))
   }
 }
 </script>
@@ -272,31 +301,36 @@ const resolveAction = async (actionId: number) => {
   <Sheet v-model:open="isOpen">
     <SheetContent class="sm:max-w-lg">
       <SheetHeader>
-        <SheetTitle> Registration #{{ registrationDetails?.registration.id ?? '' }} </SheetTitle>
+        <SheetTitle>
+          {{ t('manager.details.title', { id: registrationDetails?.registration.id ?? '' }) }}
+        </SheetTitle>
         <SheetDescription>
           <Copyable v-if="registrationDetails?.battletag" :value="registrationDetails.battletag">
             {{ registrationDetails.battletag }}
           </Copyable>
+          <span v-else>{{ t('manager.details.subtitle') }}</span>
         </SheetDescription>
       </SheetHeader>
 
       <div class="flex-1 overflow-y-auto pr-2 space-y-6">
         <div v-if="isLoading" class="flex items-center justify-center gap-2 text-muted-foreground">
           <Spinner class="animate-spin" />
-          <span>Loading registration...</span>
+          <span>{{ t('manager.details.loading') }}</span>
         </div>
 
         <div v-else-if="registrationDetails" class="space-y-6">
           <div class="rounded-lg border p-4 space-y-2">
             <div class="flex items-center justify-between text-sm">
-              <span class="text-muted-foreground">Status</span>
+              <span class="text-muted-foreground">{{ t('manager.details.summary.status') }}</span>
               <Badge :class="statusBadgeClasses(registrationDetails.registration.status)">
                 {{ statusLabel(registrationDetails.registration.status) }}
               </Badge>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-muted-foreground">Alt accounts</span>
-              <div class="flex gap-1">
+              <span class="text-muted-foreground">{{
+                t('manager.details.info.alt_accounts')
+              }}</span>
+              <div v-if="registrationDetails.registration.alt_accounts?.length" class="flex gap-1">
                 <Copyable
                   v-for="account in registrationDetails.registration.alt_accounts || []"
                   :key="`alt-${registrationId}-${account}`"
@@ -305,31 +339,43 @@ const resolveAction = async (actionId: number) => {
                   {{ account }}
                 </Copyable>
               </div>
+              <span v-else class="text-sm text-muted-foreground">
+                {{ t('manager.common.not_available') }}
+              </span>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-muted-foreground">Twitch</span>
+              <span class="text-muted-foreground">{{ t('manager.details.info.twitch') }}</span>
               <Copyable :value="registrationDetails.registration.twitch">
-                {{ registrationDetails.registration.twitch || 'N/A' }}
+                {{ registrationDetails.registration.twitch || t('manager.common.not_available') }}
               </Copyable>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-muted-foreground">Discord</span>
+              <span class="text-muted-foreground">{{ t('manager.details.info.discord') }}</span>
               <Copyable :value="registrationDetails.registration.discord">
-                {{ registrationDetails.registration.discord || 'N/A' }}
+                {{ registrationDetails.registration.discord || t('manager.common.not_available') }}
               </Copyable>
             </div>
             <div class="grid gap-2 text-sm">
               <div class="flex items-center justify-between">
-                <span class="text-muted-foreground">Primary role</span>
+                <span class="text-muted-foreground">{{
+                  t('manager.details.summary.primary_role')
+                }}</span>
                 <span>{{ roleLabel(registrationDetails.registration.primary_role) }}</span>
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-muted-foreground">Secondary role</span>
+                <span class="text-muted-foreground">{{
+                  t('manager.details.summary.secondary_role')
+                }}</span>
                 <span>{{ roleLabel(registrationDetails.registration.secondary_role) }}</span>
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-muted-foreground">Guarantors</span>
-                <div class="flex gap-1">
+                <span class="text-muted-foreground">{{
+                  t('manager.details.info.guarantors')
+                }}</span>
+                <div
+                  v-if="registrationDetails.registration.guarantors?.length"
+                  class="flex gap-1"
+                >
                   <Copyable
                     v-for="guarantor in registrationDetails.registration.guarantors || []"
                     :key="`gua-${registrationId}-${guarantor}`"
@@ -338,11 +384,19 @@ const resolveAction = async (actionId: number) => {
                     {{ guarantor }}
                   </Copyable>
                 </div>
+                <span v-else class="text-sm text-muted-foreground">
+                  {{ t('manager.common.not_available') }}
+                </span>
               </div>
               <div class="space-y-1">
-                <p class="text-xs text-muted-foreground">Additional info</p>
+                <p class="text-xs text-muted-foreground">
+                  {{ t('manager.details.info.additional_info') }}
+                </p>
                 <div class="rounded-md border p-2 text-sm whitespace-pre-line">
-                  {{ registrationDetails.registration.additional_info || 'N/A' }}
+                  {{
+                    registrationDetails.registration.additional_info
+                      || t('manager.common.not_available')
+                  }}
                 </div>
               </div>
             </div>
@@ -351,53 +405,71 @@ const resolveAction = async (actionId: number) => {
           <Separator />
 
           <div class="space-y-3">
-            <h3 class="text-sm font-semibold">Update status</h3>
+            <h3 class="text-sm font-semibold">{{ t('manager.details.update_status.title') }}</h3>
             <Select v-model="localStatus">
               <SelectTrigger>
-                <SelectValue placeholder="Select status" />
+                <SelectValue :placeholder="t('manager.details.update_status.placeholder')" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem v-for="status in statusOptions" :key="status" :value="status">
-                  {{ status }}
+                  {{ statusLabel(status) }}
                 </SelectItem>
               </SelectContent>
             </Select>
 
             <div v-if="localStatus === 'DECLINED'" class="space-y-2">
-              <label class="text-xs text-muted-foreground">Decline reason</label>
-              <Textarea v-model="declineReason" placeholder="Provide a reason" />
-            </div>
-
-            <div v-if="localStatus === 'ACTION_REQUIRED'" class="space-y-2">
-              <label class="text-xs text-muted-foreground">Requested action</label>
+              <label class="text-xs text-muted-foreground">
+                {{ t('manager.details.update_status.decline_reason') }}
+              </label>
               <Textarea
-                v-model="requestedActionDescription"
-                placeholder="Describe required action"
+                v-model="declineReason"
+                :placeholder="t('manager.details.update_status.decline_placeholder')"
               />
             </div>
 
-            <Button class="w-full" @click="submitStatusUpdate">Update status</Button>
-          </div>
-
-          <Separator />
-
-          <div class="space-y-3">
-            <h3 class="text-sm font-semibold">Role rankings</h3>
-            <div class="grid gap-2">
-              <div v-for="role in roleValues" :key="role" class="flex items-center gap-3">
-                <span class="w-24 text-sm">{{ roleLabel(role) }}</span>
-                <Input v-model="roleRankingDraft[role]" type="number" min="1" placeholder="Rank" />
-              </div>
+            <div v-if="localStatus === 'ACTION_REQUIRED'" class="space-y-2">
+              <label class="text-xs text-muted-foreground">
+                {{ t('manager.details.update_status.requested_action') }}
+              </label>
+              <Textarea
+                v-model="requestedActionDescription"
+                :placeholder="t('manager.details.update_status.requested_action_placeholder')"
+              />
             </div>
-            <Button class="w-full" variant="secondary" @click="submitRoleRankings">
-              Save rankings
+
+            <Button class="w-full" @click="submitStatusUpdate">
+              {{ t('manager.details.update_status.submit') }}
             </Button>
           </div>
 
           <Separator />
 
           <div class="space-y-3">
-            <h3 class="text-sm font-semibold">Requested actions</h3>
+            <h3 class="text-sm font-semibold">
+              {{ t('manager.details.role_rankings.title') }}
+            </h3>
+            <div class="grid gap-2">
+              <div v-for="role in roleValues" :key="role" class="flex items-center gap-3">
+                <span class="w-24 text-sm">{{ roleLabel(role) }}</span>
+                <Input
+                  v-model="roleRankingDraft[role]"
+                  type="number"
+                  min="1"
+                  :placeholder="t('manager.details.role_rankings.placeholder')"
+                />
+              </div>
+            </div>
+            <Button class="w-full" variant="secondary" @click="submitRoleRankings">
+              {{ t('manager.details.role_rankings.submit') }}
+            </Button>
+          </div>
+
+          <Separator />
+
+          <div class="space-y-3">
+            <h3 class="text-sm font-semibold">
+              {{ t('manager.details.requested_actions.title') }}
+            </h3>
             <div v-if="registrationDetails.requested_actions.length" class="space-y-2">
               <div
                 v-for="action in registrationDetails.requested_actions"
@@ -413,7 +485,7 @@ const resolveAction = async (actionId: number) => {
                       )
                     "
                   >
-                    {{ action.status }}
+                    {{ actionStatusLabel(action.status) }}
                   </Badge>
                 </div>
                 <p class="text-sm">{{ action.description }}</p>
@@ -425,18 +497,20 @@ const resolveAction = async (actionId: number) => {
                     variant="secondary"
                     @click="resolveAction(action.id)"
                   >
-                    Resolve
+                    {{ t('manager.details.requested_actions.resolve') }}
                   </Button>
                 </div>
               </div>
             </div>
-            <p v-else class="text-sm text-muted-foreground">No requested actions.</p>
+            <p v-else class="text-sm text-muted-foreground">
+              {{ t('manager.details.requested_actions.empty') }}
+            </p>
           </div>
 
           <Separator />
 
           <div class="space-y-3">
-            <h3 class="text-sm font-semibold">Comments</h3>
+            <h3 class="text-sm font-semibold">{{ t('manager.details.comments.title') }}</h3>
             <div v-if="registrationDetails.comments.length" class="space-y-2">
               <div
                 v-for="comment in registrationDetails.comments"
@@ -447,53 +521,75 @@ const resolveAction = async (actionId: number) => {
                 <p class="text-xs text-muted-foreground">{{ formatDate(comment.created_at) }}</p>
               </div>
             </div>
-            <p v-else class="text-sm text-muted-foreground">No comments yet.</p>
-            <Textarea v-model="commentText" placeholder="Add internal comment" />
-            <Button class="w-full" variant="secondary" @click="submitComment"> Add comment </Button>
+            <p v-else class="text-sm text-muted-foreground">
+              {{ t('manager.details.comments.empty') }}
+            </p>
+            <Textarea
+              v-model="commentText"
+              :placeholder="t('manager.details.comments.placeholder')"
+            />
+            <Button class="w-full" variant="secondary" @click="submitComment">
+              {{ t('manager.details.comments.submit') }}
+            </Button>
           </div>
 
           <Separator />
 
           <div class="space-y-3">
-            <h3 class="text-sm font-semibold">Registration info</h3>
+            <h3 class="text-sm font-semibold">{{ t('manager.details.info.title') }}</h3>
             <div class="grid gap-2 text-sm">
               <div class="flex items-center justify-between">
-                <span class="text-muted-foreground">Rules accepted</span>
-                <span>{{ registrationDetails.registration.rules_accepted ? 'Yes' : 'No' }}</span>
+                <span class="text-muted-foreground">
+                  {{ t('manager.details.info.rules_accepted') }}
+                </span>
+                <span>
+                  {{
+                    registrationDetails.registration.rules_accepted
+                      ? t('manager.details.info.yes')
+                      : t('manager.details.info.no')
+                  }}
+                </span>
               </div>
               <div
                 v-if="registrationDetails.registration.decline_reason"
                 class="flex items-center justify-between"
               >
-                <span class="text-muted-foreground">Decline reason</span>
+                <span class="text-muted-foreground">
+                  {{ t('manager.details.info.decline_reason') }}
+                </span>
                 <span class="text-right">{{
                   registrationDetails.registration.decline_reason
                 }}</span>
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-muted-foreground">IP address</span>
-                <span>{{ registrationDetails.registration.ip_address || 'N/A' }}</span>
+                <span class="text-muted-foreground">{{ t('manager.details.info.ip_address') }}</span>
+                <span>
+                  {{ registrationDetails.registration.ip_address || t('manager.common.not_available') }}
+                </span>
               </div>
               <div class="flex items-center justify-between">
-                <span class="text-muted-foreground">User agent</span>
+                <span class="text-muted-foreground">{{ t('manager.details.info.user_agent') }}</span>
                 <span class="text-right text-xs text-muted-foreground">
-                  {{ registrationDetails.registration.user_agent || 'N/A' }}
+                  {{
+                    registrationDetails.registration.user_agent
+                      || t('manager.common.not_available')
+                  }}
                 </span>
               </div>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-muted-foreground">Created</span>
+              <span class="text-muted-foreground">{{ t('manager.details.summary.created') }}</span>
               <span>{{ formatDate(registrationDetails.registration.created_at) }}</span>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-muted-foreground">Updated</span>
+              <span class="text-muted-foreground">{{ t('manager.details.summary.updated') }}</span>
               <span>{{ formatDate(registrationDetails.registration.updated_at) }}</span>
             </div>
           </div>
         </div>
 
         <div v-else class="text-sm text-muted-foreground">
-          Select a registration to view details.
+          {{ t('manager.details.select_prompt') }}
         </div>
       </div>
     </SheetContent>
