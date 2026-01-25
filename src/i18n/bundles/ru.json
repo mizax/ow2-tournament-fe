@@ -8,6 +8,7 @@
     "forbidden": "Доступ запрещен",
     "not_found": "Страница не найдена",
     "already_registered": "Вы уже подали заявку на этот турнир",
+    "registration_not_started": "Регистрация еще не началась",
     "unknown": "Произошла ошибка. Попробуйте еще раз позже"
   },
   "validation": {
@@ -68,7 +69,8 @@
       "stream": "Трансляция"
     },
     "hero": {
-      "prize_pool": "Призовой фонд"
+      "prize_pool": "Призовой фонд",
+      "registration_opens_in": "Регистрация откроется через {time}"
     },
     "overview": {
       "organizers": "Организаторы"

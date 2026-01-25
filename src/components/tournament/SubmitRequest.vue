@@ -59,6 +59,11 @@ const handleSubmit = async (payload: RegistrationFormValues) => {
       return
     }
 
+    if (errorData?.error === 'registration_not_started') {
+      toast.error(t('errors.registration_not_started'))
+      return
+    }
+
     if (errorData?.details) {
       toast.error(errorData.details)
       return
