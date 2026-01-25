@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { fetchWithoutAuth } from '@/services/apiService'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useTournamentStore } from '@/stores/tournamentStore'
 
 import TournamentHero from './details/TournamentHero.vue'
 import OverviewTab from './details/OverviewTab.vue'
@@ -15,86 +15,43 @@ import StreamTab from './details/StreamTab.vue'
 
 const { t } = useI18n()
 const route = useRoute()
-const { tournamentSef } = route.params
+const tournamentStore = useTournamentStore()
+const tournamentSef = computed(() => String(route.params.tournamentSef ?? ''))
 
-// Define the tournament type based on JSON schema
-interface TournamentDetails {
-  id: string
-  title: string
-  discipline: string
-  format: string
-  type: string
-  organizers?: Array<{ role: string; name: string; contact?: string }>
-  rules?: {
-    full_rules_url?: string
-    version?: string
-    last_update?: string
-  }
-  eligibility?: {
-    min_rank?: string
-    min_competitive_hours?: number
-    min_calibrated_seasons?: number
-    wins_current_season_main_role?: number
-    subscription?: {
-      twitch_channel?: string
-      donation_amount_rub?: number
-      donation_url?: string
-    }
-    verification_battletag?: string
-  }
-  registration?: {
-    start?: string
-    deadline?: string
-    checkin?: {
-      from?: string
-      to?: string
-      platform?: string
-      platform_url?: string
-    }
-  }
-  schedule: Array<{
-    day: number
-    date: string
-    stage: string
-    start_time: string
-  }>
-  prize_pool: {
-    currency: string
-    places: Array<{ place: number; amount: number }>
-  }
-  stream?: {
-    platform?: string
-    channel?: string
-  }
-  markdown?: {
-    description?: string
-    notes?: string
-    full_regulation?: string
-  }
-}
-
-const tournament = ref<TournamentDetails | null>(null)
-const isLoading = ref(true)
+const tournament = computed(() =>
+  tournamentSef.value ? tournamentStore.tournaments[tournamentSef.value] ?? null : null,
+)
+const isLoading = ref(!tournament.value)
 const error = ref<string | null>(null)
 
-onMounted(async () => {
-  try {
-    const response = await fetchWithoutAuth<TournamentDetails>(
-      `/api/public/v1/tournaments/${tournamentSef}`,
-    )
-
-    if (!response.success) {
-      throw new Error(response.errorCode || 'unknown_error')
-    }
-
-    tournament.value = response.data!
-  } catch (err) {
-    console.error('Error fetching tournament details:', err)
+const loadTournament = async () => {
+  if (!tournamentSef.value) {
     error.value = t('tournament.error.loading')
-  } finally {
     isLoading.value = false
+    return
   }
-})
+
+  if (tournament.value) {
+    error.value = null
+    isLoading.value = false
+    return
+  }
+
+  isLoading.value = true
+  const response = await tournamentStore.fetchTournament(tournamentSef.value)
+
+  if (!response.success) {
+    console.error('Error fetching tournament details:', response.errorCode)
+    error.value = t('tournament.error.loading')
+  } else {
+    error.value = null
+  }
+
+  isLoading.value = false
+}
+
+onMounted(loadTournament)
+watch(tournamentSef, loadTournament)
 </script>
 
 <template>

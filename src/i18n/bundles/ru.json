@@ -111,6 +111,7 @@
       "watch_on_twitch": "Смотреть на Twitch"
     },
     "registration_form": {
+      "title": "Подача заявки на участие в турнире",
       "battletag": {
         "label": "BattleTag",
         "empty": "Не указан",
