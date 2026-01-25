@@ -175,8 +175,16 @@
       "submit": "Отправить заявку"
     },
     "registration_status": {
-      "title": "Заявка отправлена",
-      "message": "Мы получили вашу заявку. Номер заявки: {id}"
+      "title": "Статус Вашей заявки на участие в турнире",
+      "subtitle": "Номер заявки: {id}",
+      "status": "Статус",
+      "created_at": "Создано",
+      "updated_at": "Обновлено",
+      "info_title": "Данные заявки",
+      "steps_title": "Следующие шаги",
+      "manager_comment_title": "Комментарий организатора",
+      "decline_reason_title": "Причина отказа",
+      "empty": "—"
     }
   }
 }

@@ -39,11 +39,6 @@ const router = createRouter({
               component: () => import('@/components/tournament/TournamentDetails.vue'),
             },
             {
-              path: 'regulation',
-              name: 'tournament-regulation',
-              component: () => import('@/components/common/MarkdownRenderer.vue'),
-            },
-            {
               path: 'register',
               name: 'tournament-registration',
               component: () => import('@/components/tournament/SubmitRequest.vue'),
