@@ -95,8 +95,6 @@ export const useAuthStore = defineStore('auth', {
         this.fetchingUser = fetchWithAuth<User>('/api/secured/v1/user/whoami')
         const response = await this.fetchingUser
 
-        console.log('Fetched user info', response)
-
         if (response.success && response.data) {
           this.user = response.data
           return { success: true }
