@@ -12,7 +12,11 @@ import { InputGroup, InputGroupInput, InputGroupText } from '@/components/ui/inp
 import RoleSelectField from './RoleSelectField.vue'
 import TagsInputField from './TagsInputField.vue'
 import { RoleValue, type RegistrationFormValues, type RoleOption } from './types'
-import { formSchema, validateBattleTags } from './TournamentRegistrationFormSchema'
+import {
+  formSchema,
+  validateBattleTagOrDiscordArray,
+  validateBattleTags,
+} from './TournamentRegistrationFormSchema'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -166,7 +170,7 @@ defineExpose({
         tooltip-key="tournament.registration_form.guarantors.tooltip"
         tooltip-label-key="tournament.registration_form.tooltip_label"
         :is-invalid="isInvalid"
-        :validate-tags="validateBattleTags"
+        :validate-tags="validateBattleTagOrDiscordArray"
       />
 
       <form.Field name="additionalInfo" #default="{ field }">

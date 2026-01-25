@@ -27,7 +27,7 @@ const roleSchema = z
 
 const battleTagSchema = z
   .string()
-  .regex(discordRegex, { error: 'tournament.registration_form.battletag.errors.format' })
+  .regex(battleTagRegex, { error: 'tournament.registration_form.battletag.errors.format' })
 
 const additionalInfoSchema = z
   .string()
@@ -41,13 +41,21 @@ export const validateBattleTags = (value: string[]) => {
   }
 }
 
+export const validateBattleTagOrDiscordArray = (value: string[]) => {
+  const hasInvalidTag = value.some((tag) => !battleTagRegex.test(tag) && !discordRegex.test(tag))
+
+  if (hasInvalidTag) {
+    return 'tournament.registration_form.guarantors.errors.format'
+  }
+}
+
 export const formSchema = z.object({
   altAccounts: z.array(battleTagSchema, {}).default([]),
   twitch: twitchSchema,
   discord: discordSchema,
   primaryRole: roleSchema,
   secondaryRole: roleSchema.optional(),
-  guarantors: z.array(battleTagSchema).default([]),
+  guarantors: z.array(battleTagSchema.or(discordSchema)).default([]),
   additionalInfo: additionalInfoSchema,
   rulesAccepted: z.literal(true, {
     error: 'tournament.registration_form.rules.errors.required',

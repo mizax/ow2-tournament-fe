@@ -126,8 +126,11 @@
       },
       "guarantors": {
         "label": "Поручители",
-        "placeholder": "Введите BattleTag и нажмите Enter",
-        "tooltip": "BattleTag'и поручителей"
+        "placeholder": "Введите BattleTag или Discord и нажмите Enter",
+        "tooltip": "BattleTag'и поручителей",
+        "errors": {
+          "format": "Введите корректный BattleTag или Discord"
+        }
       },
       "twitch": {
         "label": "Twitch",
