@@ -70,10 +70,14 @@ defineExpose({
 
 <template>
   <form class="space-y-6 w-full" @submit.prevent="form.handleSubmit">
-    <FieldGroup class="space-y-4">
+    <FieldGroup>
       <Field>
-        <FieldLabel class="form-field-required">{{ t('tournament.registration_form.battletag.label') }}</FieldLabel>
-        <div class="rounded-md border border-input bg-input/30 px-3 py-1.75 text-sm text-foreground">
+        <FieldLabel class="form-field-required">{{
+          t('tournament.registration_form.battletag.label')
+        }}</FieldLabel>
+        <div
+          class="rounded-md border border-input bg-input/30 px-3 py-1.75 text-sm text-foreground"
+        >
           {{ battleTag }}
         </div>
       </Field>
@@ -199,6 +203,7 @@ defineExpose({
             :id="field.name"
             :name="field.name"
             :model-value="field.state.value"
+            class="bg-input/50 cursor-pointer"
             @update:model-value="(value) => field.handleChange(value === true)"
             :aria-invalid="isInvalid(field)"
           />
@@ -210,14 +215,13 @@ defineExpose({
           </div>
         </Field>
       </form.Field>
+      <form.Subscribe>
+        <template v-slot="{ canSubmit, isPristine, isSubmitting }">
+          <Button class="cursor-pointer" type="submit" :disabled="!canSubmit || isPristine">
+            {{ isSubmitting ? '...' : t('tournament.registration_form.submit') }}
+          </Button>
+        </template>
+      </form.Subscribe>
     </FieldGroup>
-
-    <form.Subscribe>
-      <template v-slot="{ canSubmit, isPristine, isSubmitting }">
-        <Button type="submit" :disabled="!canSubmit || isPristine">
-          {{ isSubmitting ? '...' : t('tournament.registration_form.submit') }}
-        </Button>
-      </template>
-    </form.Subscribe>
   </form>
 </template>

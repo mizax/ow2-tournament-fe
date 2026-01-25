@@ -19,6 +19,9 @@ interface Props {
       currency: string
       places: Array<{ amount: number }>
     }
+    registration?: {
+      start?: string
+    }
   }
 }
 

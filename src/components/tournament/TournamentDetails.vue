@@ -38,15 +38,18 @@ interface TournamentDetails {
     subscription?: {
       twitch_channel?: string
       donation_amount_rub?: number
+      donation_url?: string
     }
     verification_battletag?: string
   }
   registration?: {
+    start?: string
     deadline?: string
     checkin?: {
       from?: string
       to?: string
       platform?: string
+      platform_url?: string
     }
   }
   schedule: Array<{

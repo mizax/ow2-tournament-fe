@@ -18,16 +18,19 @@ interface Eligibility {
   subscription?: {
     twitch_channel?: string
     donation_amount_rub?: number
+    donation_url?: string
   }
   verification_battletag?: string
 }
 
 interface Registration {
+  start?: string
   deadline?: string
   checkin?: {
     from?: string
     to?: string
     platform?: string
+    platform_url?: string
   }
 }
 
@@ -104,6 +107,15 @@ defineProps<Props>()
           <p v-if="eligibility.subscription.donation_amount_rub">
             {{ t('tournament.participation.donation') }}:
             {{ eligibility.subscription.donation_amount_rub }} RUB
+            <a
+              v-if="eligibility.subscription.donation_url"
+              class="underline"
+              :href="eligibility.subscription.donation_url"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ t('tournament.participation.donation_url') }}
+            </a>
           </p>
         </div>
       </CardContent>
@@ -114,6 +126,10 @@ defineProps<Props>()
         <CardTitle class="text-xl">{{ t('tournament.participation.registration') }}</CardTitle>
       </CardHeader>
       <CardContent class="space-y-4">
+        <div v-if="registration.start">
+          <p class="font-semibold">{{ t('tournament.participation.start') }}</p>
+          <p>{{ format(registration.start, DATE_FORMAT_EXTENDED) }}</p>
+        </div>
         <div v-if="registration.deadline">
           <p class="font-semibold">{{ t('tournament.participation.deadline') }}</p>
           <p>{{ format(registration.deadline, DATE_FORMAT_EXTENDED) }}</p>
@@ -124,7 +140,16 @@ defineProps<Props>()
             <p>{{ registration.checkin.from }} — {{ registration.checkin.to }}</p>
             <p v-if="registration.checkin.platform">
               {{ t('tournament.participation.check-in-platform') }}:
-              {{ registration.checkin.platform }}
+              <a
+                v-if="registration.checkin.platform_url"
+                :href="registration.checkin.platform_url"
+                class="underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {{ registration.checkin.platform }}
+              </a>
+              <span v-else>{{ registration.checkin.platform }}</span>
             </p>
           </AlertDescription>
         </Alert>

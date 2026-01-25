@@ -48,7 +48,7 @@ const selectId = computed(() => `role-select-${props.name}`)
         @update:model-value="field.handleChange($event as RoleValue)"
         @blur="field.handleBlur"
       >
-        <SelectTrigger :id="selectId" :aria-invalid="isInvalid(field)">
+        <SelectTrigger :id="selectId" class="cursor-pointer" :aria-invalid="isInvalid(field)">
           <SelectValue :placeholder="t(placeholderKey)"></SelectValue>
         </SelectTrigger>
         <SelectContent>

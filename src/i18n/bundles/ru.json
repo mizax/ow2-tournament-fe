@@ -77,6 +77,7 @@
       "eligibility": "Требования к участникам",
       "registration": "Регистрация",
       "checkin": "Чек-ин",
+      "start": "Начало регистрации",
       "deadline": "Дедлайн регистрации",
       "min_rank": "Минимальный ранг",
       "min_hours": "Минимально соревновательных часов",
@@ -85,6 +86,7 @@
       "subscription": "Подписка",
       "twitch_channel": "Twitch канал",
       "donation": "Донат (при отсутствии сабки)",
+      "donation_url": "(Ссылка)",
       "verification_btag": "BattleTag для верификации",
       "check-in-platform": "Платформа"
     },
