@@ -28,6 +28,13 @@ export interface RegistrationSummary {
   updated_at: string
 }
 
+export interface RegistrationListResponse {
+  items: RegistrationSummary[]
+  total: number
+  page: number
+  per_page: number
+}
+
 export interface RegistrationRow {
   id: number
   tournament_id: number

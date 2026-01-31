@@ -22,6 +22,7 @@ interface RegistrationManagerState {
   managedTournamentsLoading: boolean
   registrationsByTournament: Record<number, RegistrationSummary[]>
   registrationsLoadingByTournament: Record<number, boolean>
+  registrationsTotalByTournament: Record<number, number>
   registrationDetails: Record<number, RegistrationDetailResponse>
   registrationDetailsLoading: Record<number, boolean>
 }
@@ -32,6 +33,7 @@ export const useRegistrationManagerStore = defineStore('registrationManager', {
     managedTournamentsLoading: false,
     registrationsByTournament: {},
     registrationsLoadingByTournament: {},
+    registrationsTotalByTournament: {},
     registrationDetails: {},
     registrationDetailsLoading: {},
   }),
@@ -49,16 +51,24 @@ export const useRegistrationManagerStore = defineStore('registrationManager', {
     },
     async loadRegistrations(
       tournamentId: number,
+      params?: Omit<
+        Parameters<typeof fetchRegistrations>[0],
+        'tournamentId'
+      >,
     ): Promise<ApiResponse<RegistrationSummary[]>> {
       this.registrationsLoadingByTournament[tournamentId] = true
-      const response = await fetchRegistrations({ tournamentId })
+      const response = await fetchRegistrations({ tournamentId, ...params })
       this.registrationsLoadingByTournament[tournamentId] = false
 
       if (response.success && response.data) {
-        this.registrationsByTournament[tournamentId] = response.data
+        this.registrationsByTournament[tournamentId] = response.data.items
+        this.registrationsTotalByTournament[tournamentId] = response.data.total
       }
 
-      return response
+      return {
+        ...response,
+        data: response.data?.items,
+      }
     },
     async loadRegistrationDetails(
       registrationId: number,

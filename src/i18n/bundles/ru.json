@@ -220,6 +220,28 @@
       "invalid_tournament": "Некорректный ID турнира.",
       "load_error": "Не удалось загрузить заявки.",
       "empty": "Заявки не найдены.",
+      "filters": {
+        "search_label": "Поиск по BattleTag",
+        "search_placeholder": "Введите BattleTag",
+        "status_label": "Статусы",
+        "per_page_label": "На странице",
+        "per_page_placeholder": "Выберите количество",
+        "reset": "Сбросить фильтры",
+        "refresh": "Обновить",
+        "sort": {
+          "label": "Сортировка",
+          "placeholder": "Выберите сортировку",
+          "created_desc": "Создана: новые сверху",
+          "created_asc": "Создана: старые сверху",
+          "updated_desc": "Обновлена: новые сверху",
+          "updated_asc": "Обновлена: старые сверху"
+        }
+      },
+      "pagination": {
+        "page": "Всего {total} · {perPage} на странице",
+        "prev": "Назад",
+        "next": "Вперед"
+      },
       "table": {
         "id": "ID",
         "battletag": "BattleTag",

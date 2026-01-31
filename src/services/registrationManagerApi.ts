@@ -3,6 +3,7 @@ import type {
   CreateCommentRequest,
   ManagedTournament,
   RegistrationDetailResponse,
+  RegistrationListResponse,
   RegistrationRequestedAction,
   RegistrationRoleRanking,
   RegistrationRow,
@@ -17,6 +18,7 @@ export interface ListRegistrationsParams {
   sort?: string
   page?: number
   perPage?: number
+  battletag?: string
 }
 
 export async function fetchManagedTournaments(): Promise<ApiResponse<ManagedTournament[]>> {
@@ -25,7 +27,7 @@ export async function fetchManagedTournaments(): Promise<ApiResponse<ManagedTour
 
 export async function fetchRegistrations(
   params: ListRegistrationsParams,
-): Promise<ApiResponse<RegistrationSummary[]>> {
+): Promise<ApiResponse<RegistrationListResponse>> {
   const query = new URLSearchParams()
   query.set('tournament_id', String(params.tournamentId))
 
@@ -45,7 +47,11 @@ export async function fetchRegistrations(
     query.set('per_page', String(params.perPage))
   }
 
-  return fetchWithAuth<RegistrationSummary[]>(
+  if (params.battletag) {
+    query.set('battletag', params.battletag)
+  }
+
+  return fetchWithAuth<RegistrationListResponse>(
     `/api/secured/v1/manager/registrations/?${query.toString()}`,
   )
 }

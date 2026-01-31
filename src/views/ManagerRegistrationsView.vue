@@ -1,26 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute, RouterLink } from 'vue-router'
-import { format } from 'date-fns'
-import { DATE_FORMAT_EXTENDED } from '@/util/date'
+import { useRoute } from 'vue-router'
 import { useRegistrationManagerStore } from '@/stores/registrationManagerStore'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableEmpty,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { Spinner } from '@/components/ui/spinner'
+import ManagerRegistrationsHeader from '@/components/manager/ManagerRegistrationsHeader.vue'
+import ManagerRegistrationsFilters from '@/components/manager/ManagerRegistrationsFilters.vue'
+import ManagerRegistrationsTable from '@/components/manager/ManagerRegistrationsTable.vue'
+import ManagerRegistrationsPagination from '@/components/manager/ManagerRegistrationsPagination.vue'
 import RegistrationDetailsSheet from '@/components/manager/RegistrationDetailsSheet.vue'
-import { RoleValue } from '@/components/tournament/registration/types'
 import type { RegistrationStatus } from '@/types/registrationManager'
-import { Copyable } from '@/components/ui/copyable'
 import { useI18n } from 'vue-i18n'
+import { useDebounceFn } from '@vueuse/core'
 
 const route = useRoute()
 const managerStore = useRegistrationManagerStore()
@@ -37,74 +26,60 @@ const registrations = computed(
 const loading = computed(
   () => managerStore.registrationsLoadingByTournament[tournamentId.value] ?? false,
 )
+const total = computed(
+  () => managerStore.registrationsTotalByTournament[tournamentId.value] ?? 0,
+)
 
 const errorMessage = ref<string | null>(null)
 
 const sheetOpen = ref(false)
 const selectedRegistrationId = ref<number | null>(null)
+const battletagSearch = ref('')
+const selectedStatuses = ref<RegistrationStatus[]>([
+  'PENDING',
+  'PROCESSING',
+  'ACTION_REQUIRED',
+])
+const sortValue = ref('created_at:desc')
+const page = ref(1)
+const perPage = ref(50)
 
-const formatDate = (value?: string) => {
-  if (!value) {
-    return t('manager.common.not_available')
-  }
-  const parsed = new Date(value)
-  if (Number.isNaN(parsed.getTime())) {
-    return t('manager.common.not_available')
-  }
-  return format(parsed, DATE_FORMAT_EXTENDED)
-}
+const perPageValue = computed({
+  get: () => String(perPage.value),
+  set: (value: string) => {
+    const parsed = Number(value)
+    if (!Number.isNaN(parsed)) {
+      perPage.value = parsed
+    }
+  },
+})
 
-const roleLabel = (role?: RoleValue | null) => {
-  switch (role) {
-    case RoleValue.TANK:
-      return t('tournament.registration_form.roles.options.tank')
-    case RoleValue.DAMAGE:
-      return t('tournament.registration_form.roles.options.damage')
-    case RoleValue.SUPPORT:
-      return t('tournament.registration_form.roles.options.support')
-    case RoleValue.FLEX:
-      return t('tournament.registration_form.roles.options.flex')
-    default:
-      return t('manager.common.not_available')
-  }
-}
+const statusOptions: RegistrationStatus[] = [
+  'PENDING',
+  'PROCESSING',
+  'ACCEPTED',
+  'ACTION_REQUIRED',
+  'DECLINED',
+  'DELETED',
+]
 
-const statusBadgeClasses = (status?: RegistrationStatus) => {
-  switch (status) {
-    case 'ACCEPTED':
-      return 'bg-[oklch(0.5_0.1751_141.88)]'
-    case 'DECLINED':
-      return 'bg-black text-white'
-    case 'PENDING':
-      return 'bg-[oklch(0.764_0.1392_100.59)] text-black'
-    case 'PROCESSING':
-      return 'bg-[oklch(0.5412_0.1357_50.82)] text-white'
-    case 'ACTION_REQUIRED':
-      return 'bg-[oklch(0.4588_0.1702_15.88)] text-white'
-    case 'DELETED':
-      return 'bg-muted text-muted-foreground'
-    default:
-      return 'bg-muted text-muted-foreground'
-  }
-}
+const sortOptions = computed(() => [
+  { value: 'created_at:desc', label: t('manager.registrations.filters.sort.created_desc') },
+  { value: 'created_at:asc', label: t('manager.registrations.filters.sort.created_asc') },
+  { value: 'updated_at:desc', label: t('manager.registrations.filters.sort.updated_desc') },
+  { value: 'updated_at:asc', label: t('manager.registrations.filters.sort.updated_asc') },
+])
 
-const statusLabel = (status?: RegistrationStatus) => {
-  switch (status) {
-    case 'PENDING':
-      return t('manager.statuses.pending')
-    case 'PROCESSING':
-      return t('manager.statuses.processing')
-    case 'ACCEPTED':
-      return t('manager.statuses.accepted')
-    case 'ACTION_REQUIRED':
-      return t('manager.statuses.action_required')
-    case 'DECLINED':
-      return t('manager.statuses.declined')
-    case 'DELETED':
-      return t('manager.statuses.deleted')
-    default:
-      return t('manager.common.not_available')
+const perPageOptions = [25, 50, 100]
+
+const setStatusFilter = (status: RegistrationStatus, checked: boolean) => {
+  if (checked) {
+    if (!selectedStatuses.value.includes(status)) {
+      selectedStatuses.value = [...selectedStatuses.value, status]
+    }
+    return
   }
+  selectedStatuses.value = selectedStatuses.value.filter((item) => item !== status)
 }
 
 const loadRegistrations = async () => {
@@ -114,18 +89,70 @@ const loadRegistrations = async () => {
     return
   }
 
-  const response = await managerStore.loadRegistrations(tournamentId.value)
+  const response = await managerStore.loadRegistrations(tournamentId.value, {
+    status: selectedStatuses.value.length ? selectedStatuses.value : undefined,
+    sort: sortValue.value,
+    page: page.value,
+    perPage: perPage.value,
+    battletag: battletagSearch.value.trim() || undefined,
+  })
   if (!response.success) {
     errorMessage.value = t('manager.registrations.load_error')
   }
 }
+
+const debouncedLoad = useDebounceFn(loadRegistrations, 350)
 
 const openRegistration = (registrationId: number) => {
   selectedRegistrationId.value = registrationId
   sheetOpen.value = true
 }
 
-watch(tournamentId, loadRegistrations)
+const resetFilters = async () => {
+  battletagSearch.value = ''
+  selectedStatuses.value = []
+  sortValue.value = 'created_at:desc'
+  perPage.value = 50
+  page.value = 1
+  await loadRegistrations()
+}
+
+const refreshRegistrations = async () => {
+  await loadRegistrations()
+}
+
+watch(tournamentId, async () => {
+  page.value = 1
+  await loadRegistrations()
+})
+
+watch(sortValue, () => {
+  page.value = 1
+  loadRegistrations()
+})
+
+watch(perPage, () => {
+  page.value = 1
+  loadRegistrations()
+})
+
+watch(
+  selectedStatuses,
+  () => {
+    page.value = 1
+    loadRegistrations()
+  },
+  { deep: true },
+)
+
+watch(battletagSearch, () => {
+  page.value = 1
+  debouncedLoad()
+})
+
+watch(page, () => {
+  loadRegistrations()
+})
 
 onMounted(async () => {
   if (!managerStore.managedTournaments.length) {
@@ -137,74 +164,53 @@ onMounted(async () => {
 
 <template>
   <div class="container mx-auto py-10 space-y-6">
-    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <Button variant="link" :as="RouterLink" to="/manager" class="p-0">
-          {{ t('manager.registrations.back') }}
-        </Button>
-        <h1 class="text-2xl font-semibold tracking-tight">
-          {{ tournament?.title || t('manager.registrations.title') }}
-        </h1>
-        <p class="text-sm text-muted-foreground">
-          {{ t('manager.registrations.tournament_id', { id: tournamentId }) }}
-        </p>
-      </div>
-    </div>
+    <ManagerRegistrationsHeader
+      :title="tournament?.title || t('manager.registrations.title')"
+      :tournament-id="tournamentId"
+    />
 
-    <div v-if="loading" class="flex items-center justify-center gap-2 text-muted-foreground">
-      <Spinner class="animate-spin" />
-      <span>{{ t('manager.registrations.loading') }}</span>
-    </div>
+    <ManagerRegistrationsFilters
+      :battletag-search="battletagSearch"
+      :sort-value="sortValue"
+      :per-page-value="perPageValue"
+      :per-page-options="perPageOptions"
+      :sort-options="sortOptions"
+      :status-options="statusOptions"
+      :selected-statuses="selectedStatuses"
+      @update:battletag-search="(value) => (battletagSearch = value)"
+      @update:sort-value="(value) => (sortValue = value)"
+      @update:per-page-value="(value) => (perPageValue = value)"
+      @toggle-status="setStatusFilter"
+      @reset="resetFilters"
+      @refresh="refreshRegistrations"
+    />
 
     <div
-      v-else-if="errorMessage"
+      v-if="errorMessage"
       class="rounded-lg border border-destructive/40 bg-destructive/10 p-4"
     >
       <p class="text-sm text-destructive">{{ errorMessage }}</p>
     </div>
 
-    <div v-else class="rounded-lg border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>{{ t('manager.registrations.table.id') }}</TableHead>
-            <TableHead>{{ t('manager.registrations.table.battletag') }}</TableHead>
-            <TableHead>{{ t('manager.registrations.table.status') }}</TableHead>
-            <TableHead>{{ t('manager.registrations.table.roles') }}</TableHead>
-            <TableHead>{{ t('manager.registrations.table.created') }}</TableHead>
-            <TableHead>{{ t('manager.registrations.table.updated') }}</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          <TableRow
-            v-for="registration in registrations"
-            :key="registration.id"
-            class="cursor-pointer hover:bg-muted/30"
-            @click="openRegistration(registration.id)"
-          >
-            <TableCell class="font-medium">{{ registration.id }}</TableCell>
-            <Copyable :as="TableCell" :value="registration.battletag">{{ registration.battletag }}</Copyable>
-            <TableCell>
-              <Badge :class="statusBadgeClasses(registration.status)">
-                {{ statusLabel(registration.status) }}
-              </Badge>
-            </TableCell>
-            <TableCell>
-              <span class="text-sm text-muted-foreground">
-                {{ roleLabel(registration.primary_role) }}
-                <span v-if="registration.secondary_role"
-                  >/ {{ roleLabel(registration.secondary_role) }}</span
-                >
-              </span>
-            </TableCell>
-            <TableCell>{{ formatDate(registration.created_at) }}</TableCell>
-            <TableCell>{{ formatDate(registration.updated_at) }}</TableCell>
-          </TableRow>
-          <TableEmpty v-if="!registrations.length" :colspan="6">
-            {{ t('manager.registrations.empty') }}
-          </TableEmpty>
-        </TableBody>
-      </Table>
+    <div v-else>
+      <ManagerRegistrationsTable
+        :registrations="registrations"
+        :loading="loading"
+        @open="openRegistration"
+      />
+    </div>
+
+    <div
+      v-if="!loading && !errorMessage"
+      class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <ManagerRegistrationsPagination
+        :page="page"
+        :per-page="perPage"
+        :total="total"
+        :loading="loading"
+        @update:page="(value) => (page = value)"
+      />
     </div>
 
     <RegistrationDetailsSheet v-model:open="sheetOpen" :registration-id="selectedRegistrationId" />
