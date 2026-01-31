@@ -8,6 +8,7 @@ import { useTournamentStore } from '@/stores/tournamentStore'
 import TournamentHero from './details/TournamentHero.vue'
 import OverviewTab from './details/OverviewTab.vue'
 import ParticipationTab from './details/ParticipationTab.vue'
+import PlayersTab from './details/PlayersTab.vue'
 import ScheduleTab from './details/ScheduleTab.vue'
 import RulesTab from './details/RulesTab.vue'
 import PrizesTab from './details/PrizesTab.vue'
@@ -18,7 +19,7 @@ const route = useRoute()
 const router = useRouter()
 const tournamentStore = useTournamentStore()
 const tournamentSef = computed(() => String(route.params.tournamentSef ?? ''))
-const tabValues = ['overview', 'participation', 'schedule', 'rules', 'prizes', 'stream'] as const
+const tabValues = ['overview', 'participation', 'players', 'schedule', 'rules', 'prizes', 'stream'] as const
 const defaultTab = 'overview'
 const activeTab = computed({
   get: () => {
@@ -102,6 +103,10 @@ watch(tournamentSef, loadTournament)
               class="cursor-pointer flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground">
               {{ t('tournament.tabs.participation') }}
             </TabsTrigger>
+            <TabsTrigger value="players"
+              class="cursor-pointer flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground">
+              {{ t('tournament.tabs.players') }}
+            </TabsTrigger>
             <TabsTrigger value="schedule"
               class="cursor-pointer flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground">
               {{ t('tournament.tabs.schedule') }}
@@ -127,6 +132,10 @@ watch(tournamentSef, loadTournament)
 
           <TabsContent value="participation" class="mt-6">
             <ParticipationTab :eligibility="tournament.eligibility" :registration="tournament.registration" />
+          </TabsContent>
+
+          <TabsContent value="players" class="mt-6">
+            <PlayersTab :tournament-sef="tournament.id" />
           </TabsContent>
 
           <TabsContent value="schedule" class="mt-6">

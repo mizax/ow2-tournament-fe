@@ -65,6 +65,7 @@
     "tabs": {
       "overview": "Общее",
       "participation": "Участие",
+      "players": "Игроки",
       "schedule": "Расписание",
       "rules": "Правила",
       "prizes": "Награды",
@@ -111,6 +112,15 @@
     },
     "stream": {
       "watch_on_twitch": "Смотреть на Twitch"
+    },
+    "players": {
+      "search_label": "Поиск",
+      "search_placeholder": "Введите BattleTag",
+      "count": "Показано: {shown} из {total}",
+      "loading": "Загрузка списка игроков",
+      "empty": "Пока нет заявок",
+      "empty_search": "Никого не нашли по этому запросу",
+      "load_error": "Не удалось загрузить список заявок"
     },
     "registration_form": {
       "title": "Подача заявки на участие в турнире",
