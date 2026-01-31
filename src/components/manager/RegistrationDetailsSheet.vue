@@ -299,13 +299,13 @@ const resolveAction = async (actionId: number) => {
 
 <template>
   <Sheet v-model:open="isOpen">
-    <SheetContent class="sm:max-w-lg">
+    <SheetContent class="px-2 pb-4 sm:max-w-lg">
       <SheetHeader>
         <SheetTitle>
           {{ t('manager.details.title', { id: registrationDetails?.registration.id ?? '' }) }}
         </SheetTitle>
         <SheetDescription>
-          <Copyable v-if="registrationDetails?.battletag" :value="registrationDetails.battletag">
+          <Copyable class="chip" v-if="registrationDetails?.battletag" :value="registrationDetails.battletag">
             {{ registrationDetails.battletag }}
           </Copyable>
           <span v-else>{{ t('manager.details.subtitle') }}</span>
@@ -331,11 +331,8 @@ const resolveAction = async (actionId: number) => {
                 t('manager.details.info.alt_accounts')
               }}</span>
               <div v-if="registrationDetails.registration.alt_accounts?.length" class="flex gap-1">
-                <Copyable
-                  v-for="account in registrationDetails.registration.alt_accounts || []"
-                  :key="`alt-${registrationId}-${account}`"
-                  :value="account"
-                >
+                <Copyable class="chip" v-for="account in registrationDetails.registration.alt_accounts || []"
+                  :key="`alt-${registrationId}-${account}`" :value="account">
                   {{ account }}
                 </Copyable>
               </div>
@@ -345,13 +342,13 @@ const resolveAction = async (actionId: number) => {
             </div>
             <div class="flex items-center justify-between">
               <span class="text-muted-foreground">{{ t('manager.details.info.twitch') }}</span>
-              <Copyable :value="registrationDetails.registration.twitch">
+              <Copyable class="chip" :value="registrationDetails.registration.twitch">
                 {{ registrationDetails.registration.twitch || t('manager.common.not_available') }}
               </Copyable>
             </div>
             <div class="flex items-center justify-between">
               <span class="text-muted-foreground">{{ t('manager.details.info.discord') }}</span>
-              <Copyable :value="registrationDetails.registration.discord">
+              <Copyable class="chip" :value="registrationDetails.registration.discord">
                 {{ registrationDetails.registration.discord || t('manager.common.not_available') }}
               </Copyable>
             </div>
@@ -377,6 +374,7 @@ const resolveAction = async (actionId: number) => {
                   class="flex gap-1"
                 >
                   <Copyable
+                    class="chip"
                     v-for="guarantor in registrationDetails.registration.guarantors || []"
                     :key="`gua-${registrationId}-${guarantor}`"
                     :value="guarantor"

@@ -72,16 +72,6 @@ const sortOptions = computed(() => [
 
 const perPageOptions = [25, 50, 100]
 
-const setStatusFilter = (status: RegistrationStatus, checked: boolean) => {
-  if (checked) {
-    if (!selectedStatuses.value.includes(status)) {
-      selectedStatuses.value = [...selectedStatuses.value, status]
-    }
-    return
-  }
-  selectedStatuses.value = selectedStatuses.value.filter((item) => item !== status)
-}
-
 const loadRegistrations = async () => {
   errorMessage.value = null
   if (!tournamentId.value || Number.isNaN(tournamentId.value)) {
@@ -110,7 +100,11 @@ const openRegistration = (registrationId: number) => {
 
 const resetFilters = async () => {
   battletagSearch.value = ''
-  selectedStatuses.value = []
+  selectedStatuses.value = [
+    'PENDING',
+    'PROCESSING',
+    'ACTION_REQUIRED',
+  ]
   sortValue.value = 'created_at:desc'
   perPage.value = 50
   page.value = 1
@@ -163,7 +157,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="container mx-auto py-10 space-y-6">
+  <div class="container mx-auto py-8 space-y-6">
     <ManagerRegistrationsHeader
       :title="tournament?.title || t('manager.registrations.title')"
       :tournament-id="tournamentId"
@@ -180,7 +174,7 @@ onMounted(async () => {
       @update:battletag-search="(value) => (battletagSearch = value)"
       @update:sort-value="(value) => (sortValue = value)"
       @update:per-page-value="(value) => (perPageValue = value)"
-      @toggle-status="setStatusFilter"
+      @update:selected-statuses="(value) => (selectedStatuses = value)"
       @reset="resetFilters"
       @refresh="refreshRegistrations"
     />

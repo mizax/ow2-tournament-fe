@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { RefreshCcw, RotateCcw, Settings } from 'lucide-vue-next'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -28,7 +29,7 @@ const emit = defineEmits<{
   (e: 'update:battletagSearch', value: string): void
   (e: 'update:sortValue', value: string): void
   (e: 'update:perPageValue', value: string): void
-  (e: 'toggleStatus', status: RegistrationStatus, checked: boolean): void
+  (e: 'update:selectedStatuses', value: RegistrationStatus[]): void
   (e: 'reset'): void
   (e: 'refresh'): void
 }>()
@@ -49,12 +50,31 @@ const localPerPage = computed({
   get: () => props.perPageValue,
   set: (value: string) => emit('update:perPageValue', value),
 })
+
+const localSelectedStatuses = computed({
+  get: () => props.selectedStatuses,
+  set: (value: RegistrationStatus[]) => emit('update:selectedStatuses', value),
+})
+
+const selectedStatusLabel = computed(() => {
+  if (!props.selectedStatuses.length) {
+    return t('manager.registrations.filters.status_placeholder')
+  }
+  if (props.selectedStatuses.length <= 2) {
+    return props.selectedStatuses
+      .map((status) => t(`manager.statuses.${status.toLowerCase()}`))
+      .join(', ')
+  }
+  return t('manager.registrations.filters.status_selected', {
+    count: props.selectedStatuses.length,
+  })
+})
 </script>
 
 <template>
-  <div class="rounded-lg border bg-card p-4 space-y-4">
-    <div class="grid gap-4 md:grid-cols-[2fr_1fr_1fr]">
-      <div class="space-y-1">
+  <div class="space-y-4">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-end">
+      <div class="flex-1 space-y-1">
         <Label class="text-xs uppercase text-muted-foreground">
           {{ t('manager.registrations.filters.search_label') }}
         </Label>
@@ -63,65 +83,88 @@ const localPerPage = computed({
           :placeholder="t('manager.registrations.filters.search_placeholder')"
         />
       </div>
-      <div class="space-y-1">
+      <div class="min-w-[220px] space-y-1">
         <Label class="text-xs uppercase text-muted-foreground">
-          {{ t('manager.registrations.filters.sort.label') }}
+          {{ t('manager.registrations.filters.status_label') }}
         </Label>
-        <Select v-model="localSort">
+        <Select v-model="localSelectedStatuses" multiple>
           <SelectTrigger>
-            <SelectValue :placeholder="t('manager.registrations.filters.sort.placeholder')" />
+            <SelectValue :placeholder="t('manager.registrations.filters.status_placeholder')">
+              {{ selectedStatusLabel }}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem v-for="option in props.sortOptions" :key="option.value" :value="option.value">
-              {{ option.label }}
+            <SelectItem
+              v-for="status in props.statusOptions"
+              :key="status"
+              :value="status"
+            >
+              {{ t(`manager.statuses.${status.toLowerCase()}`) }}
             </SelectItem>
           </SelectContent>
         </Select>
       </div>
-      <div class="space-y-1">
-        <Label class="text-xs uppercase text-muted-foreground">
-          {{ t('manager.registrations.filters.per_page_label') }}
-        </Label>
-        <Select v-model="localPerPage">
-          <SelectTrigger>
-            <SelectValue :placeholder="t('manager.registrations.filters.per_page_placeholder')" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem v-for="value in props.perPageOptions" :key="value" :value="String(value)">
-              {{ value }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-    </div>
-
-    <div class="space-y-2">
-      <p class="text-xs uppercase text-muted-foreground">
-        {{ t('manager.registrations.filters.status_label') }}
-      </p>
-      <div class="flex flex-wrap gap-4">
-        <Label
-          v-for="status in props.statusOptions"
-          :key="status"
-          class="flex items-center gap-2 text-sm"
+      <div class="flex flex-wrap gap-2">
+        <Popover>
+          <PopoverTrigger as-child>
+            <Button
+              variant="outline"
+              size="icon"
+              :aria-label="t('manager.registrations.filters.show_settings')"
+            >
+              <Settings class="size-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="end" class="w-72 space-y-3">
+            <div class="space-y-1">
+              <Label class="text-xs uppercase text-muted-foreground">
+                {{ t('manager.registrations.filters.sort.label') }}
+              </Label>
+              <Select v-model="localSort">
+                <SelectTrigger>
+                  <SelectValue :placeholder="t('manager.registrations.filters.sort.placeholder')" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem v-for="option in props.sortOptions" :key="option.value" :value="option.value">
+                    {{ option.label }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div class="space-y-1">
+              <Label class="text-xs uppercase text-muted-foreground">
+                {{ t('manager.registrations.filters.per_page_label') }}
+              </Label>
+              <Select v-model="localPerPage">
+                <SelectTrigger>
+                  <SelectValue :placeholder="t('manager.registrations.filters.per_page_placeholder')" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem v-for="value in props.perPageOptions" :key="value" :value="String(value)">
+                    {{ value }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </PopoverContent>
+        </Popover>
+        <Button
+          variant="secondary"
+          size="icon"
+          :aria-label="t('manager.registrations.filters.reset')"
+          @click="emit('reset')"
         >
-          <Checkbox
-            :model-value="props.selectedStatuses.includes(status)"
-            class="bg-input/50"
-            @update:model-value="(value) => emit('toggleStatus', status, value === true)"
-          />
-          <span>{{ t(`manager.statuses.${status.toLowerCase()}`) }}</span>
-        </Label>
+          <RotateCcw class="size-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          :aria-label="t('manager.registrations.filters.refresh')"
+          @click="emit('refresh')"
+        >
+          <RefreshCcw class="size-4" />
+        </Button>
       </div>
-    </div>
-
-    <div class="flex flex-wrap items-center gap-2">
-      <Button variant="secondary" size="sm" @click="emit('reset')">
-        {{ t('manager.registrations.filters.reset') }}
-      </Button>
-      <Button variant="outline" size="sm" @click="emit('refresh')">
-        {{ t('manager.registrations.filters.refresh') }}
-      </Button>
     </div>
   </div>
 </template>

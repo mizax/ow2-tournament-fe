@@ -224,8 +224,12 @@
         "search_label": "Поиск по BattleTag",
         "search_placeholder": "Введите BattleTag",
         "status_label": "Статусы",
+        "status_placeholder": "Выберите статусы",
+        "status_selected": "Выбрано: {count}",
         "per_page_label": "На странице",
         "per_page_placeholder": "Выберите количество",
+        "show_settings": "Настройки",
+        "hide_settings": "Скрыть настройки",
         "reset": "Сбросить фильтры",
         "refresh": "Обновить",
         "sort": {
