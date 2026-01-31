@@ -22,7 +22,7 @@ defineProps<Props>()
 </script>
 
 <template>
-  <Card>
+  <Card class="bg-transparent shadow-none ring-0">
     <CardHeader>
       <CardTitle class="text-xl">{{ t('tournament.tabs.schedule') }}</CardTitle>
     </CardHeader>

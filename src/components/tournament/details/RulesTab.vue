@@ -18,7 +18,7 @@ defineProps<Props>()
 </script>
 
 <template>
-  <Card>
+  <Card class="bg-transparent shadow-none ring-0">
     <CardHeader>
       <div class="flex justify-between items-center">
         <CardTitle class="text-xl">{{ t('tournament.tabs.rules') }}</CardTitle>

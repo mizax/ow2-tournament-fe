@@ -90,59 +90,61 @@ watch(tournamentSef, loadTournament)
     <TournamentHero :tournament="tournament" />
 
     <Tabs v-model="activeTab" class="w-full">
-      <TabsList class="grid w-full grid-cols-3 md:grid-cols-6 mb-8 h-auto">
-        <TabsTrigger value="overview" class="py-2">
+      <div class="rounded-2xl border border-white/10 bg-gradient-to-b from-white/5 to-transparent p-4 md:p-6">
+        <TabsList class="flex w-full flex-wrap items-center justify-start gap-2 overflow-x-auto bg-muted/40 p-1.5 md:flex-nowrap">
+        <TabsTrigger value="overview" class="flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground">
           {{ t('tournament.tabs.overview') }}
         </TabsTrigger>
-        <TabsTrigger value="participation" class="py-2">
+        <TabsTrigger value="participation" class="flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground">
           {{ t('tournament.tabs.participation') }}
         </TabsTrigger>
-        <TabsTrigger value="schedule" class="py-2">
+        <TabsTrigger value="schedule" class="flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground">
           {{ t('tournament.tabs.schedule') }}
         </TabsTrigger>
-        <TabsTrigger value="rules" class="py-2">
+        <TabsTrigger value="rules" class="flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground">
           {{ t('tournament.tabs.rules') }}
         </TabsTrigger>
-        <TabsTrigger value="prizes" class="py-2">
+        <TabsTrigger value="prizes" class="flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground">
           {{ t('tournament.tabs.prizes') }}
         </TabsTrigger>
-        <TabsTrigger value="stream" class="py-2">
+        <TabsTrigger value="stream" class="flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground">
           {{ t('tournament.tabs.stream') }}
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="overview">
+      <TabsContent value="overview" class="mt-6">
         <OverviewTab
           :organizers="tournament.organizers || []"
           :description="tournament.markdown?.description || ''"
         />
       </TabsContent>
 
-      <TabsContent value="participation">
+      <TabsContent value="participation" class="mt-6">
         <ParticipationTab
           :eligibility="tournament.eligibility"
           :registration="tournament.registration"
         />
       </TabsContent>
 
-      <TabsContent value="schedule">
+      <TabsContent value="schedule" class="mt-6">
         <ScheduleTab :schedule="tournament.schedule" />
       </TabsContent>
 
-      <TabsContent value="rules">
+      <TabsContent value="rules" class="mt-6">
         <RulesTab
           :rules="tournament.rules || {}"
           :regulation="tournament.markdown?.full_regulation"
         />
       </TabsContent>
 
-      <TabsContent value="prizes">
+      <TabsContent value="prizes" class="mt-6">
         <PrizesTab :prize-pool="tournament.prize_pool" />
       </TabsContent>
 
-      <TabsContent value="stream">
+      <TabsContent value="stream" class="mt-6">
         <StreamTab :stream="tournament.stream" />
       </TabsContent>
+      </div>
     </Tabs>
   </div>
 </template>

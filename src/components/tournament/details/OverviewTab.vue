@@ -41,7 +41,7 @@ const isALink = (text: string) =>
 </script>
 
 <template>
-  <Card class="gap-2">
+  <Card class="gap-2 bg-transparent shadow-none ring-0">
     <CardHeader>
       <CardTitle class="text-xl">{{ t('tournament.tabs.overview') }}</CardTitle>
     </CardHeader>
