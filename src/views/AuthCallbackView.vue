@@ -7,12 +7,13 @@ import { handleApiResponse } from '@/services/apiService.ts'
 
 const router = useRouter()
 const authStore = useAuthStore()
-const { t, te } = useI18n({ useScope: 'global' })
+const { t } = useI18n({ useScope: 'global' })
 
 onMounted(async () => {
   try {
     // Get all query parameters from the URL
     const queryParams = new URLSearchParams(window.location.search)
+    const state = queryParams.get('state')
 
     // Create a request to the backend callback endpoint
     const response = await fetch(
@@ -32,8 +33,10 @@ onMounted(async () => {
     authStore.login(data.id_token, data.user)
     console.log('authResponse', data)
 
-    // Redirect to home page after successful authentication
-    await router.push('/')
+    // Redirect to stored page after successful authentication
+    const redirectPath = authStore.consumeRedirectPath(state)
+    const safeRedirectPath = redirectPath.startsWith('/') ? redirectPath : '/'
+    await router.push(safeRedirectPath)
   } catch (error: unknown) {
     console.error('Authentication error:', error)
     // Redirect to the login page on error
