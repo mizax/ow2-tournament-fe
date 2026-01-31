@@ -3,7 +3,6 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Copyable } from '@/components/ui/copyable'
 import { Spinner } from '@/components/ui/spinner'
@@ -114,7 +113,10 @@ const showDeclineReason = computed(
     registrationDetails.value?.status === 'DECLINED' && registrationDetails.value?.declineReason,
 )
 const showSteps = computed(() =>
-  ['PENDING', 'PROCESSING'].includes(registrationDetails.value?.status ?? ''),
+  ['PENDING', 'PROCESSING', 'ACCEPTED'].includes(registrationDetails.value?.status ?? ''),
+)
+const showActionsPanel = computed(
+  () => showSteps.value || showManagerComment.value || showDeclineReason.value,
 )
 
 const loadRegistrationDetails = async () => {
@@ -157,237 +159,191 @@ watch(registrationId, loadRegistrationDetails)
       <p class="text-sm text-destructive">{{ errorMessage }}</p>
     </div>
 
-    <div v-else-if="registrationDetails" class="space-y-6">
-      <Card>
-        <CardHeader class="space-y-1">
-          <CardTitle class="text-xl">
-            {{ t('tournament.registration_status.title') }}
-            <RouterLink
-              :to="{
-                name: 'tournament-details-home',
-                params: { tournamentSef: registrationDetails.tournamentSefTitle },
-              }"
-              class="hover:underline text-muted-foreground"
-            >
-              &laquo;{{ registrationDetails.tournamentTitle }}&raquo;
-            </RouterLink>
-          </CardTitle>
-          <p class="text-sm text-muted-foreground">
-            {{ t('tournament.registration_status.subtitle', { id: registrationId }) }}
-          </p>
+    <div v-else-if="registrationDetails">
+      <Card class="overflow-hidden">
+        <CardHeader class="space-y-2">
+          <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <CardTitle class="text-xl md:text-2xl">
+              {{ t('tournament.registration_status.title') }}
+              <RouterLink
+                :to="{
+                  name: 'tournament-details-home',
+                  params: { tournamentSef: registrationDetails.tournamentSefTitle },
+                }"
+                class="hover:underline text-muted-foreground"
+              >
+                &laquo;{{ registrationDetails.tournamentTitle }}&raquo;
+              </RouterLink>
+            </CardTitle>
+            <Badge :class="statusBadgeClasses" class="text-sm md:text-base">{{ statusLabel }}</Badge>
+          </div>
+          <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+            <span>{{ t('tournament.registration_status.subtitle', { id: registrationId }) }}</span>
+            <span>{{ t('tournament.registration_status.created_at') }}: {{ formatDate(registrationDetails.createdAt) }}</span>
+            <span>{{ t('tournament.registration_status.updated_at') }}: {{ formatDate(registrationDetails.updatedAt) }}</span>
+          </div>
         </CardHeader>
-        <CardContent>
-          <Table>
-            <TableBody>
-              <TableRow>
-                <TableCell class="font-medium w-3/4">
-                  {{ t('tournament.registration_status.status') }}
-                </TableCell>
-                <TableCell>
-                  <Badge :class="statusBadgeClasses" class="text-md">{{ statusLabel }}</Badge>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell class="font-medium">
-                  {{ t('tournament.registration_status.created_at') }}
-                </TableCell>
-                <TableCell>{{ formatDate(registrationDetails.createdAt) }}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell class="font-medium">
-                  {{ t('tournament.registration_status.updated_at') }}
-                </TableCell>
-                <TableCell>{{ formatDate(registrationDetails.updatedAt) }}</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle class="text-xl">{{
-            t('tournament.registration_status.info_title')
-          }}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableBody>
-              <TableRow>
-                <TableCell class="font-medium w-3/4">
-                  {{ t('tournament.registration_form.battletag.label') }}
-                </TableCell>
-                <TableCell>
-                  {{ registrationDetails.battleTag || t('tournament.registration_status.empty') }}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell class="font-medium">
-                  {{ t('tournament.registration_form.twitch.label') }}
-                </TableCell>
-                <TableCell>
-                  <a
-                    v-if="registrationDetails.twitch"
-                    :href="`https://twitch.tv/${registrationDetails.twitch}`"
-                    target="_blank"
-                    class="text-muted-foreground hover:underline"
-                  >
-                    {{ registrationDetails.twitch }}
-                  </a>
-                  <span v-else>{{ t('tournament.registration_status.empty') }}</span>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell class="font-medium">
-                  {{ t('tournament.registration_form.discord.label') }}
-                </TableCell>
-                <TableCell>
-                  {{ registrationDetails.discord || t('tournament.registration_status.empty') }}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell class="font-medium">
-                  {{ t('tournament.registration_form.roles.primary') }}
-                </TableCell>
-                <TableCell>{{ roleLabel(registrationDetails.primaryRole) }}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell class="font-medium">
-                  {{ t('tournament.registration_form.roles.secondary') }}
-                </TableCell>
-                <TableCell>{{ roleLabel(registrationDetails.secondaryRole) }}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell class="font-medium">
-                  {{ t('tournament.registration_form.alt_accounts.label') }}
-                </TableCell>
-                <TableCell>
-                  <div v-if="registrationDetails.altAccounts?.length" class="flex flex-wrap gap-2">
-                    <Badge
-                      v-for="altAccount in registrationDetails.altAccounts"
-                      :key="altAccount"
-                      variant="secondary"
+        <div class="h-px bg-white/10"></div>
+        <CardContent class="space-y-6 py-6">
+          <div
+            class="grid gap-6"
+            :class="showActionsPanel ? 'lg:grid-cols-[1.1fr_0.9fr]' : 'lg:grid-cols-1'"
+          >
+            <section v-if="showActionsPanel" class="space-y-4">
+              <h3 class="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                {{ t('tournament.registration_status.info_title') }}
+              </h3>
+              <dl class="grid gap-y-3 text-sm">
+                <div class="grid grid-cols-1 gap-1 md:grid-cols-[220px_1fr]">
+                  <dt class="font-medium text-muted-foreground">{{ t('tournament.registration_form.battletag.label') }}</dt>
+                  <dd>{{ registrationDetails.battleTag || t('tournament.registration_status.empty') }}</dd>
+                </div>
+                <div class="grid grid-cols-1 gap-1 md:grid-cols-[220px_1fr]">
+                  <dt class="font-medium text-muted-foreground">{{ t('tournament.registration_form.twitch.label') }}</dt>
+                  <dd>
+                    <a
+                      v-if="registrationDetails.twitch"
+                      :href="`https://twitch.tv/${registrationDetails.twitch}`"
+                      target="_blank"
+                      class="text-muted-foreground hover:underline"
                     >
-                      {{ altAccount }}
-                    </Badge>
-                  </div>
-                  <span v-else>{{ t('tournament.registration_status.empty') }}</span>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell class="font-medium">
-                  {{ t('tournament.registration_form.guarantors.label') }}
-                </TableCell>
-                <TableCell>
-                  <div v-if="registrationDetails.guarantors?.length" class="flex flex-wrap gap-2">
-                    <Badge
-                      v-for="guarantor in registrationDetails.guarantors"
-                      :key="guarantor"
-                      variant="secondary"
+                      {{ registrationDetails.twitch }}
+                    </a>
+                    <span v-else>{{ t('tournament.registration_status.empty') }}</span>
+                  </dd>
+                </div>
+                <div class="grid grid-cols-1 gap-1 md:grid-cols-[220px_1fr]">
+                  <dt class="font-medium text-muted-foreground">{{ t('tournament.registration_form.discord.label') }}</dt>
+                  <dd>{{ registrationDetails.discord || t('tournament.registration_status.empty') }}</dd>
+                </div>
+                <div class="grid grid-cols-1 gap-1 md:grid-cols-[220px_1fr]">
+                  <dt class="font-medium text-muted-foreground">{{ t('tournament.registration_form.roles.primary') }}</dt>
+                  <dd>
+                    <span
+                      v-if="registrationDetails.primaryRole"
+                      class="chip"
                     >
-                      {{ guarantor }}
-                    </Badge>
+                      {{ roleLabel(registrationDetails.primaryRole) }}
+                    </span>
+                    <span v-else>{{ t('tournament.registration_status.empty') }}</span>
+                  </dd>
+                </div>
+                <div class="grid grid-cols-1 gap-1 md:grid-cols-[220px_1fr]">
+                  <dt class="font-medium text-muted-foreground">{{ t('tournament.registration_form.roles.secondary') }}</dt>
+                  <dd>
+                    <span
+                      v-if="registrationDetails.secondaryRole"
+                      class="chip"
+                    >
+                      {{ roleLabel(registrationDetails.secondaryRole) }}
+                    </span>
+                    <span v-else>{{ t('tournament.registration_status.empty') }}</span>
+                  </dd>
+                </div>
+                <div class="grid grid-cols-1 gap-1 md:grid-cols-[220px_1fr]">
+                  <dt class="font-medium text-muted-foreground">{{ t('tournament.registration_form.alt_accounts.label') }}</dt>
+                  <dd>
+                    <div v-if="registrationDetails.altAccounts?.length" class="flex flex-wrap gap-2">
+                      <span
+                        v-for="altAccount in registrationDetails.altAccounts"
+                        :key="altAccount"
+                        class="chip"
+                      >
+                        {{ altAccount }}
+                      </span>
+                    </div>
+                    <span v-else>{{ t('tournament.registration_status.empty') }}</span>
+                  </dd>
+                </div>
+                <div class="grid grid-cols-1 gap-1 md:grid-cols-[220px_1fr]">
+                  <dt class="font-medium text-muted-foreground">{{ t('tournament.registration_form.guarantors.label') }}</dt>
+                  <dd>
+                    <div v-if="registrationDetails.guarantors?.length" class="flex flex-wrap gap-2">
+                      <span
+                        v-for="guarantor in registrationDetails.guarantors"
+                        :key="guarantor"
+                        class="chip"
+                      >
+                        {{ guarantor }}
+                      </span>
+                    </div>
+                    <span v-else>{{ t('tournament.registration_status.empty') }}</span>
+                  </dd>
+                </div>
+                <div class="grid grid-cols-1 gap-1 md:grid-cols-[220px_1fr]">
+                  <dt class="font-medium text-muted-foreground">{{ t('tournament.registration_form.additional_info.label') }}</dt>
+                  <dd>{{ registrationDetails.additionalInfo || t('tournament.registration_status.empty') }}</dd>
+                </div>
+              </dl>
+            </section>
+
+            <section class="space-y-4">
+              <template v-if="showSteps">
+                <h3 class="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                  {{ t('tournament.registration_status.steps_title') }}
+                </h3>
+                <dl class="grid gap-y-3 text-sm">
+                  <div class="grid grid-cols-1 gap-1 md:grid-cols-[220px_1fr]">
+                    <dt class="font-medium text-muted-foreground">{{ t('tournament.participation.verification_btag') }}</dt>
+                    <dd>
+                      <Copyable
+                        v-if="registrationDetails.verificationBattletag"
+                        :value="registrationDetails.verificationBattletag"
+                        :as="Badge"
+                        variant="secondary"
+                        class="gap-1.5 px-2 py-0.5"
+                      >
+                        {{ registrationDetails.verificationBattletag }}
+                      </Copyable>
+                      <span v-else>{{ t('tournament.registration_status.empty') }}</span>
+                    </dd>
                   </div>
-                  <span v-else>{{ t('tournament.registration_status.empty') }}</span>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell class="font-medium">
-                  {{ t('tournament.registration_form.additional_info.label') }}
-                </TableCell>
-                <TableCell>
-                  {{
-                    registrationDetails.additionalInfo || t('tournament.registration_status.empty')
-                  }}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+                  <div class="grid grid-cols-1 gap-1 md:grid-cols-[220px_1fr]">
+                    <dt class="font-medium text-muted-foreground">{{ t('tournament.participation.twitch_channel') }}</dt>
+                    <dd>
+                      <a
+                        v-if="registrationDetails.twitchChannel"
+                        :href="`https://twitch.tv/${registrationDetails.twitchChannel}`"
+                        class="text-muted-foreground hover:underline"
+                        target="_blank"
+                      >
+                        {{ registrationDetails.twitchChannel }}
+                      </a>
+                      <span v-else>{{ t('tournament.registration_status.empty') }}</span>
+                    </dd>
+                  </div>
+                  <div class="grid grid-cols-1 gap-1 md:grid-cols-[220px_1fr]">
+                    <dt class="font-medium text-muted-foreground">{{ t('tournament.participation.donation') }}</dt>
+                    <dd>
+                      <span
+                        v-if="
+                          registrationDetails.donationAmountRub !== null &&
+                          registrationDetails.donationAmountRub !== undefined
+                        "
+                      >
+                        {{ registrationDetails.donationAmountRub }} RUB
+                      </span>
+                      <span v-else>{{ t('tournament.registration_status.empty') }}</span>
+                    </dd>
+                  </div>
+                </dl>
+              </template>
 
-      <Card v-if="showSteps">
-        <CardHeader>
-          <CardTitle class="text-xl">{{
-            t('tournament.registration_status.steps_title')
-          }}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableBody>
-              <TableRow>
-                <TableCell class="font-medium w-3/4">
-                  {{ t('tournament.participation.verification_btag') }}
-                </TableCell>
-                <TableCell>
-                  <Copyable
-                    v-if="registrationDetails.verificationBattletag"
-                    :value="registrationDetails.verificationBattletag"
-                    :as="Badge"
-                    variant="secondary"
-                    class="gap-1.5 px-2 py-0.5"
-                  >
-                    {{ registrationDetails.verificationBattletag }}
-                  </Copyable>
-                  <span v-else>{{ t('tournament.registration_status.empty') }}</span>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell class="font-medium">
-                  {{ t('tournament.participation.twitch_channel') }}
-                </TableCell>
-                <TableCell>
-                  <a
-                    v-if="registrationDetails.twitchChannel"
-                    :href="`https://twitch.tv/${registrationDetails.twitchChannel}`"
-                    class="text-muted-foreground hover:underline"
-                    target="_blank"
-                  >
-                    {{ registrationDetails.twitchChannel }}
-                  </a>
-                  <span v-else>{{ t('tournament.registration_status.empty') }}</span>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell class="font-medium">
-                  {{ t('tournament.participation.donation') }}
-                </TableCell>
-                <TableCell>
-                  <span
-                    v-if="
-                      registrationDetails.donationAmountRub !== null &&
-                      registrationDetails.donationAmountRub !== undefined
-                    "
-                  >
-                    {{ registrationDetails.donationAmountRub }} RUB
-                  </span>
-                  <span v-else>{{ t('tournament.registration_status.empty') }}</span>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+              <div v-if="showManagerComment" class="rounded-xl border border-white/10 bg-muted/30 p-4">
+                <p class="text-xs uppercase tracking-wide text-muted-foreground">
+                  {{ t('tournament.registration_status.manager_comment_title') }}
+                </p>
+                <p class="mt-2 text-sm">{{ registrationDetails.managerComment }}</p>
+              </div>
 
-      <Card v-if="showManagerComment">
-        <CardHeader>
-          <CardTitle class="text-xl">
-            {{ t('tournament.registration_status.manager_comment_title') }}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>{{ registrationDetails.managerComment }}</p>
-        </CardContent>
-      </Card>
-
-      <Card v-if="showDeclineReason">
-        <CardHeader>
-          <CardTitle class="text-xl">
-            {{ t('tournament.registration_status.decline_reason_title') }}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>{{ registrationDetails.declineReason }}</p>
+              <div v-if="showDeclineReason" class="rounded-xl border border-white/10 bg-muted/30 p-4">
+                <p class="text-xs uppercase tracking-wide text-muted-foreground">
+                  {{ t('tournament.registration_status.decline_reason_title') }}
+                </p>
+                <p class="mt-2 text-sm">{{ registrationDetails.declineReason }}</p>
+              </div>
+            </section>
+          </div>
         </CardContent>
       </Card>
     </div>
