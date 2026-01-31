@@ -1,0 +1,6 @@
+@layer components {
+  .chip {
+    @apply inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-medium
+    bg-muted/25 text-muted-foreground ring-1 ring-white/5;
+  }
+}

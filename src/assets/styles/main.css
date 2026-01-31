@@ -2,6 +2,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "./util.css";
+@import "./components.css";
 
 /* ---break---  */
 @custom-variant dark (&:is(.dark *));
