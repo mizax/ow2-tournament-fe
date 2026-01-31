@@ -144,7 +144,7 @@ watch(registrationId, loadRegistrationDetails)
 </script>
 
 <template>
-  <div class="container mx-auto py-12">
+  <div class="container mx-auto py-8">
     <div v-if="loading" class="flex items-center justify-center gap-2 text-muted-foreground">
       <Spinner class="animate-spin" />
       <span>{{ t('registration.smart_button.loading') }}</span>

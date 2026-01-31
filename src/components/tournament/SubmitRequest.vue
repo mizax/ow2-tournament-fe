@@ -113,7 +113,7 @@ onMounted(loadTournament)
 </script>
 
 <template>
-  <div class="container mx-auto py-12">
+  <div class="container mx-auto py-8">
     <Card>
       <CardHeader class="space-y-1">
         <CardTitle class="text-xl">
