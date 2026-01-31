@@ -320,61 +320,76 @@ const resolveAction = async (actionId: number) => {
 
         <div v-else-if="registrationDetails" class="space-y-6">
           <div class="rounded-lg border p-4 space-y-2">
-            <div class="flex items-center justify-between text-sm">
+            <div class="grid items-center gap-2 text-sm sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
               <span class="text-muted-foreground">{{ t('manager.details.summary.status') }}</span>
-              <Badge :class="statusBadgeClasses(registrationDetails.registration.status)">
-                {{ statusLabel(registrationDetails.registration.status) }}
-              </Badge>
+              <div class="flex justify-end">
+                <Badge :class="statusBadgeClasses(registrationDetails.registration.status)">
+                  {{ statusLabel(registrationDetails.registration.status) }}
+                </Badge>
+              </div>
             </div>
-            <div class="flex items-center justify-between">
+            <div class="grid gap-2 text-sm sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
               <span class="text-muted-foreground">{{
                 t('manager.details.info.alt_accounts')
               }}</span>
-              <div v-if="registrationDetails.registration.alt_accounts?.length" class="flex gap-1">
-                <Copyable class="chip" v-for="account in registrationDetails.registration.alt_accounts || []"
+              <div
+                v-if="registrationDetails.registration.alt_accounts?.length"
+                class="flex flex-wrap justify-end gap-1"
+              >
+                <Copyable
+                  class="chip max-w-full break-all"
+                  v-for="account in registrationDetails.registration.alt_accounts || []"
                   :key="`alt-${registrationId}-${account}`" :value="account">
                   {{ account }}
                 </Copyable>
               </div>
-              <span v-else class="text-sm text-muted-foreground">
+              <span v-else class="text-sm text-muted-foreground text-right">
                 {{ t('manager.common.not_available') }}
               </span>
             </div>
-            <div class="flex items-center justify-between">
+            <div class="grid items-center gap-2 text-sm sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
               <span class="text-muted-foreground">{{ t('manager.details.info.twitch') }}</span>
-              <Copyable class="chip" :value="registrationDetails.registration.twitch">
-                {{ registrationDetails.registration.twitch || t('manager.common.not_available') }}
-              </Copyable>
+              <div class="flex justify-end">
+                <Copyable class="chip max-w-full break-all" :value="registrationDetails.registration.twitch">
+                  {{ registrationDetails.registration.twitch || t('manager.common.not_available') }}
+                </Copyable>
+              </div>
             </div>
-            <div class="flex items-center justify-between">
+            <div class="grid items-center gap-2 text-sm sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
               <span class="text-muted-foreground">{{ t('manager.details.info.discord') }}</span>
-              <Copyable class="chip" :value="registrationDetails.registration.discord">
-                {{ registrationDetails.registration.discord || t('manager.common.not_available') }}
-              </Copyable>
+              <div class="flex justify-end">
+                <Copyable class="chip max-w-full break-all" :value="registrationDetails.registration.discord">
+                  {{ registrationDetails.registration.discord || t('manager.common.not_available') }}
+                </Copyable>
+              </div>
             </div>
             <div class="grid gap-2 text-sm">
-              <div class="flex items-center justify-between">
+              <div class="grid items-center gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
                 <span class="text-muted-foreground">{{
                   t('manager.details.summary.primary_role')
                 }}</span>
-                <span>{{ roleLabel(registrationDetails.registration.primary_role) }}</span>
+                <span class="text-right">
+                  {{ roleLabel(registrationDetails.registration.primary_role) }}
+                </span>
               </div>
-              <div class="flex items-center justify-between">
+              <div class="grid items-center gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
                 <span class="text-muted-foreground">{{
                   t('manager.details.summary.secondary_role')
                 }}</span>
-                <span>{{ roleLabel(registrationDetails.registration.secondary_role) }}</span>
+                <span class="text-right">
+                  {{ roleLabel(registrationDetails.registration.secondary_role) }}
+                </span>
               </div>
-              <div class="flex items-center justify-between">
+              <div class="grid gap-2 text-sm sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
                 <span class="text-muted-foreground">{{
                   t('manager.details.info.guarantors')
                 }}</span>
                 <div
                   v-if="registrationDetails.registration.guarantors?.length"
-                  class="flex gap-1"
+                  class="flex flex-wrap justify-end gap-1"
                 >
                   <Copyable
-                    class="chip"
+                    class="chip max-w-full break-all"
                     v-for="guarantor in registrationDetails.registration.guarantors || []"
                     :key="`gua-${registrationId}-${guarantor}`"
                     :value="guarantor"
@@ -382,7 +397,7 @@ const resolveAction = async (actionId: number) => {
                     {{ guarantor }}
                   </Copyable>
                 </div>
-                <span v-else class="text-sm text-muted-foreground">
+                <span v-else class="text-sm text-muted-foreground text-right">
                   {{ t('manager.common.not_available') }}
                 </span>
               </div>
