@@ -19,9 +19,9 @@ defineProps<Props>()
 <template>
   <Card class="bg-transparent shadow-none ring-0">
     <CardHeader>
-      <CardTitle class="text-xl">{{ t('tournament.tabs.stream') }}</CardTitle>
+      <CardTitle class="text-lg font-semibold tracking-tight">{{ t('tournament.tabs.stream') }}</CardTitle>
     </CardHeader>
-    <CardContent>
+    <CardContent class="text-sm leading-6">
       <div v-if="stream?.channel" class="flex flex-col items-center justify-center py-12">
         <Tv class="w-16 h-16 mb-4 text-primary" />
         <h3 class="text-xl font-semibold mb-4">{{ stream.channel }}</h3>

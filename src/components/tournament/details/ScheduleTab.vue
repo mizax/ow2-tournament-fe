@@ -24,9 +24,9 @@ defineProps<Props>()
 <template>
   <Card class="bg-transparent shadow-none ring-0">
     <CardHeader>
-      <CardTitle class="text-xl">{{ t('tournament.tabs.schedule') }}</CardTitle>
+      <CardTitle class="text-lg font-semibold tracking-tight">{{ t('tournament.tabs.schedule') }}</CardTitle>
     </CardHeader>
-    <CardContent>
+    <CardContent class="text-sm leading-6">
       <Table>
         <TableHeader>
           <TableRow>

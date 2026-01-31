@@ -46,37 +46,37 @@ defineProps<Props>()
   <div class="space-y-6">
     <Card v-if="eligibility" class="bg-transparent shadow-none ring-0">
       <CardHeader>
-        <CardTitle class="text-xl">{{ t('tournament.participation.eligibility') }}</CardTitle>
+        <CardTitle class="text-lg font-semibold tracking-tight">{{ t('tournament.participation.eligibility') }}</CardTitle>
       </CardHeader>
-      <CardContent>
-        <Table>
+      <CardContent class="text-sm leading-6">
+        <Table class="text-sm">
           <TableBody>
             <TableRow v-if="eligibility.min_rank">
-              <TableCell class="font-medium">{{
+              <TableCell class="font-medium text-muted-foreground">{{
                 t('tournament.participation.min_rank')
               }}</TableCell>
               <TableCell>{{ eligibility.min_rank }}</TableCell>
             </TableRow>
             <TableRow v-if="eligibility.min_competitive_hours">
-              <TableCell class="font-medium">{{
+              <TableCell class="font-medium text-muted-foreground">{{
                 t('tournament.participation.min_hours')
               }}</TableCell>
               <TableCell>{{ eligibility.min_competitive_hours }}</TableCell>
             </TableRow>
             <TableRow v-if="eligibility.min_calibrated_seasons">
-              <TableCell class="font-medium">{{
+              <TableCell class="font-medium text-muted-foreground">{{
                 t('tournament.participation.min_seasons')
               }}</TableCell>
               <TableCell>{{ eligibility.min_calibrated_seasons }}</TableCell>
             </TableRow>
             <TableRow v-if="eligibility.wins_current_season_main_role">
-              <TableCell class="font-medium">{{
+              <TableCell class="font-medium text-muted-foreground">{{
                 t('tournament.participation.wins_current_season')
               }}</TableCell>
               <TableCell>{{ eligibility.wins_current_season_main_role }}</TableCell>
             </TableRow>
             <TableRow v-if="eligibility.verification_battletag">
-              <TableCell class="font-medium">{{
+              <TableCell class="font-medium text-muted-foreground">{{
                 t('tournament.participation.verification_btag')
               }}</TableCell>
               <TableCell>
@@ -93,8 +93,8 @@ defineProps<Props>()
           </TableBody>
         </Table>
 
-        <div v-if="eligibility.subscription" class="mt-4 space-y-2">
-          <h4 class="font-semibold">{{ t('tournament.participation.subscription') }}</h4>
+        <div v-if="eligibility.subscription" class="mt-5 space-y-2 text-sm">
+          <h4 class="text-xs uppercase tracking-wide text-muted-foreground">{{ t('tournament.participation.subscription') }}</h4>
           <p v-if="eligibility.subscription.twitch_channel">
             {{ t('tournament.participation.twitch_channel') }}:
             <a
@@ -123,15 +123,15 @@ defineProps<Props>()
 
     <Card v-if="registration" class="bg-transparent shadow-none ring-0">
       <CardHeader>
-        <CardTitle class="text-xl">{{ t('tournament.participation.registration') }}</CardTitle>
+        <CardTitle class="text-lg font-semibold tracking-tight">{{ t('tournament.participation.registration') }}</CardTitle>
       </CardHeader>
-      <CardContent class="space-y-4">
+      <CardContent class="space-y-4 text-sm leading-6">
         <div v-if="registration.start">
-          <p class="font-semibold">{{ t('tournament.participation.start') }}</p>
+          <p class="text-xs uppercase tracking-wide text-muted-foreground">{{ t('tournament.participation.start') }}</p>
           <p>{{ format(registration.start, DATE_FORMAT_EXTENDED) }}</p>
         </div>
         <div v-if="registration.deadline">
-          <p class="font-semibold">{{ t('tournament.participation.deadline') }}</p>
+          <p class="text-xs uppercase tracking-wide text-muted-foreground">{{ t('tournament.participation.deadline') }}</p>
           <p>{{ format(registration.deadline, DATE_FORMAT_EXTENDED) }}</p>
         </div>
         <Alert v-if="registration.checkin">

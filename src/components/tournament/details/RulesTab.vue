@@ -21,14 +21,14 @@ defineProps<Props>()
   <Card class="bg-transparent shadow-none ring-0">
     <CardHeader>
       <div class="flex justify-between items-center">
-        <CardTitle class="text-xl">{{ t('tournament.tabs.rules') }}</CardTitle>
+        <CardTitle class="text-lg font-semibold tracking-tight">{{ t('tournament.tabs.rules') }}</CardTitle>
         <div class="text-sm text-muted-foreground space-x-4">
           <span v-if="rules.version">{{ t('tournament.rules.version') }}: {{ rules.version }}</span>
           <span v-if="rules.last_update">{{ t('tournament.rules.last_update') }}: {{ rules.last_update }}</span>
         </div>
       </div>
     </CardHeader>
-    <CardContent class="space-y-6">
+    <CardContent class="space-y-6 text-sm leading-7 text-muted-foreground">
       <div v-if="rules.full_rules_url" class="mb-4">
         <a :href="rules.full_rules_url" target="_blank" class="text-primary hover:underline font-medium">
           {{ t('tournament.rules.full_rules') }}

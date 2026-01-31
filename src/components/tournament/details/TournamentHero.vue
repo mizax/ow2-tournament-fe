@@ -7,6 +7,7 @@ import { ru } from 'date-fns/locale'
 import { DATE_FORMAT } from '@/util/date.ts'
 import RegistrationSmartButton from '@/components/tournament/details/RegistrationSmartButton.vue'
 import { computed, onUnmounted, ref, watchEffect } from 'vue'
+import CardContent from '@/components/ui/card/CardContent.vue'
 
 const { t } = useI18n()
 
@@ -63,9 +64,9 @@ const countdownLabel = computed(() => {
     diffMs < 1000
       ? { seconds: 1 }
       : intervalToDuration({
-          start: new Date(now.value),
-          end: registrationStartDate.value,
-        })
+        start: new Date(now.value),
+        end: registrationStartDate.value,
+      })
   const units: Array<keyof typeof duration> = [
     'years',
     'months',
@@ -114,21 +115,26 @@ onUnmounted(stopCountdown)
 </script>
 
 <template>
-  <Card class="mb-6">
+  <Card class="mb-0 gap-3">
     <CardHeader>
+      <CardTitle class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight leading-[1.05] text-balance">{{
+        tournament.title }}</CardTitle>
+    </CardHeader>
+    <CardContent>
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div class="flex flex-col space-y-3 max-w-xl">
-          <CardTitle class="text-3xl md:text-4xl font-semibold tracking-tight leading-[1.05]">{{ tournament.title }}</CardTitle>
           <div class="flex flex-wrap gap-2">
             <span class="chip">{{ tournament.discipline }}</span>
             <span class="chip">{{ tournament.format }}</span>
           </div>
-          <span class="text-sm text-muted-foreground">
+          <span class="text-xs uppercase tracking-wide text-muted-foreground/80">
             {{ format(startDate!, DATE_FORMAT) }} — {{ format(endDate!, DATE_FORMAT) }}
           </span>
           <div>
-            <span class="text-sm text-muted-foreground/80">{{ t('tournament.hero.prize_pool') }}: </span>
-            <span class="text-sm font-medium text-foreground">{{ totalPrize }} {{ tournament.prize_pool.currency }}</span>
+            <span class="text-xs uppercase tracking-wide text-muted-foreground/70">{{ t('tournament.hero.prize_pool')
+              }}: </span>
+            <span class="text-sm font-semibold text-foreground">{{ totalPrize }} {{ tournament.prize_pool.currency
+              }}</span>
           </div>
         </div>
         <div class="shrink-0 text-right">
@@ -140,6 +146,6 @@ onUnmounted(stopCountdown)
           <RegistrationSmartButton v-else :tournament-uri="tournament.id" />
         </div>
       </div>
-    </CardHeader>
+    </CardContent>
   </Card>
 </template>

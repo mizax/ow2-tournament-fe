@@ -43,21 +43,21 @@ const isALink = (text: string) =>
 <template>
   <Card class="gap-2 bg-transparent shadow-none ring-0">
     <CardHeader>
-      <CardTitle class="text-xl">{{ t('tournament.tabs.overview') }}</CardTitle>
+      <CardTitle class="text-lg font-semibold tracking-tight">{{ t('tournament.tabs.overview') }}</CardTitle>
     </CardHeader>
     <CardContent class="space-y-6">
-      <div v-if="description" class="prose dark:prose-invert max-w-none">
+      <div v-if="description" class="prose prose-sm md:prose-base leading-7 text-muted-foreground dark:prose-invert max-w-none">
         <VueMarkdown :markdown="description" :customAttrs="customAttrs" />
       </div>
 
       <Separator />
 
       <div>
-        <h3 class="text-xl font-semibold mb-3">{{ t('tournament.overview.organizers') }}</h3>
-        <ul class="space-y-2">
+        <h3 class="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">{{ t('tournament.overview.organizers') }}</h3>
+        <ul class="space-y-2 text-sm">
           <li v-for="org in organizers" :key="org.name" class="flex flex-col">
-            <span class="font-medium">{{ org.role }}: {{ org.name }}</span>
-            <span v-if="org.contact" class="text-sm text-muted-foreground">
+            <span class="font-medium text-foreground">{{ org.role }}: {{ org.name }}</span>
+            <span v-if="org.contact" class="text-xs text-muted-foreground">
               <span v-if="isALink(org.contact)"><a :href="org.contact" target="_blank" class="text-muted-foreground hover:underline">{{ org.contact }}</a></span>
               <span v-else>{{ org.contact }}</span>
             </span>
