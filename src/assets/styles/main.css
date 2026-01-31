@@ -92,6 +92,8 @@
 @layer base {
   body {
     @apply bg-background text-foreground;
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
   }
 }
 
