@@ -8,7 +8,6 @@ import { useAuthReady } from '@/composables/useAuthReady.ts'
 import { useI18n } from 'vue-i18n'
 import { computed, onMounted, ref } from 'vue'
 import { fetchWithAuth } from '@/services/apiService.ts'
-import { Label } from '@/components/ui/label'
 import { useDebounceFn } from '@vueuse/core'
 
 const props = defineProps<{ tournamentUri: string }>()
@@ -36,6 +35,7 @@ const loadRequestStatusInner = async () => {
 }
 
 const loadRequestStatus = async () => {
+  if (!isAuthenticated.value) return
   loading.value = true
   try {
     await loadRequestStatusInner()
@@ -64,9 +64,11 @@ onMounted(loadRequestStatus)
 const buttonConfig = computed(() => {
   if (!isAuthenticated.value) {
     return {
-      is: Label,
+      is: 'div',
       text: t('registration.button.login_to_register'),
-      classes: '',
+      classes: 'text-sm font-medium text-foreground',
+      subtext: t('registration.button.login_hint'),
+      wrap: true,
       action: () => {},
     }
   }
@@ -140,15 +142,36 @@ const buttonConfig = computed(() => {
   return {
     is: Button,
     text: t('registration.smart_button.loading'),
-    classes: 'text-lg',
+    classes: 'text-base bg-muted/30 text-muted-foreground border border-white/10 hover:bg-muted/30',
     action: () => {},
+    disabled: true,
   }
 })
 </script>
 
 <template>
-  <div class="text-right">
+  <div class="md:text-right">
+    <div
+      v-if="buttonConfig.wrap"
+      class="inline-flex flex-col items-end gap-2 rounded-xl bg-muted/20 px-4 py-3 ring-1 ring-white/10"
+    >
+      <component
+        :is="buttonConfig.is"
+        :class="buttonConfig.classes"
+        :disabled="buttonConfig.disabled || !authReady || loading"
+        @click.prevent="buttonConfig.action"
+      >
+        <Spinner v-if="!authReady || loading" class="animate-spin" />
+        {{ buttonConfig.text }}
+      </component>
+
+      <p v-if="buttonConfig.subtext" class="text-xs text-muted-foreground">
+        {{ buttonConfig.subtext }}
+      </p>
+    </div>
+
     <component
+      v-else
       :is="buttonConfig.is"
       :class="buttonConfig.classes"
       size="lg"

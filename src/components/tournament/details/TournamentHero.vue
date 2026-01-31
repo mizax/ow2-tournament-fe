@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { useI18n } from 'vue-i18n'
 import { format, formatDuration, intervalToDuration } from 'date-fns'
 import type { Duration } from 'date-fns'
@@ -118,26 +117,28 @@ onUnmounted(stopCountdown)
   <Card class="mb-6">
     <CardHeader>
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div class="flex flex-col justify-between gap-2">
-          <CardTitle class="text-3xl font-bold mb-2">{{ tournament.title }}</CardTitle>
-          <div class="flex gap-2">
-            <Badge variant="secondary">{{ tournament.discipline }}</Badge>
-            <Badge variant="outline">{{ tournament.format }}</Badge>
+        <div class="flex flex-col space-y-3 max-w-xl">
+          <CardTitle class="text-3xl md:text-4xl font-semibold tracking-tight leading-[1.05]">{{ tournament.title }}</CardTitle>
+          <div class="flex flex-wrap gap-2">
+            <span class="chip">{{ tournament.discipline }}</span>
+            <span class="chip">{{ tournament.format }}</span>
           </div>
-          <p class="text-md text-muted-foreground">
+          <span class="text-sm text-muted-foreground">
             {{ format(startDate!, DATE_FORMAT) }} — {{ format(endDate!, DATE_FORMAT) }}
-          </p>
-          <p class="text-lg font-bold">
-            {{ t('tournament.hero.prize_pool') }}: {{ totalPrize }}
-            {{ tournament.prize_pool.currency }}
-          </p>
+          </span>
+          <div>
+            <span class="text-sm text-muted-foreground/80">{{ t('tournament.hero.prize_pool') }}: </span>
+            <span class="text-sm font-medium text-foreground">{{ totalPrize }} {{ tournament.prize_pool.currency }}</span>
+          </div>
         </div>
-        <div v-if="!isRegistrationOpen" class="text-right">
-          <p class="text-sm text-muted-foreground">
-            {{ t('tournament.hero.registration_opens_in', { time: countdownLabel }) }}
-          </p>
+        <div class="shrink-0 text-right">
+          <div v-if="!isRegistrationOpen">
+            <p class="text-sm text-muted-foreground">
+              {{ t('tournament.hero.registration_opens_in', { time: countdownLabel }) }}
+            </p>
+          </div>
+          <RegistrationSmartButton v-else :tournament-uri="tournament.id" />
         </div>
-        <RegistrationSmartButton v-else :tournament-uri="tournament.id" />
       </div>
     </CardHeader>
   </Card>

@@ -43,7 +43,8 @@
   },
   "registration": {
     "button": {
-      "login_to_register": "Войдите, чтобы подать заявку"
+      "login_to_register": "Войдите, чтобы подать заявку",
+      "login_hint": "Авторизация в правом верхнем углу"
     },
     "smart_button": {
       "register": "Подать заявку",
