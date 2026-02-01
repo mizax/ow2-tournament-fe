@@ -66,7 +66,7 @@ const tagValidators = computed(() => {
         :model-value="normalizeTags(field.state.value)"
         @update:model-value="(value) => field.handleChange(value as string[])"
         :aria-invalid="props.isInvalid(field)"
-        class="px-1 gap-2 w-full bg-input/30 text-base min-h-9 h-auto items-start content-start"
+        class="px-1 gap-2 w-full bg-input/30 text-base min-h-9 h-auto"
         add-on-blur
         add-on-tab
         @blur="field.handleBlur"
@@ -80,7 +80,7 @@ const tagValidators = computed(() => {
           :id="inputId"
           :placeholder="t(props.placeholderKey)"
           :aria-invalid="props.isInvalid(field)"
-          class="placeholder:text-muted-foreground placeholder:text-sm"
+          class="placeholder:text-muted-foreground placeholder:text-sm self-center"
           @blur="field.handleBlur"
         />
       </TagsInput>
