@@ -11,7 +11,7 @@ export default mergeConfig(
       root: fileURLToPath(new URL('./', import.meta.url)),
       setupFiles: ['./src/__tests__/setup.ts'],
       coverage: {
-        exclude: ['src/assets', 'src/components/ui/**']
+        exclude: ['src/assets', 'src/components/ui/**', 'src/lib/utils.ts']
       }
     },
   }),
