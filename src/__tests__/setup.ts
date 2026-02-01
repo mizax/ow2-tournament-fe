@@ -7,4 +7,7 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.clearAllMocks()
+  if (typeof localStorage !== 'undefined') {
+    localStorage.clear()
+  }
 })
