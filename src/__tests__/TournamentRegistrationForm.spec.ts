@@ -114,7 +114,7 @@ const RoleSelectFieldStub = {
   props: ['form', 'name'],
   template: '<button type="button" :data-role="name" @click="setRole">set</button>',
   methods: {
-    setRole() {
+    setRole(this: { name: string; form: { setFieldValue: (name: string, value: unknown) => void } }) {
       const role = this.name === 'primaryRole' ? RoleValue.FLEX : RoleValue.DAMAGE
       this.form.setFieldValue(this.name, role)
     },

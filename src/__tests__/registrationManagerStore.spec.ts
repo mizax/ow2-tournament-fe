@@ -130,7 +130,9 @@ describe('registrationManagerStore', () => {
 
     expect(result.success).toBe(true)
     expect(store.registrationDetails[22].registration.status).toBe('ACCEPTED')
-    expect(store.registrationsByTournament[5][0].status).toBe('ACCEPTED')
+    const summary = store.registrationsByTournament[5]?.[0]
+    expect(summary).toBeDefined()
+    expect(summary!.status).toBe('ACCEPTED')
   })
 
   it('adds registration comment to details', async () => {
@@ -226,7 +228,9 @@ describe('registrationManagerStore', () => {
     const result = await store.resolveRequestedAction(22, 7)
 
     expect(result.success).toBe(true)
-    expect(store.registrationDetails[22].requested_actions[0].status).toBe('RESOLVED')
+    const action = store.registrationDetails[22]?.requested_actions?.[0]
+    expect(action).toBeDefined()
+    expect(action!.status).toBe('RESOLVED')
   })
 
   it('updates role rankings in details', async () => {

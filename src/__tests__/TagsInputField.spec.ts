@@ -10,7 +10,12 @@ vi.mock('vue-i18n', () => ({
   }),
 }))
 
-const fieldState = {
+const fieldState: {
+  name: string
+  state: { value: unknown; meta: { isTouched: boolean; isValid: boolean; errors: unknown[] } }
+  handleChange: ReturnType<typeof vi.fn>
+  handleBlur: ReturnType<typeof vi.fn>
+} = {
   name: 'altAccounts',
   state: {
     value: [],
@@ -95,7 +100,7 @@ describe('TagsInputField', () => {
   })
 
   it('normalizes non-array value for TagsInput', () => {
-    fieldState.state.value = undefined as unknown as string[]
+    fieldState.state.value = undefined
 
     const wrapper = setup()
     const tagsInput = wrapper.findComponent(TagsInputStub)
