@@ -39,10 +39,12 @@ onMounted(async () => {
     await router.push(safeRedirectPath)
   } catch (error: unknown) {
     console.error('Authentication error:', error)
-    // Redirect to the login page on error
+    // Redirect to the home page on error
     const errorMessage = error instanceof Error ? error.message : 'unknown_error'
-    // TODO: really?
-    await router.push(`/login?error=${errorMessage}`)
+    await router.push({
+      path: '/',
+      query: { error: errorMessage },
+    })
   }
 })
 </script>
