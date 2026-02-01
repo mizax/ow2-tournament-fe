@@ -47,7 +47,6 @@ const tournament = computed(() =>
 )
 const isLoading = ref(!tournament.value)
 const error = ref<string | null>(null)
-
 const loadTournament = async () => {
   if (!tournamentSef.value) {
     error.value = t('tournament.error.loading')
@@ -76,6 +75,7 @@ const loadTournament = async () => {
 
 onMounted(loadTournament)
 watch(tournamentSef, loadTournament)
+
 </script>
 
 <template>
@@ -94,7 +94,7 @@ watch(tournamentSef, loadTournament)
       <Tabs v-model="activeTab" class="w-full">
         <div class="p-4 md:p-6">
           <TabsList
-            class="flex w-full flex-wrap items-center justify-start gap-2 overflow-x-auto bg-muted/40 p-1.5 text-xs uppercase tracking-wide md:flex-nowrap">
+            class="tabs-scroll flex w-full flex-nowrap items-center justify-start gap-2 overflow-x-auto bg-muted/40 p-1.5 text-xs uppercase tracking-wide md:flex-wrap">
             <TabsTrigger value="overview"
               class="cursor-pointer flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground">
               {{ t('tournament.tabs.overview') }}
@@ -159,4 +159,13 @@ watch(tournamentSef, loadTournament)
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.tabs-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tabs-scroll::-webkit-scrollbar {
+  display: none;
+}
+</style>

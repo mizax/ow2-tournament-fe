@@ -108,7 +108,7 @@ watch(() => props.tournamentSef, loadRegistrations)
           {{ search.trim() ? t('tournament.players.empty_search') : t('tournament.players.empty') }}
         </div>
 
-        <ul v-else class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <ul v-else class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <li
             v-for="(player, index) in filteredRegistrations"
             :key="`${player.battletag}-${index}`"
@@ -119,7 +119,7 @@ watch(() => props.tournamentSef, loadRegistrations)
               :alt="player.primary_role ?? RoleValue.FLEX"
               class="h-8 w-8"
             />
-            <span class="font-medium text-foreground">{{ player.battletag }}</span>
+            <span class="font-medium text-foreground truncate">{{ player.battletag }}</span>
           </li>
         </ul>
       </div>

@@ -20,7 +20,7 @@ defineProps<Props>()
 <template>
   <Card class="bg-transparent shadow-none ring-0">
     <CardHeader>
-      <div class="flex justify-between items-center">
+      <div class="flex justify-between items-center flex-wrap gap-2">
         <CardTitle class="text-lg font-semibold tracking-tight">{{ t('tournament.tabs.rules') }}</CardTitle>
         <div class="text-sm text-muted-foreground space-x-4">
           <span v-if="rules.version">{{ t('tournament.rules.version') }}: {{ rules.version }}</span>
@@ -35,7 +35,7 @@ defineProps<Props>()
         </a>
       </div>
 
-      <div v-if="regulation" class="prose dark:prose-invert max-w-none">
+      <div v-if="regulation" class="prose max-md:prose-sm dark:prose-invert max-w-none">
         <MarkdownRenderer :markdown="regulation" />
       </div>
     </CardContent>
