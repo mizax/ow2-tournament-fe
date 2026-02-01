@@ -40,7 +40,7 @@ vi.mock('vue-sonner', () => ({
 }))
 
 const fetchWithoutAuthMock = vi.mocked(fetchWithoutAuth)
-const toastMock = vi.mocked(toast)
+const toastErrorMock = vi.mocked(toast.error)
 
 const setup = () => {
   return shallowMount(AuthCallbackView)
@@ -51,7 +51,7 @@ beforeEach(() => {
   authStoreMock.login.mockReset()
   authStoreMock.consumeRedirectPath.mockReset()
   fetchWithoutAuthMock.mockReset()
-  toastMock.error.mockReset()
+  toastErrorMock.mockReset()
 })
 
 describe('AuthCallbackView', () => {
@@ -92,7 +92,7 @@ describe('AuthCallbackView', () => {
     await flushPromises()
     await nextTick()
 
-    expect(toastMock.error).toHaveBeenCalledWith('auth_callback.authentication_failed')
+    expect(toastErrorMock).toHaveBeenCalledWith('auth_callback.authentication_failed')
     expect(routerMock.push).toHaveBeenCalledWith('/')
     consoleErrorSpy.mockRestore()
   })
@@ -109,7 +109,7 @@ describe('AuthCallbackView', () => {
     await flushPromises()
     await nextTick()
 
-    expect(toastMock.error).toHaveBeenCalledWith('auth_callback.authentication_failed', {
+    expect(toastErrorMock).toHaveBeenCalledWith('auth_callback.authentication_failed', {
       description: 'Battle.net error',
     })
     expect(routerMock.push).toHaveBeenCalledWith('/')

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useMediaQuery } from '@vueuse/core'
 import { toast } from 'vue-sonner'
 import { format } from 'date-fns'
 import { DATE_FORMAT_EXTENDED } from '@/util/date'
@@ -11,12 +12,12 @@ import type {
 } from '@/types/registrationManager'
 import { useRegistrationManagerStore } from '@/stores/registrationManagerStore'
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from '@/components/ui/sheet'
+  Dialog,
+  DialogDescription,
+  DialogHeader,
+  DialogScrollContent,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -48,7 +49,8 @@ const roleRankingDraft = ref<Record<RoleValue, string>>({
   [RoleValue.SUPPORT]: '',
   [RoleValue.FLEX]: '',
 })
-const lastInitializedId = ref<number | null>(null)
+const lastInitializedKey = ref<string | null>(null)
+const isDesktop = useMediaQuery('(min-width: 640px)')
 
 const isOpen = computed({
   get: () => props.open,
@@ -170,6 +172,9 @@ const initializeFormState = (details: RegistrationDetailResponse) => {
   commentText.value = ''
 }
 
+const buildInitKey = (details: RegistrationDetailResponse) =>
+  `${details.registration.id}:${details.registration.status}:${details.registration.updated_at}`
+
 const ensureDetailsLoaded = async (registrationId: number) => {
   const response = await managerStore.loadRegistrationDetails(registrationId)
   if (!response.success) {
@@ -190,10 +195,14 @@ watch(
 watch(
   () => registrationDetails.value,
   (details) => {
-    if (!details || details.registration.id === lastInitializedId.value) {
+    if (!details) {
       return
     }
-    lastInitializedId.value = details.registration.id
+    const key = buildInitKey(details)
+    if (key === lastInitializedKey.value) {
+      return
+    }
+    lastInitializedKey.value = key
     initializeFormState(details)
   },
   { immediate: true },
@@ -298,313 +307,388 @@ const resolveAction = async (actionId: number) => {
 </script>
 
 <template>
-  <Sheet v-model:open="isOpen">
-    <SheetContent class="px-2 pb-4 sm:max-w-lg">
-      <SheetHeader>
-        <SheetTitle>
+  <Dialog v-model:open="isOpen">
+    <DialogScrollContent
+      class="h-dvh w-full max-w-none rounded-none p-0 bg-background sm:h-auto sm:max-w-4xl sm:rounded-lg lg:max-w-5xl my-0 sm:my-8"
+    >
+      <DialogHeader class="border-b px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 sm:px-6 sm:py-4">
+        <DialogTitle class="text-xl font-semibold tracking-tight">
           {{ t('manager.details.title', { id: registrationDetails?.registration.id ?? '' }) }}
-        </SheetTitle>
-        <SheetDescription>
-          <Copyable class="chip" v-if="registrationDetails?.battletag" :value="registrationDetails.battletag">
+        </DialogTitle>
+        <DialogDescription class="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+          <Copyable
+            class="chip px-2 py-0.5 text-[0.7rem]"
+            v-if="registrationDetails?.battletag"
+            :value="registrationDetails.battletag"
+          >
             {{ registrationDetails.battletag }}
           </Copyable>
           <span v-else>{{ t('manager.details.subtitle') }}</span>
-        </SheetDescription>
-      </SheetHeader>
+          <Badge
+            v-if="registrationDetails?.registration.status"
+            :class="`${statusBadgeClasses(registrationDetails.registration.status)} text-[0.7rem] uppercase tracking-wide`"
+          >
+            {{ statusLabel(registrationDetails.registration.status) }}
+          </Badge>
+        </DialogDescription>
+      </DialogHeader>
 
-      <div class="flex-1 overflow-y-auto pr-2 space-y-6">
-        <div v-if="isLoading" class="flex items-center justify-center gap-2 text-muted-foreground">
+      <div class="min-h-dvh bg-background space-y-5 px-4 pt-4 pb-10 sm:min-h-0 sm:bg-transparent sm:space-y-6 sm:px-6 sm:py-6">
+        <div
+          v-if="isLoading && !registrationDetails"
+          class="flex items-center justify-center gap-2 text-muted-foreground"
+        >
           <Spinner class="animate-spin" />
           <span>{{ t('manager.details.loading') }}</span>
         </div>
 
-        <div v-else-if="registrationDetails" class="space-y-6">
-          <div class="rounded-lg border p-4 space-y-2">
-            <div class="grid items-center gap-2 text-sm sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
-              <span class="text-muted-foreground">{{ t('manager.details.summary.status') }}</span>
-              <div class="flex justify-end">
-                <Badge :class="statusBadgeClasses(registrationDetails.registration.status)">
-                  {{ statusLabel(registrationDetails.registration.status) }}
-                </Badge>
-              </div>
-            </div>
-            <div class="grid gap-2 text-sm sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
-              <span class="text-muted-foreground">{{
-                t('manager.details.info.alt_accounts')
-              }}</span>
-              <div
-                v-if="registrationDetails.registration.alt_accounts?.length"
-                class="flex flex-wrap justify-end gap-1"
-              >
-                <Copyable
-                  class="chip max-w-full break-all"
-                  v-for="account in registrationDetails.registration.alt_accounts || []"
-                  :key="`alt-${registrationId}-${account}`" :value="account">
-                  {{ account }}
-                </Copyable>
-              </div>
-              <span v-else class="text-sm text-muted-foreground text-right">
-                {{ t('manager.common.not_available') }}
-              </span>
-            </div>
-            <div class="grid items-center gap-2 text-sm sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
-              <span class="text-muted-foreground">{{ t('manager.details.info.twitch') }}</span>
-              <div class="flex justify-end">
-                <Copyable class="chip max-w-full break-all" :value="registrationDetails.registration.twitch">
-                  {{ registrationDetails.registration.twitch || t('manager.common.not_available') }}
-                </Copyable>
-              </div>
-            </div>
-            <div class="grid items-center gap-2 text-sm sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
-              <span class="text-muted-foreground">{{ t('manager.details.info.discord') }}</span>
-              <div class="flex justify-end">
-                <Copyable class="chip max-w-full break-all" :value="registrationDetails.registration.discord">
-                  {{ registrationDetails.registration.discord || t('manager.common.not_available') }}
-                </Copyable>
-              </div>
-            </div>
-            <div class="grid gap-2 text-sm">
-              <div class="grid items-center gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
-                <span class="text-muted-foreground">{{
-                  t('manager.details.summary.primary_role')
-                }}</span>
-                <span class="text-right">
-                  {{ roleLabel(registrationDetails.registration.primary_role) }}
-                </span>
-              </div>
-              <div class="grid items-center gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
-                <span class="text-muted-foreground">{{
-                  t('manager.details.summary.secondary_role')
-                }}</span>
-                <span class="text-right">
-                  {{ roleLabel(registrationDetails.registration.secondary_role) }}
-                </span>
-              </div>
-              <div class="grid gap-2 text-sm sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
-                <span class="text-muted-foreground">{{
-                  t('manager.details.info.guarantors')
-                }}</span>
-                <div
-                  v-if="registrationDetails.registration.guarantors?.length"
-                  class="flex flex-wrap justify-end gap-1"
-                >
-                  <Copyable
-                    class="chip max-w-full break-all"
-                    v-for="guarantor in registrationDetails.registration.guarantors || []"
-                    :key="`gua-${registrationId}-${guarantor}`"
-                    :value="guarantor"
+        <div v-else-if="registrationDetails" class="space-y-6 sm:space-y-8">
+          <div v-if="isLoading" class="flex items-center gap-2 text-xs text-muted-foreground">
+            <Spinner class="h-3.5 w-3.5 animate-spin" />
+            <span>{{ t('manager.details.loading') }}</span>
+          </div>
+          <div class="grid gap-4 sm:gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+            <div class="order-2 space-y-6 lg:order-1">
+              <div class="rounded-lg bg-muted/5 ring-1 ring-white/5 p-3 space-y-3">
+                <div class="grid gap-2 text-sm sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+                  <span class="text-[0.7rem] uppercase tracking-wide text-muted-foreground">{{
+                    t('manager.details.info.alt_accounts')
+                  }}</span>
+                  <div
+                    v-if="registrationDetails.registration.alt_accounts?.length"
+                    class="flex flex-wrap justify-end gap-1"
                   >
-                    {{ guarantor }}
-                  </Copyable>
+                    <Copyable
+                      class="chip max-w-full break-all px-2 py-0.5 text-[0.7rem]"
+                      v-for="account in registrationDetails.registration.alt_accounts || []"
+                      :key="`alt-${registrationId}-${account}`"
+                      :value="account"
+                    >
+                      {{ account }}
+                    </Copyable>
+                  </div>
+                  <span v-else class="text-sm text-muted-foreground text-right">
+                    {{ t('manager.common.not_available') }}
+                  </span>
                 </div>
-                <span v-else class="text-sm text-muted-foreground text-right">
-                  {{ t('manager.common.not_available') }}
-                </span>
+                <div class="grid items-center gap-2 text-sm sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+                  <span class="text-[0.7rem] uppercase tracking-wide text-muted-foreground">{{
+                    t('manager.details.info.twitch')
+                  }}</span>
+                  <div class="flex justify-end">
+                    <Copyable
+                      class="chip max-w-full break-all px-2 py-0.5 text-[0.7rem]"
+                      :value="registrationDetails.registration.twitch"
+                    >
+                      {{ registrationDetails.registration.twitch || t('manager.common.not_available') }}
+                    </Copyable>
+                  </div>
+                </div>
+                <div class="grid items-center gap-2 text-sm sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+                  <span class="text-[0.7rem] uppercase tracking-wide text-muted-foreground">{{
+                    t('manager.details.info.discord')
+                  }}</span>
+                  <div class="flex justify-end">
+                    <Copyable
+                      class="chip max-w-full break-all px-2 py-0.5 text-[0.7rem]"
+                      :value="registrationDetails.registration.discord"
+                    >
+                      {{ registrationDetails.registration.discord || t('manager.common.not_available') }}
+                    </Copyable>
+                  </div>
+                </div>
+                <div class="grid gap-2 text-sm">
+                  <div class="grid items-center gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+                    <span class="text-[0.7rem] uppercase tracking-wide text-muted-foreground">{{
+                      t('manager.details.summary.primary_role')
+                    }}</span>
+                    <span class="text-right text-sm font-medium">
+                      {{ roleLabel(registrationDetails.registration.primary_role) }}
+                    </span>
+                  </div>
+                  <div class="grid items-center gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+                    <span class="text-[0.7rem] uppercase tracking-wide text-muted-foreground">{{
+                      t('manager.details.summary.secondary_role')
+                    }}</span>
+                    <span class="text-right text-sm font-medium">
+                      {{ roleLabel(registrationDetails.registration.secondary_role) }}
+                    </span>
+                  </div>
+                  <div class="grid gap-2 text-sm sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+                    <span class="text-[0.7rem] uppercase tracking-wide text-muted-foreground">{{
+                      t('manager.details.info.guarantors')
+                    }}</span>
+                    <div
+                      v-if="registrationDetails.registration.guarantors?.length"
+                      class="flex flex-wrap justify-end gap-1"
+                    >
+                      <Copyable
+                        class="chip max-w-full break-all px-2 py-0.5 text-[0.7rem]"
+                        v-for="guarantor in registrationDetails.registration.guarantors || []"
+                        :key="`gua-${registrationId}-${guarantor}`"
+                        :value="guarantor"
+                      >
+                        {{ guarantor }}
+                      </Copyable>
+                    </div>
+                    <span v-else class="text-sm text-muted-foreground text-right">
+                      {{ t('manager.common.not_available') }}
+                    </span>
+                  </div>
+                  <div class="space-y-1">
+                    <p class="text-[0.7rem] uppercase tracking-wide text-muted-foreground">
+                      {{ t('manager.details.info.additional_info') }}
+                    </p>
+                    <div class="rounded-md border p-2 text-sm leading-6 whitespace-pre-line">
+                      {{
+                        registrationDetails.registration.additional_info
+                          || t('manager.common.not_available')
+                      }}
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="space-y-1">
-                <p class="text-xs text-muted-foreground">
-                  {{ t('manager.details.info.additional_info') }}
+
+              <Separator class="opacity-40" />
+
+              <div class="space-y-3">
+                <h3 class="text-base font-semibold tracking-tight">
+                  {{ t('manager.details.requested_actions.title') }}
+                </h3>
+                <div v-if="registrationDetails.requested_actions.length" class="space-y-2">
+                  <div
+                    v-for="action in registrationDetails.requested_actions"
+                    :key="action.id"
+                    class="rounded-md bg-muted/5 ring-1 ring-white/5 p-3 space-y-2"
+                  >
+                    <div class="flex items-center justify-between text-sm">
+                      <span class="text-xs uppercase tracking-wide text-muted-foreground">#{{ action.id }}</span>
+                      <Badge
+                        :class="
+                          statusBadgeClasses(
+                            action.status === 'RESOLVED' ? 'ACCEPTED' : 'ACTION_REQUIRED',
+                          )
+                        "
+                      >
+                        {{ actionStatusLabel(action.status) }}
+                      </Badge>
+                    </div>
+                    <p class="text-sm leading-6">{{ action.description }}</p>
+                    <div class="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>{{ formatDate(action.created_at) }}</span>
+                      <Button
+                        v-if="action.status === 'PENDING'"
+                        size="sm"
+                        variant="secondary"
+                        @click="resolveAction(action.id)"
+                      >
+                        {{ t('manager.details.requested_actions.resolve') }}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+                <p v-else class="text-sm text-muted-foreground">
+                  {{ t('manager.details.requested_actions.empty') }}
                 </p>
-                <div class="rounded-md border p-2 text-sm whitespace-pre-line">
-                  {{
-                    registrationDetails.registration.additional_info
-                      || t('manager.common.not_available')
-                  }}
-                </div>
               </div>
-            </div>
-          </div>
 
-          <Separator />
+              <Separator class="opacity-40" />
 
-          <div class="space-y-3">
-            <h3 class="text-sm font-semibold">{{ t('manager.details.update_status.title') }}</h3>
-            <Select v-model="localStatus">
-              <SelectTrigger>
-                <SelectValue :placeholder="t('manager.details.update_status.placeholder')" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem v-for="status in statusOptions" :key="status" :value="status">
-                  {{ statusLabel(status) }}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-
-            <div v-if="localStatus === 'DECLINED'" class="space-y-2">
-              <label class="text-xs text-muted-foreground">
-                {{ t('manager.details.update_status.decline_reason') }}
-              </label>
-              <Textarea
-                v-model="declineReason"
-                :placeholder="t('manager.details.update_status.decline_placeholder')"
-              />
-            </div>
-
-            <div v-if="localStatus === 'ACTION_REQUIRED'" class="space-y-2">
-              <label class="text-xs text-muted-foreground">
-                {{ t('manager.details.update_status.requested_action') }}
-              </label>
-              <Textarea
-                v-model="requestedActionDescription"
-                :placeholder="t('manager.details.update_status.requested_action_placeholder')"
-              />
-            </div>
-
-            <Button class="w-full" @click="submitStatusUpdate">
-              {{ t('manager.details.update_status.submit') }}
-            </Button>
-          </div>
-
-          <Separator />
-
-          <div class="space-y-3">
-            <h3 class="text-sm font-semibold">
-              {{ t('manager.details.role_rankings.title') }}
-            </h3>
-            <div class="grid gap-2">
-              <div v-for="role in roleValues" :key="role" class="flex items-center gap-3">
-                <span class="w-24 text-sm">{{ roleLabel(role) }}</span>
-                <Input
-                  v-model="roleRankingDraft[role]"
-                  type="number"
-                  min="1"
-                  :placeholder="t('manager.details.role_rankings.placeholder')"
+              <div class="space-y-3">
+                <h3 class="text-base font-semibold tracking-tight">
+                  {{ t('manager.details.comments.title') }}
+                </h3>
+                <div v-if="registrationDetails.comments.length" class="space-y-2">
+                  <div
+                    v-for="comment in registrationDetails.comments"
+                    :key="comment.id"
+                    class="rounded-md bg-muted/5 ring-1 ring-white/5 p-3 text-sm space-y-1"
+                  >
+                    <p class="text-sm leading-6">{{ comment.comment }}</p>
+                    <p class="text-xs uppercase tracking-wide text-muted-foreground">
+                      {{ formatDate(comment.created_at) }}
+                    </p>
+                  </div>
+                </div>
+                <p v-else class="text-sm text-muted-foreground">
+                  {{ t('manager.details.comments.empty') }}
+                </p>
+                <Textarea
+                  v-model="commentText"
+                  :placeholder="t('manager.details.comments.placeholder')"
                 />
+                <Button class="w-full" variant="secondary" @click="submitComment">
+                  {{ t('manager.details.comments.submit') }}
+                </Button>
+              </div>
+
+              <Separator class="opacity-40" />
+
+              <div class="space-y-3">
+                <h3 class="text-base font-semibold tracking-tight">
+                  {{ t('manager.details.info.title') }}
+                </h3>
+                <div class="grid gap-2 text-sm">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[0.7rem] uppercase tracking-wide text-muted-foreground">
+                      {{ t('manager.details.info.rules_accepted') }}
+                    </span>
+                    <span class="text-sm font-medium">
+                      {{
+                        registrationDetails.registration.rules_accepted
+                          ? t('manager.details.info.yes')
+                          : t('manager.details.info.no')
+                      }}
+                    </span>
+                  </div>
+                  <div
+                    v-if="registrationDetails.registration.decline_reason"
+                    class="flex items-center justify-between"
+                  >
+                    <span class="text-[0.7rem] uppercase tracking-wide text-muted-foreground">
+                      {{ t('manager.details.info.decline_reason') }}
+                    </span>
+                    <span class="text-right text-sm">{{
+                      registrationDetails.registration.decline_reason
+                    }}</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[0.7rem] uppercase tracking-wide text-muted-foreground">{{
+                      t('manager.details.info.ip_address')
+                    }}</span>
+                    <span class="text-sm">
+                      {{ registrationDetails.registration.ip_address || t('manager.common.not_available') }}
+                    </span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[0.7rem] uppercase tracking-wide text-muted-foreground">{{
+                      t('manager.details.info.user_agent')
+                    }}</span>
+                    <span class="text-right text-xs leading-5 text-muted-foreground">
+                      {{
+                        registrationDetails.registration.user_agent
+                          || t('manager.common.not_available')
+                      }}
+                    </span>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-[0.7rem] uppercase tracking-wide text-muted-foreground">
+                    {{ t('manager.details.summary.created') }}
+                  </span>
+                  <span class="text-sm">{{ formatDate(registrationDetails.registration.created_at) }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-[0.7rem] uppercase tracking-wide text-muted-foreground">
+                    {{ t('manager.details.summary.updated') }}
+                  </span>
+                  <span class="text-sm">{{ formatDate(registrationDetails.registration.updated_at) }}</span>
+                </div>
               </div>
             </div>
-            <Button class="w-full" variant="secondary" @click="submitRoleRankings">
-              {{ t('manager.details.role_rankings.submit') }}
-            </Button>
-          </div>
 
-          <Separator />
-
-          <div class="space-y-3">
-            <h3 class="text-sm font-semibold">
-              {{ t('manager.details.requested_actions.title') }}
-            </h3>
-            <div v-if="registrationDetails.requested_actions.length" class="space-y-2">
-              <div
-                v-for="action in registrationDetails.requested_actions"
-                :key="action.id"
-                class="rounded-md border p-3 space-y-2"
+            <div class="order-1 space-y-4 sm:space-y-6 lg:order-2 lg:sticky lg:top-6 lg:self-start">
+              <details
+                :open="isDesktop"
+                class="rounded-lg bg-muted/5 ring-1 ring-white/5 p-3"
               >
-                <div class="flex items-center justify-between text-sm">
-                  <span class="text-muted-foreground">#{{ action.id }}</span>
-                  <Badge
-                    :class="
-                      statusBadgeClasses(
-                        action.status === 'RESOLVED' ? 'ACCEPTED' : 'ACTION_REQUIRED',
-                      )
-                    "
-                  >
-                    {{ actionStatusLabel(action.status) }}
-                  </Badge>
-                </div>
-                <p class="text-sm">{{ action.description }}</p>
-                <div class="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>{{ formatDate(action.created_at) }}</span>
-                  <Button
-                    v-if="action.status === 'PENDING'"
-                    size="sm"
-                    variant="secondary"
-                    @click="resolveAction(action.id)"
-                  >
-                    {{ t('manager.details.requested_actions.resolve') }}
+                <summary
+                  class="sm:hidden text-base font-semibold tracking-tight list-none flex items-center justify-between cursor-pointer select-none"
+                >
+                  <span>{{ t('manager.details.update_status.title') }}</span>
+                  <span class="text-xs uppercase tracking-wide text-muted-foreground">
+                    {{ localStatus ? statusLabel(localStatus as RegistrationStatus) : '' }}
+                  </span>
+                </summary>
+                <div class="space-y-3 pt-3 sm:pt-0">
+                  <h3 class="hidden sm:block text-base font-semibold tracking-tight">
+                    {{ t('manager.details.update_status.title') }}
+                  </h3>
+                  <Select v-model="localStatus">
+                    <SelectTrigger size="sm" class="w-full text-sm">
+                      <SelectValue :placeholder="t('manager.details.update_status.placeholder')" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem v-for="status in statusOptions" :key="status" :value="status">
+                        {{ statusLabel(status) }}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <div v-if="localStatus === 'DECLINED'" class="space-y-2">
+                    <label class="text-xs text-muted-foreground">
+                      {{ t('manager.details.update_status.decline_reason') }}
+                    </label>
+                    <Textarea
+                      v-model="declineReason"
+                      :placeholder="t('manager.details.update_status.decline_placeholder')"
+                    />
+                  </div>
+
+                  <div v-if="localStatus === 'ACTION_REQUIRED'" class="space-y-2">
+                    <label class="text-xs text-muted-foreground">
+                      {{ t('manager.details.update_status.requested_action') }}
+                    </label>
+                    <Textarea
+                      v-model="requestedActionDescription"
+                      :placeholder="t('manager.details.update_status.requested_action_placeholder')"
+                    />
+                  </div>
+
+                  <Button class="w-full" size="sm" @click="submitStatusUpdate">
+                    {{ t('manager.details.update_status.submit') }}
                   </Button>
                 </div>
-              </div>
-            </div>
-            <p v-else class="text-sm text-muted-foreground">
-              {{ t('manager.details.requested_actions.empty') }}
-            </p>
-          </div>
+              </details>
 
-          <Separator />
-
-          <div class="space-y-3">
-            <h3 class="text-sm font-semibold">{{ t('manager.details.comments.title') }}</h3>
-            <div v-if="registrationDetails.comments.length" class="space-y-2">
-              <div
-                v-for="comment in registrationDetails.comments"
-                :key="comment.id"
-                class="rounded-md border p-3 text-sm space-y-1"
+              <details
+                :open="isDesktop"
+                class="rounded-lg bg-muted/5 ring-1 ring-white/5 p-3"
               >
-                <p>{{ comment.comment }}</p>
-                <p class="text-xs text-muted-foreground">{{ formatDate(comment.created_at) }}</p>
-              </div>
-            </div>
-            <p v-else class="text-sm text-muted-foreground">
-              {{ t('manager.details.comments.empty') }}
-            </p>
-            <Textarea
-              v-model="commentText"
-              :placeholder="t('manager.details.comments.placeholder')"
-            />
-            <Button class="w-full" variant="secondary" @click="submitComment">
-              {{ t('manager.details.comments.submit') }}
-            </Button>
-          </div>
-
-          <Separator />
-
-          <div class="space-y-3">
-            <h3 class="text-sm font-semibold">{{ t('manager.details.info.title') }}</h3>
-            <div class="grid gap-2 text-sm">
-              <div class="flex items-center justify-between">
-                <span class="text-muted-foreground">
-                  {{ t('manager.details.info.rules_accepted') }}
-                </span>
-                <span>
-                  {{
-                    registrationDetails.registration.rules_accepted
-                      ? t('manager.details.info.yes')
-                      : t('manager.details.info.no')
-                  }}
-                </span>
-              </div>
-              <div
-                v-if="registrationDetails.registration.decline_reason"
-                class="flex items-center justify-between"
-              >
-                <span class="text-muted-foreground">
-                  {{ t('manager.details.info.decline_reason') }}
-                </span>
-                <span class="text-right">{{
-                  registrationDetails.registration.decline_reason
-                }}</span>
-              </div>
-              <div class="flex items-center justify-between">
-                <span class="text-muted-foreground">{{ t('manager.details.info.ip_address') }}</span>
-                <span>
-                  {{ registrationDetails.registration.ip_address || t('manager.common.not_available') }}
-                </span>
-              </div>
-              <div class="flex items-center justify-between">
-                <span class="text-muted-foreground">{{ t('manager.details.info.user_agent') }}</span>
-                <span class="text-right text-xs text-muted-foreground">
-                  {{
-                    registrationDetails.registration.user_agent
-                      || t('manager.common.not_available')
-                  }}
-                </span>
-              </div>
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-muted-foreground">{{ t('manager.details.summary.created') }}</span>
-              <span>{{ formatDate(registrationDetails.registration.created_at) }}</span>
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-muted-foreground">{{ t('manager.details.summary.updated') }}</span>
-              <span>{{ formatDate(registrationDetails.registration.updated_at) }}</span>
+                <summary
+                  class="sm:hidden text-base font-semibold tracking-tight list-none flex items-center justify-between cursor-pointer select-none"
+                >
+                  <span>{{ t('manager.details.role_rankings.title') }}</span>
+                  <span class="text-xs uppercase tracking-wide text-muted-foreground">
+                    {{ t('manager.details.role_rankings.submit') }}
+                  </span>
+                </summary>
+                <div class="space-y-3 pt-3 sm:pt-0">
+                  <h3 class="hidden sm:block text-base font-semibold tracking-tight">
+                    {{ t('manager.details.role_rankings.title') }}
+                  </h3>
+                  <div class="grid gap-2">
+                    <div
+                      v-for="role in roleValues"
+                      :key="role"
+                      class="grid items-center gap-3 sm:grid-cols-[6.5rem_minmax(0,1fr)]"
+                    >
+                      <span class="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                        {{ roleLabel(role) }}
+                      </span>
+                      <Input
+                        v-model="roleRankingDraft[role]"
+                        type="number"
+                        min="1"
+                        class="h-8 text-sm"
+                        :placeholder="t('manager.details.role_rankings.placeholder')"
+                      />
+                    </div>
+                  </div>
+                  <Button class="w-full" size="sm" variant="secondary" @click="submitRoleRankings">
+                    {{ t('manager.details.role_rankings.submit') }}
+                  </Button>
+                </div>
+              </details>
             </div>
           </div>
+          <div class="h-[max(1rem,env(safe-area-inset-bottom))] sm:hidden" />
         </div>
 
         <div v-else class="text-sm text-muted-foreground">
           {{ t('manager.details.select_prompt') }}
         </div>
       </div>
-    </SheetContent>
-  </Sheet>
+    </DialogScrollContent>
+  </Dialog>
 </template>

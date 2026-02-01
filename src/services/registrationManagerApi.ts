@@ -83,8 +83,8 @@ export async function createRegistrationComment(
 export async function updateRegistrationStatus(
   registrationId: number,
   payload: UpdateRegistrationStatusRequest,
-): Promise<ApiResponse<RegistrationRow>> {
-  return fetchWithAuth<RegistrationRow>(
+): Promise<ApiResponse<RegistrationDetailResponse>> {
+  return fetchWithAuth<RegistrationDetailResponse>(
     `/api/secured/v1/manager/registrations/${registrationId}/status`,
     {
       method: 'PATCH',

@@ -90,16 +90,13 @@ export const useRegistrationManagerStore = defineStore('registrationManager', {
       const response = await updateRegistrationStatusApi(registrationId, payload)
 
       if (response.success && response.data) {
-        const updated = response.data
-        const details = this.registrationDetails[registrationId]
-        if (details) {
-          this.registrationDetails[registrationId] = {
-            ...details,
-            registration: updated,
-          }
-        }
-
-        this.updateRegistrationSummary(updated.id, updated.status, updated.updated_at)
+        const detail = response.data
+        this.registrationDetails[registrationId] = detail
+        this.updateRegistrationSummary(
+          detail.registration.id,
+          detail.registration.status,
+          detail.registration.updated_at,
+        )
       }
 
       return response
