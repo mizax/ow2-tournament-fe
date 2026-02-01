@@ -3,11 +3,26 @@ import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useI18n } from 'vue-i18n'
-import { handleApiResponse } from '@/services/apiService.ts'
+import { toast } from 'vue-sonner'
+import { fetchWithoutAuth } from '@/services/apiService.ts'
+import type { User } from '@/types/User.ts'
 
 const router = useRouter()
 const authStore = useAuthStore()
-const { t } = useI18n({ useScope: 'global' })
+const { t, te } = useI18n({ useScope: 'global' })
+
+const showAuthError = (errorMessage: string, details?: string) => {
+  const errorKeyCandidates = [`errors.${errorMessage}`, `auth_callback.${errorMessage}`]
+  const resolvedKey =
+    errorKeyCandidates.find((key) => te(key)) ?? 'auth_callback.authentication_failed'
+  const title = t(resolvedKey)
+  const trimmedDetails = details?.trim()
+  if (trimmedDetails) {
+    toast.error(title, { description: trimmedDetails })
+  } else {
+    toast.error(title)
+  }
+}
 
 onMounted(async () => {
   try {
@@ -15,23 +30,22 @@ onMounted(async () => {
     const queryParams = new URLSearchParams(window.location.search)
     const state = queryParams.get('state')
 
-    // Create a request to the backend callback endpoint
-    const response = await fetch(
-      `/api/public/v1/auth/battlenet/callback?${queryParams.toString()}`,
-      {
-        method: 'GET',
-      },
-    )
+    const apiResponse = await fetchWithoutAuth<
+      { id_token: string; user: User },
+      { error?: string; details?: string }
+    >(`/api/public/v1/auth/battlenet/callback?${queryParams.toString()}`, {
+      method: 'GET',
+    })
 
-    if (!response.ok) {
-      const errorResponse = await handleApiResponse(response)
-      throw new Error(errorResponse.errorCode || 'unknown_error')
+    if (!apiResponse.success) {
+      const errorMessage = apiResponse.errorData?.error || apiResponse.errorCode || 'unknown_error'
+      showAuthError(errorMessage, apiResponse.errorData?.details)
+      await router.push('/')
+      return
     }
 
-    const data = await response.json()
-
+    const data = apiResponse.data!
     authStore.login(data.id_token, data.user)
-    console.log('authResponse', data)
 
     // Redirect to stored page after successful authentication
     const redirectPath = authStore.consumeRedirectPath(state)
@@ -39,12 +53,9 @@ onMounted(async () => {
     await router.push(safeRedirectPath)
   } catch (error: unknown) {
     console.error('Authentication error:', error)
-    // Redirect to the home page on error
     const errorMessage = error instanceof Error ? error.message : 'unknown_error'
-    await router.push({
-      path: '/',
-      query: { error: errorMessage },
-    })
+    showAuthError(errorMessage)
+    await router.push('/')
   }
 })
 </script>

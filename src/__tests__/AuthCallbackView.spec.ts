@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { shallowMount, flushPromises } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import AuthCallbackView from '@/views/AuthCallbackView.vue'
-import { handleApiResponse } from '@/services/apiService'
+import { fetchWithoutAuth } from '@/services/apiService'
+import { toast } from 'vue-sonner'
 
 const routerMock = vi.hoisted(() => ({
   push: vi.fn(),
@@ -24,14 +25,22 @@ vi.mock('@/stores/authStore', () => ({
 vi.mock('vue-i18n', () => ({
   useI18n: () => ({
     t: (key: string) => key,
+    te: (key: string) => key === 'auth_callback.authentication_failed',
   }),
 }))
 
 vi.mock('@/services/apiService', () => ({
-  handleApiResponse: vi.fn(),
+  fetchWithoutAuth: vi.fn(),
 }))
 
-const handleApiResponseMock = vi.mocked(handleApiResponse)
+vi.mock('vue-sonner', () => ({
+  toast: {
+    error: vi.fn(),
+  },
+}))
+
+const fetchWithoutAuthMock = vi.mocked(fetchWithoutAuth)
+const toastMock = vi.mocked(toast)
 
 const setup = () => {
   return shallowMount(AuthCallbackView)
@@ -41,20 +50,20 @@ beforeEach(() => {
   routerMock.push.mockReset()
   authStoreMock.login.mockReset()
   authStoreMock.consumeRedirectPath.mockReset()
-  handleApiResponseMock.mockReset()
+  fetchWithoutAuthMock.mockReset()
+  toastMock.error.mockReset()
 })
 
 describe('AuthCallbackView', () => {
   it('logs in and redirects on success', async () => {
     const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-    const fetchMock = vi.fn().mockResolvedValue({
-      ok: true,
-      json: vi.fn().mockResolvedValue({
+    fetchWithoutAuthMock.mockResolvedValueOnce({
+      success: true,
+      data: {
         id_token: 'token',
         user: { id: '1', battletag: 'Test#1234', roles: [] },
-      }),
+      },
     })
-    vi.stubGlobal('fetch', fetchMock)
 
     authStoreMock.consumeRedirectPath.mockReturnValueOnce('/home')
 
@@ -71,26 +80,39 @@ describe('AuthCallbackView', () => {
     consoleLogSpy.mockRestore()
   })
 
-  it('redirects to home with error on error response', async () => {
+  it('shows error toast and redirects to home on error response', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-    const fetchMock = vi.fn().mockResolvedValue({
-      ok: false,
-    })
-    vi.stubGlobal('fetch', fetchMock)
-
-    handleApiResponseMock.mockResolvedValueOnce({
+    fetchWithoutAuthMock.mockResolvedValueOnce({
       success: false,
       errorCode: 'bad_request',
+      errorData: { error: 'bad_request' },
     })
 
     setup()
     await flushPromises()
     await nextTick()
 
-    expect(routerMock.push).toHaveBeenCalledWith({
-      path: '/',
-      query: { error: 'bad_request' },
+    expect(toastMock.error).toHaveBeenCalledWith('auth_callback.authentication_failed')
+    expect(routerMock.push).toHaveBeenCalledWith('/')
+    consoleErrorSpy.mockRestore()
+  })
+
+  it('shows error toast with description when details are present', async () => {
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    fetchWithoutAuthMock.mockResolvedValueOnce({
+      success: false,
+      errorCode: 'bad_request',
+      errorData: { error: 'bad_request', details: 'Battle.net error' },
     })
+
+    setup()
+    await flushPromises()
+    await nextTick()
+
+    expect(toastMock.error).toHaveBeenCalledWith('auth_callback.authentication_failed', {
+      description: 'Battle.net error',
+    })
+    expect(routerMock.push).toHaveBeenCalledWith('/')
     consoleErrorSpy.mockRestore()
   })
 })
