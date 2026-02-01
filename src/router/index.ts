@@ -31,22 +31,22 @@ const router = createRouter({
         {
           path: '',
           name: 'tournament-list',
-          component: () => import('@/components/tournament/TournamentList.vue')
+          component: () => import('@/views/tournament/TournamentListView.vue')
         },
         {
           path: ':tournamentSef',
           name: 'tournament-details',
-          component: () => import('@/components/tournament/TournamentDetailsParent.vue'),
+          component: () => import('@/views/tournament/TournamentDetailsLayout.vue'),
           children: [
             {
               path: '',
               name: 'tournament-details-home',
-              component: () => import('@/components/tournament/TournamentDetails.vue'),
+              component: () => import('@/views/tournament/TournamentDetailsView.vue'),
             },
             {
               path: 'register',
               name: 'tournament-registration',
-              component: () => import('@/components/tournament/SubmitRequest.vue'),
+              component: () => import('@/views/tournament/TournamentRegistrationView.vue'),
               meta: {
                 requiresAuth: true,
               },
@@ -54,7 +54,7 @@ const router = createRouter({
             {
               path: 'register/:registrationId',
               name: 'tournament-registration-status',
-              component: () => import('@/components/tournament/RegistrationStatus.vue'),
+              component: () => import('@/views/tournament/TournamentRegistrationStatusView.vue'),
               meta: {
                 requiresAuth: true,
               },

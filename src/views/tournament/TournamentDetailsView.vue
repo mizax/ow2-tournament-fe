@@ -5,14 +5,14 @@ import { useI18n } from 'vue-i18n'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useTournamentStore } from '@/stores/tournamentStore'
 
-import TournamentHero from './details/TournamentHero.vue'
-import OverviewTab from './details/OverviewTab.vue'
-import ParticipationTab from './details/ParticipationTab.vue'
-import PlayersTab from './details/PlayersTab.vue'
-import ScheduleTab from './details/ScheduleTab.vue'
-import RulesTab from './details/RulesTab.vue'
-import PrizesTab from './details/PrizesTab.vue'
-import StreamTab from './details/StreamTab.vue'
+import TournamentHero from '@/components/tournament/details/TournamentHero.vue'
+import OverviewTab from '@/components/tournament/details/OverviewTab.vue'
+import ParticipationTab from '@/components/tournament/details/ParticipationTab.vue'
+import PlayersTab from '@/components/tournament/details/PlayersTab.vue'
+import ScheduleTab from '@/components/tournament/details/ScheduleTab.vue'
+import RulesTab from '@/components/tournament/details/RulesTab.vue'
+import PrizesTab from '@/components/tournament/details/PrizesTab.vue'
+import StreamTab from '@/components/tournament/details/StreamTab.vue'
 
 const { t } = useI18n()
 const route = useRoute()
