@@ -24,6 +24,9 @@ const endDate = props.tournament.dates[props.tournament.dates.length - 1]!
       <div class="flex gap-2 pt-1">
         <span class="chip">{{ tournament.discipline }}</span>
         <span class="chip">{{ tournament.format }}</span>
+        <span v-if="(tournament.registration_count ?? 0) > 0" class="chip">
+          {{ t('tournament_card.registrations', { count: tournament.registration_count }) }}
+        </span>
       </div>
     </CardHeader>
     <CardContent class="flex flex-col justify-between gap-3">

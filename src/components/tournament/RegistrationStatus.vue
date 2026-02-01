@@ -113,7 +113,7 @@ const showDeclineReason = computed(
     registrationDetails.value?.status === 'DECLINED' && registrationDetails.value?.declineReason,
 )
 const showSteps = computed(() =>
-  ['PENDING', 'PROCESSING', 'ACCEPTED'].includes(registrationDetails.value?.status ?? ''),
+  ['PENDING', 'PROCESSING', 'ACCEPTED', 'ACTION_REQUIRED', 'DECLINED'].includes(registrationDetails.value?.status ?? ''),
 )
 const showActionsPanel = computed(
   () => showSteps.value || showManagerComment.value || showDeclineReason.value,

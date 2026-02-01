@@ -40,7 +40,8 @@
     "noTournaments": "Нет ближайших турниров 😢"
   },
   "tournament_card": {
-    "details": "Подробнее"
+    "details": "Подробнее",
+    "registrations": "Участников: {count}"
   },
   "registration": {
     "button": {
