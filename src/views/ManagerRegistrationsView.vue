@@ -6,7 +6,7 @@ import ManagerRegistrationsHeader from '@/components/manager/ManagerRegistration
 import ManagerRegistrationsFilters from '@/components/manager/ManagerRegistrationsFilters.vue'
 import ManagerRegistrationsTable from '@/components/manager/ManagerRegistrationsTable.vue'
 import ManagerRegistrationsPagination from '@/components/manager/ManagerRegistrationsPagination.vue'
-import RegistrationDetailsSheet from '@/components/manager/RegistrationDetailsSheet.vue'
+import RegistrationDetailsDialog from '@/components/manager/RegistrationDetailsDialog.vue'
 import type { RegistrationStatus } from '@/types/registrationManager'
 import { useI18n } from 'vue-i18n'
 import { useDebounceFn } from '@vueuse/core'
@@ -207,6 +207,6 @@ onMounted(async () => {
       />
     </div>
 
-    <RegistrationDetailsSheet v-model:open="sheetOpen" :registration-id="selectedRegistrationId" />
+    <RegistrationDetailsDialog v-model:open="sheetOpen" :registration-id="selectedRegistrationId" />
   </div>
 </template>
