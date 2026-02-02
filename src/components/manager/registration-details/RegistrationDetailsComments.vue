@@ -46,7 +46,7 @@ const { t } = useI18n()
     <Textarea
       :model-value="modelValue"
       :placeholder="t('manager.details.comments.placeholder')"
-      @update:modelValue="(value) => emit('update:modelValue', value)"
+      @update:modelValue="(value) => emit('update:modelValue', String(value ?? ''))"
     />
     <Button class="w-full" variant="secondary" @click="emit('submit')">
       {{ t('manager.details.comments.submit') }}

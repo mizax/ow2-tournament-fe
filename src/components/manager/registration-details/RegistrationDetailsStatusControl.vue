@@ -46,7 +46,7 @@ const { t } = useI18n()
       </h3>
       <Select
         :model-value="localStatus"
-        @update:modelValue="(value) => emit('update:localStatus', value)"
+        @update:modelValue="(value) => emit('update:localStatus', (value ?? '') as RegistrationStatus | '')"
       >
         <SelectTrigger size="sm" class="w-full text-sm">
           <SelectValue :placeholder="t('manager.details.update_status.placeholder')" />
@@ -65,7 +65,7 @@ const { t } = useI18n()
         <Textarea
           :model-value="declineReason"
           :placeholder="t('manager.details.update_status.decline_placeholder')"
-          @update:modelValue="(value) => emit('update:declineReason', value)"
+          @update:modelValue="(value) => emit('update:declineReason', String(value ?? ''))"
         />
       </div>
 
@@ -76,7 +76,7 @@ const { t } = useI18n()
         <Textarea
           :model-value="requestedActionDescription"
           :placeholder="t('manager.details.update_status.requested_action_placeholder')"
-          @update:modelValue="(value) => emit('update:requestedActionDescription', value)"
+          @update:modelValue="(value) => emit('update:requestedActionDescription', String(value ?? ''))"
         />
       </div>
 
