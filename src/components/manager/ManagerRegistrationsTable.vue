@@ -101,9 +101,15 @@ const statusLabel = (status?: RegistrationStatus) => {
           <TableHead>{{ t('manager.registrations.table.id') }}</TableHead>
           <TableHead>{{ t('manager.registrations.table.battletag') }}</TableHead>
           <TableHead>{{ t('manager.registrations.table.status') }}</TableHead>
-          <TableHead>{{ t('manager.registrations.table.roles') }}</TableHead>
-          <TableHead>{{ t('manager.registrations.table.created') }}</TableHead>
-          <TableHead>{{ t('manager.registrations.table.updated') }}</TableHead>
+          <TableHead class="hidden sm:table-cell">
+            {{ t('manager.registrations.table.roles') }}
+          </TableHead>
+          <TableHead class="hidden sm:table-cell">
+            {{ t('manager.registrations.table.created') }}
+          </TableHead>
+          <TableHead class="hidden sm:table-cell">
+            {{ t('manager.registrations.table.updated') }}
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -122,15 +128,25 @@ const statusLabel = (status?: RegistrationStatus) => {
           @click="emit('open', registration.id)"
         >
           <TableCell class="font-medium">{{ registration.id }}</TableCell>
-          <Copyable :as="TableCell" :value="registration.battletag">
-            {{ registration.battletag }}
+          <Copyable :as="TableCell" :value="registration.battletag" class="items-start gap-2">
+            <div class="space-y-1 leading-tight">
+              <div class="flex items-center gap-1.5">
+                <span>{{ registration.battletag }}</span>
+              </div>
+              <div class="text-xs text-muted-foreground sm:hidden">
+                {{ roleLabel(registration.primary_role) }}
+                <span v-if="registration.secondary_role">
+                  / {{ roleLabel(registration.secondary_role) }}
+                </span>
+              </div>
+            </div>
           </Copyable>
           <TableCell>
             <Badge :class="statusBadgeClasses(registration.status)">
               {{ statusLabel(registration.status) }}
             </Badge>
           </TableCell>
-          <TableCell>
+          <TableCell class="hidden sm:table-cell">
             <span class="text-sm text-muted-foreground">
               {{ roleLabel(registration.primary_role) }}
               <span v-if="registration.secondary_role">
@@ -138,8 +154,12 @@ const statusLabel = (status?: RegistrationStatus) => {
               </span>
             </span>
           </TableCell>
-          <TableCell>{{ formatDate(registration.created_at) }}</TableCell>
-          <TableCell>{{ formatDate(registration.updated_at) }}</TableCell>
+          <TableCell class="hidden sm:table-cell">
+            {{ formatDate(registration.created_at) }}
+          </TableCell>
+          <TableCell class="hidden sm:table-cell">
+            {{ formatDate(registration.updated_at) }}
+          </TableCell>
         </TableRow>
         <TableEmpty v-if="!props.loading && !props.registrations.length" :colspan="6">
           {{ t('manager.registrations.empty') }}

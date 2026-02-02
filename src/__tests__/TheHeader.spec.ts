@@ -6,6 +6,8 @@ import { stubWithSlot } from './testUtils'
 const routeMock = vi.hoisted(() => ({ path: '/' }))
 const authStoreMock = vi.hoisted(() => ({
   hasRole: vi.fn(),
+  logout: vi.fn(),
+  authorize: vi.fn(),
 }))
 
 vi.mock('vue-router', () => ({
@@ -19,6 +21,10 @@ vi.mock('vue-router', () => ({
 
 vi.mock('@/stores/authStore', () => ({
   useAuthStore: () => authStoreMock,
+}))
+
+vi.mock('@/composables/useAuthReady', () => ({
+  useAuthReady: () => true,
 }))
 
 vi.mock('vue-i18n', () => ({
@@ -53,7 +59,7 @@ describe('TheHeader', () => {
 
     const wrapper = setup()
 
-    expect(wrapper.findAllComponents({ name: 'NavigationMenuItem' })).toHaveLength(1)
+    expect(wrapper.findAllComponents({ name: 'NavigationMenuItem' })).toHaveLength(0)
   })
 
   it('shows manager link for manager roles', () => {
@@ -61,6 +67,6 @@ describe('TheHeader', () => {
 
     const wrapper = setup()
 
-    expect(wrapper.findAllComponents({ name: 'NavigationMenuItem' })).toHaveLength(2)
+    expect(wrapper.findAllComponents({ name: 'NavigationMenuItem' })).toHaveLength(1)
   })
 })

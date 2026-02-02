@@ -237,6 +237,7 @@
       "load_error": "Не удалось загрузить заявки.",
       "empty": "Заявки не найдены.",
       "filters": {
+        "title": "Фильтры",
         "search_label": "Поиск по BattleTag",
         "search_placeholder": "Введите BattleTag",
         "status_label": "Статусы",
