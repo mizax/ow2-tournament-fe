@@ -29,10 +29,15 @@ const { t } = useI18n()
         :key="comment.id"
         class="rounded-md bg-muted/5 ring-1 ring-white/5 p-3 text-sm space-y-1"
       >
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-medium text-foreground">
+            {{ comment.manager_battletag || t('manager.common.not_available') }}
+          </span>
+          <span class="uppercase tracking-wide text-muted-foreground">
+            {{ formatDate(comment.created_at) }}
+          </span>
+        </div>
         <p class="text-sm leading-6">{{ comment.comment }}</p>
-        <p class="text-xs uppercase tracking-wide text-muted-foreground">
-          {{ formatDate(comment.created_at) }}
-        </p>
       </div>
     </div>
     <p v-else class="text-sm text-muted-foreground">

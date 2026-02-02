@@ -61,6 +61,7 @@ export interface RegistrationComment {
   id: number
   registration_id: number
   manager_user_id: number
+  manager_battletag?: string | null
   comment: string
   created_at: string
 }
