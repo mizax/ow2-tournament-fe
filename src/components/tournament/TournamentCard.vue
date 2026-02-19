@@ -18,7 +18,7 @@ const endDate = props.tournament.dates[props.tournament.dates.length - 1]!
 </script>
 
 <template>
-  <Card class="overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg gap-4">
+  <Card class="overflow-hidden transition-transform duration-200 transform-gpu will-change-transform hover:-translate-y-0.5 gap-4">
     <CardHeader>
       <CardTitle class="text-3xl font-semibold tracking-tight leading-[1.05] truncate" :title="tournament.title">{{ tournament.title }}</CardTitle>
       <div class="flex gap-2 pt-1">
