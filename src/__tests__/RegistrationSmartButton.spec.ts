@@ -50,9 +50,9 @@ const SpinnerStub = {
   template: '<span />',
 }
 
-const setup = () => {
+const setup = (props?: { isRegistrationClosed?: boolean }) => {
   return shallowMount(RegistrationSmartButton, {
-    props: { tournamentUri: 'ow2' },
+    props: { tournamentUri: 'ow2', ...props },
     global: {
       stubs: {
         Button: ButtonStub,
@@ -80,6 +80,17 @@ describe('RegistrationSmartButton', () => {
     expect(wrapper.text()).toContain('registration.button.login_hint')
   })
 
+  it('shows registration closed when unauthenticated and registration is closed', async () => {
+    const wrapper = setup({ isRegistrationClosed: true })
+
+    await flushPromises()
+    await nextTick()
+
+    expect(fetchWithAuthMock).not.toHaveBeenCalled()
+    expect(wrapper.text()).toContain('tournament.hero.registration_closed')
+    expect(wrapper.text()).not.toContain('registration.button.login_to_register')
+  })
+
   it('navigates to registration when status is null', async () => {
     authState.isAuthenticated.value = true
     fetchWithAuthMock.mockResolvedValueOnce({
@@ -100,6 +111,22 @@ describe('RegistrationSmartButton', () => {
       name: 'tournament-registration',
       params: { tournamentSef: 'ow2' },
     })
+  })
+
+  it('shows registration closed for authenticated user without request when registration is closed', async () => {
+    authState.isAuthenticated.value = true
+    fetchWithAuthMock.mockResolvedValueOnce({
+      success: true,
+      data: { status: null, request_id: null },
+    })
+
+    const wrapper = setup({ isRegistrationClosed: true })
+
+    await flushPromises()
+    await nextTick()
+
+    expect(wrapper.text()).toContain('tournament.hero.registration_closed')
+    expect(wrapper.text()).not.toContain('registration.smart_button.register')
   })
 
   it('navigates to registration status when status exists', async () => {

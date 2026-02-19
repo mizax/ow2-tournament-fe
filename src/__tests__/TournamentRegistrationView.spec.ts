@@ -133,4 +133,24 @@ describe('TournamentRegistrationView', () => {
 
     expect(toastError).toHaveBeenCalledWith('t:validation.key')
   })
+
+  it('shows registration closed error from api', async () => {
+    routeMock.params = { tournamentSef: 'ow2' }
+
+    fetchWithAuthMock.mockResolvedValueOnce({
+      success: false,
+      errorData: {
+        error: 'registration_closed',
+      },
+    })
+
+    const wrapper = setup()
+    const onSubmit = wrapper.findComponent({ name: 'TournamentRegistrationForm' }).props('onSubmit') as (
+      payload: RegistrationFormValues,
+    ) => Promise<void>
+
+    await onSubmit(formPayload)
+
+    expect(toastError).toHaveBeenCalledWith('t:errors.registration_closed')
+  })
 })

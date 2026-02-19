@@ -24,6 +24,7 @@ interface Props {
     }
     registration?: {
       start?: string
+      deadline?: string
     }
   }
 }
@@ -45,11 +46,26 @@ const registrationStartDate = computed(() => {
   return Number.isNaN(parsed.getTime()) ? null : parsed
 })
 
+const registrationDeadlineDate = computed(() => {
+  if (!props.tournament.registration?.deadline) {
+    return null
+  }
+  const parsed = new Date(props.tournament.registration.deadline)
+  return Number.isNaN(parsed.getTime()) ? null : parsed
+})
+
 const isRegistrationOpen = computed(() => {
   if (!registrationStartDate.value) {
     return true
   }
   return registrationStartDate.value.getTime() <= now.value
+})
+
+const isRegistrationClosed = computed(() => {
+  if (!registrationDeadlineDate.value) {
+    return false
+  }
+  return registrationDeadlineDate.value.getTime() < now.value
 })
 
 const countdownLabel = computed(() => {
@@ -143,7 +159,11 @@ onUnmounted(stopCountdown)
               {{ t('tournament.hero.registration_opens_in', { time: countdownLabel }) }}
             </p>
           </div>
-          <RegistrationSmartButton v-else :tournament-uri="tournament.id" />
+          <RegistrationSmartButton
+            v-else
+            :tournament-uri="tournament.id"
+            :is-registration-closed="isRegistrationClosed"
+          />
         </div>
       </div>
     </CardContent>

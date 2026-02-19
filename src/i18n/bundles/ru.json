@@ -10,6 +10,7 @@
     "not_found": "Страница не найдена",
     "already_registered": "Вы уже подали заявку на этот турнир",
     "registration_not_started": "Регистрация еще не началась",
+    "registration_closed": "Регистрация уже закрыта",
     "unknown": "Произошла ошибка. Попробуйте еще раз позже"
   },
   "validation": {
@@ -74,7 +75,8 @@
     },
     "hero": {
       "prize_pool": "Призовой фонд",
-      "registration_opens_in": "Регистрация откроется через {time}"
+      "registration_opens_in": "Регистрация откроется через {time}",
+      "registration_closed": "Регистрация завершена"
     },
     "list": {
       "title": "Все турниры",

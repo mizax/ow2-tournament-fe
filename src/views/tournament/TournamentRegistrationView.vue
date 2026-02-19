@@ -72,6 +72,11 @@ const handleSubmit = async (payload: RegistrationFormValues) => {
       return
     }
 
+    if (errorData?.error === 'registration_closed') {
+      toast.error(t('errors.registration_closed'))
+      return
+    }
+
     if (errorData?.details) {
       toast.error(errorData.details)
       return

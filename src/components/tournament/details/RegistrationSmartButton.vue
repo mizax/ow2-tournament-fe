@@ -10,7 +10,9 @@ import { computed, onMounted, ref } from 'vue'
 import { fetchWithAuth } from '@/services/apiService.ts'
 import { useDebounceFn } from '@vueuse/core'
 
-const props = defineProps<{ tournamentUri: string }>()
+const props = withDefaults(defineProps<{ tournamentUri: string; isRegistrationClosed?: boolean }>(), {
+  isRegistrationClosed: false,
+})
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -18,11 +20,11 @@ const { isAuthenticated } = storeToRefs(authStore)
 const router = useRouter()
 const authReady = useAuthReady()
 const loading = ref(false)
-const requestStatusResponse = ref<{ status: string; request_id: number } | undefined>(undefined)
+const requestStatusResponse = ref<{ status: string | null; request_id: number | null } | undefined>(undefined)
 
 const loadRequestStatusInner = async () => {
   if (isAuthenticated.value) {
-    const response = await fetchWithAuth<{ status: string; request_id: number }>(
+    const response = await fetchWithAuth<{ status: string | null; request_id: number | null }>(
       `/api/secured/v1/tournaments/${props.tournamentUri}/registration-status`,
     )
 
@@ -63,6 +65,15 @@ onMounted(loadRequestStatus)
 
 const buttonConfig = computed(() => {
   if (!isAuthenticated.value) {
+    if (props.isRegistrationClosed) {
+      return {
+        is: 'div',
+        text: t('tournament.hero.registration_closed'),
+        classes: 'text-sm text-muted-foreground',
+        action: () => {},
+      }
+    }
+
     return {
       is: 'div',
       text: t('registration.button.login_to_register'),
@@ -73,6 +84,15 @@ const buttonConfig = computed(() => {
     }
   }
   if (requestStatusResponse.value?.status === null) {
+    if (props.isRegistrationClosed) {
+      return {
+        is: 'div',
+        text: t('tournament.hero.registration_closed'),
+        classes: 'text-sm text-muted-foreground',
+        action: () => {},
+      }
+    }
+
     return {
       is: Button,
       text: t('registration.smart_button.register'),
