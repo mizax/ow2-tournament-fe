@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { RegistrationDetailResponse } from '@/types/registrationManager'
 import { useI18n } from 'vue-i18n'
@@ -30,6 +30,11 @@ const geoIpTimezone = computed(
 const geoIpOrg = computed(
   () => geoIpInfo.value?.org?.trim() || t('manager.common.not_available'),
 )
+const isGeoIpTooltipOpen = ref(false)
+
+const toggleGeoIpTooltip = () => {
+  isGeoIpTooltipOpen.value = !isGeoIpTooltipOpen.value
+}
 </script>
 
 <template>
@@ -62,9 +67,14 @@ const geoIpOrg = computed(
         }}</span>
         <span class="inline-flex items-center gap-2 text-sm">
           {{ registration.ip_address || t('manager.common.not_available') }}
-          <Tooltip v-if="geoIpFlagUrl">
+          <Tooltip v-if="geoIpFlagUrl" v-model:open="isGeoIpTooltipOpen">
             <TooltipTrigger as-child>
-              <button type="button" class="inline-flex items-center" aria-label="GeoIP">
+              <button
+                type="button"
+                class="inline-flex items-center"
+                aria-label="GeoIP"
+                @touchstart="toggleGeoIpTooltip"
+              >
                 <img
                   :src="geoIpFlagUrl"
                   :alt="geoIpInfo?.country || 'GeoIP'"
