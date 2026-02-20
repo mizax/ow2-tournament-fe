@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useMediaQuery } from '@vueuse/core'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { RegistrationDetailResponse } from '@/types/registrationManager'
 import { useI18n } from 'vue-i18n'
@@ -31,9 +32,28 @@ const geoIpOrg = computed(
   () => geoIpInfo.value?.org?.trim() || t('manager.common.not_available'),
 )
 const isGeoIpTooltipOpen = ref(false)
+const isTouchInput = useMediaQuery('(hover: none), (pointer: coarse)')
+const lastTouchToggleAt = ref(0)
 
-const toggleGeoIpTooltip = () => {
+const toggleGeoIpTooltipOnTouch = (event: TouchEvent) => {
+  if (!isTouchInput.value) {
+    return
+  }
+  event.preventDefault()
+  event.stopPropagation()
+  lastTouchToggleAt.value = Date.now()
   isGeoIpTooltipOpen.value = !isGeoIpTooltipOpen.value
+}
+
+const handleGeoIpTooltipOpenChange = (value: boolean) => {
+  if (
+    isTouchInput.value &&
+    !value &&
+    Date.now() - lastTouchToggleAt.value < 350
+  ) {
+    return
+  }
+  isGeoIpTooltipOpen.value = value
 }
 </script>
 
@@ -67,13 +87,17 @@ const toggleGeoIpTooltip = () => {
         }}</span>
         <span class="inline-flex items-center gap-2 text-sm">
           {{ registration.ip_address || t('manager.common.not_available') }}
-          <Tooltip v-if="geoIpFlagUrl" v-model:open="isGeoIpTooltipOpen">
+          <Tooltip
+            v-if="geoIpFlagUrl"
+            :open="isGeoIpTooltipOpen"
+            @update:open="handleGeoIpTooltipOpenChange"
+          >
             <TooltipTrigger as-child>
               <button
                 type="button"
                 class="inline-flex items-center"
                 aria-label="GeoIP"
-                @touchstart="toggleGeoIpTooltip"
+                @touchstart="toggleGeoIpTooltipOnTouch"
               >
                 <img
                   :src="geoIpFlagUrl"
