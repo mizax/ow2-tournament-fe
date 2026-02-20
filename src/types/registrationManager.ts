@@ -50,6 +50,15 @@ export interface RegistrationRow {
   additional_info: string
   rules_accepted: boolean
   ip_address: string
+  geo_ip?: {
+    city: string
+    region: string
+    country: string
+    country_code: string
+    timezone: string
+    org: string
+    flag_url: string
+  } | null
   user_agent: string
   decline_reason?: string | null
   created_at: string
