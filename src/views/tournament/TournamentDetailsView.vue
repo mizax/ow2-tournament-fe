@@ -151,7 +151,7 @@ watch(tournamentSef, loadTournament)
           </TabsContent>
 
           <TabsContent value="stream" class="mt-6">
-            <StreamTab :stream="tournament.stream" />
+            <StreamTab :stream="tournament.stream" :tournament-sef="tournament.id" />
           </TabsContent>
         </div>
       </Tabs>

@@ -3,6 +3,12 @@ import { shallowMount } from '@vue/test-utils'
 import StreamTab from '@/components/tournament/details/StreamTab.vue'
 import { stubWithSlot } from './testUtils'
 
+const fetchWithoutAuthMock = vi.fn()
+
+vi.mock('@/services/apiService', () => ({
+  fetchWithoutAuth: (...args: unknown[]) => fetchWithoutAuthMock(...args),
+}))
+
 vi.mock('vue-i18n', () => ({
   useI18n: () => ({
     t: (key: string) => key,
@@ -17,8 +23,16 @@ const ButtonStub = {
 }
 
 const setup = (stream?: { platform?: string; channel?: string }) => {
+  fetchWithoutAuthMock.mockResolvedValue({
+    success: true,
+    data: [],
+  })
+
   return shallowMount(StreamTab, {
-    props: { stream },
+    props: {
+      stream,
+      tournamentSef: 'test-tournament',
+    },
     global: {
       stubs: {
         Card: stubWithSlot('Card'),

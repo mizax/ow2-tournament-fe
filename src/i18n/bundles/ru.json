@@ -119,7 +119,12 @@
       "prize": "Приз"
     },
     "stream": {
-      "watch_on_twitch": "Смотреть на Twitch"
+      "watch_on_twitch": "Смотреть на Twitch",
+      "live_participants": "Участники в эфире сейчас",
+      "live_loading": "Проверяем кто сейчас стримит",
+      "live_empty": "Сейчас никто из участников не стримит",
+      "live_load_error": "Не удалось загрузить список live-стримов",
+      "live_viewers": "Зрителей: {count}"
     },
     "players": {
       "search_label": "Поиск",
