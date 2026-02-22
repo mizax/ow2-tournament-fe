@@ -17,6 +17,7 @@ interface Props {
     title: string
     discipline: string
     format: string
+    status?: 'upcoming' | 'ongoing' | 'finished'
     schedule: Array<{ date: string }>
     prize_pool: {
       currency: string
@@ -68,6 +69,23 @@ const isRegistrationClosed = computed(() => {
   return registrationDeadlineDate.value.getTime() < now.value
 })
 
+const isTournamentFinished = computed(() => {
+  if (props.tournament.status) {
+    return props.tournament.status === 'finished'
+  }
+
+  if (!endDate) {
+    return false
+  }
+
+  const parsedEnd = new Date(endDate)
+  if (Number.isNaN(parsedEnd.getTime())) {
+    return false
+  }
+
+  return parsedEnd.getTime() < now.value
+})
+
 const countdownLabel = computed(() => {
   if (!registrationStartDate.value) {
     return ''
@@ -80,9 +98,9 @@ const countdownLabel = computed(() => {
     diffMs < 1000
       ? { seconds: 1 }
       : intervalToDuration({
-        start: new Date(now.value),
-        end: registrationStartDate.value,
-      })
+          start: new Date(now.value),
+          end: registrationStartDate.value,
+        })
   const units: Array<keyof typeof duration> = [
     'years',
     'months',
@@ -92,7 +110,10 @@ const countdownLabel = computed(() => {
     'seconds',
   ]
   const nonzeroUnits = units.filter((unit) => (duration[unit] ?? 0) > 0)
-  const formatUnits = (nonzeroUnits.length ? nonzeroUnits : ['seconds']).slice(0, 3) as (keyof typeof duration)[]
+  const formatUnits = (nonzeroUnits.length ? nonzeroUnits : ['seconds']).slice(
+    0,
+    3,
+  ) as (keyof typeof duration)[]
   return formatDuration(duration, {
     format: formatUnits,
     delimiter: ', ',
@@ -133,8 +154,10 @@ onUnmounted(stopCountdown)
 <template>
   <Card class="mb-0 gap-3">
     <CardHeader>
-      <CardTitle class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight leading-[1.05] text-balance">{{
-        tournament.title }}</CardTitle>
+      <CardTitle
+        class="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight leading-[1.05] text-balance"
+        >{{ tournament.title }}</CardTitle
+      >
     </CardHeader>
     <CardContent>
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -146,21 +169,32 @@ onUnmounted(stopCountdown)
           <span class="text-xs uppercase tracking-wide text-muted-foreground/80">
             {{ format(startDate!, DATE_FORMAT) }} — {{ format(endDate!, DATE_FORMAT) }}
           </span>
+          <span
+            v-if="isTournamentFinished"
+            class="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+          >
+            {{ t('tournament.status.finished') }}
+          </span>
           <div>
-            <span class="text-xs uppercase tracking-wide text-muted-foreground/70">{{ t('tournament.hero.prize_pool')
-              }}: </span>
-            <span class="text-sm font-semibold text-foreground">{{ totalPrize }} {{ tournament.prize_pool.currency
-              }}</span>
+            <span class="text-xs uppercase tracking-wide text-muted-foreground/70"
+              >{{ t('tournament.hero.prize_pool') }}:
+            </span>
+            <span class="text-sm font-semibold text-foreground"
+              >{{ totalPrize }} {{ tournament.prize_pool.currency }}</span
+            >
           </div>
         </div>
         <div class="shrink-0 text-right">
+          <p v-if="isTournamentFinished" class="text-sm text-muted-foreground">
+            {{ t('tournament.hero.tournament_finished') }}
+          </p>
           <div v-if="!isRegistrationOpen">
             <p class="text-sm text-muted-foreground">
               {{ t('tournament.hero.registration_opens_in', { time: countdownLabel }) }}
             </p>
           </div>
           <RegistrationSmartButton
-            v-else
+            v-else-if="!isTournamentFinished"
             :tournament-uri="tournament.id"
             :is-registration-closed="isRegistrationClosed"
           />

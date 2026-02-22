@@ -4,6 +4,7 @@ export interface Tournament {
   discipline: string
   format: string
   dates: string[]
+  status?: 'upcoming' | 'ongoing' | 'finished'
   prize_pool?: string
   registration_count?: number
 }

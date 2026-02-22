@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { DATE_FORMAT } from '@/util/date.ts'
+import { computed } from 'vue'
 
 const { t } = useI18n()
 
@@ -15,13 +16,38 @@ const props = defineProps<{
 
 const startDate = props.tournament.dates[0]!
 const endDate = props.tournament.dates[props.tournament.dates.length - 1]!
+
+const tournamentStatus = computed<'upcoming' | 'ongoing' | 'finished'>(() => {
+  if (props.tournament.status) {
+    return props.tournament.status
+  }
+
+  const now = Date.now()
+  const start = new Date(startDate).getTime()
+  const end = new Date(endDate).getTime()
+
+  if (!Number.isNaN(end) && end < now) {
+    return 'finished'
+  }
+  if (!Number.isNaN(start) && start > now) {
+    return 'upcoming'
+  }
+  return 'ongoing'
+})
 </script>
 
 <template>
-  <Card class="overflow-hidden transition-transform duration-200 transform-gpu will-change-transform hover:-translate-y-0.5 gap-4">
+  <Card
+    class="overflow-hidden transition-transform duration-200 transform-gpu will-change-transform hover:-translate-y-0.5 gap-4"
+  >
     <CardHeader>
-      <CardTitle class="text-3xl font-semibold tracking-tight leading-[1.05] truncate" :title="tournament.title">{{ tournament.title }}</CardTitle>
+      <CardTitle
+        class="text-3xl font-semibold tracking-tight leading-[1.05] truncate"
+        :title="tournament.title"
+        >{{ tournament.title }}</CardTitle
+      >
       <div class="flex gap-2 pt-1">
+        <span class="chip">{{ t(`tournament.status.${tournamentStatus}`) }}</span>
         <span class="chip">{{ tournament.discipline }}</span>
         <span class="chip">{{ tournament.format }}</span>
         <span v-if="(tournament.registration_count ?? 0) > 0" class="chip">
@@ -35,7 +61,9 @@ const endDate = props.tournament.dates[props.tournament.dates.length - 1]!
       </span>
       <div class="flex justify-between items-baseline">
         <div v-if="tournament.prize_pool">
-          <span class="text-sm text-muted-foreground/80">{{ t('tournament.hero.prize_pool') }}: </span>
+          <span class="text-sm text-muted-foreground/80"
+            >{{ t('tournament.hero.prize_pool') }}:
+          </span>
           <span class="text-sm font-medium text-foreground">{{ tournament.prize_pool }}</span>
         </div>
         <Button

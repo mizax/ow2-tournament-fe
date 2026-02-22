@@ -31,7 +31,7 @@ const router = createRouter({
         {
           path: '',
           name: 'tournament-list',
-          component: () => import('@/views/tournament/TournamentListView.vue')
+          component: () => import('@/views/tournament/TournamentListView.vue'),
         },
         {
           path: ':tournamentSef',
@@ -58,10 +58,10 @@ const router = createRouter({
               meta: {
                 requiresAuth: true,
               },
-            }
-          ]
-        }
-      ]
+            },
+          ],
+        },
+      ],
     },
     {
       path: '/auth/callback',
@@ -110,12 +110,8 @@ router.beforeEach(async (to, from, next) => {
   const { requiresAuth, allowedRoles } = { ...defaultMeta, ...to.meta }
 
   if (requiresAuth && !authStore.isAuthenticated) {
-    toast.error("Not authenticated")
-    if (from) {
-      next(from)
-    } else {
-      next('/')
-    }
+    toast.error('Not authenticated')
+    next('/')
     return
   }
 

@@ -38,6 +38,7 @@
   },
   "home": {
     "title": "Ближайшие турниры",
+    "title_past": "Прошедшие турниры",
     "noTournaments": "Нет ближайших турниров 😢"
   },
   "tournament_card": {
@@ -76,7 +77,13 @@
     "hero": {
       "prize_pool": "Призовой фонд",
       "registration_opens_in": "Регистрация откроется через {time}",
-      "registration_closed": "Регистрация завершена"
+      "registration_closed": "Регистрация завершена",
+      "tournament_finished": "Турнир завершен"
+    },
+    "status": {
+      "upcoming": "Скоро",
+      "ongoing": "Идет сейчас",
+      "finished": "Завершен"
     },
     "list": {
       "title": "Все турниры",
@@ -84,7 +91,11 @@
       "empty_description": "Список турниров появится позже. Загляните на главную, чтобы увидеть ближайшие турниры."
     },
     "overview": {
-      "organizers": "Организаторы"
+      "organizers": "Организаторы",
+      "results": "Итоги турнира",
+      "mvp": "MVP",
+      "vod": "Запись трансляции",
+      "bracket": "Турнирная сетка"
     },
     "participation": {
       "eligibility": "Требования к участникам",

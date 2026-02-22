@@ -6,6 +6,7 @@ export interface TournamentDetails {
   title: string
   discipline: string
   format: string
+  status?: 'upcoming' | 'ongoing' | 'finished'
   type: string
   organizers?: Array<{ role: string; name: string; contact?: string }>
   rules?: {
@@ -48,6 +49,15 @@ export interface TournamentDetails {
   stream?: {
     platform?: string
     channel?: string
+  }
+  results?: {
+    placements?: Array<{ place: number; team_name: string; captain_battletag?: string }>
+    mvp?: string
+    summary?: string
+  }
+  media?: {
+    vod_url?: string
+    bracket_url?: string
   }
   markdown?: {
     description?: string

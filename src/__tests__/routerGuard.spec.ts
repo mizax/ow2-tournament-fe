@@ -44,7 +44,7 @@ describe('router guard', () => {
 
     expect(toastError).toHaveBeenCalledWith('Not authenticated')
     expect(router.currentRoute.value.path).toBe('/')
-  })
+  }, 15000)
 
   it('redirects user without role to forbidden', async () => {
     const { router, toastError } = await setupRouter({

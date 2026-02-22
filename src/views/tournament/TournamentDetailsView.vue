@@ -19,7 +19,15 @@ const route = useRoute()
 const router = useRouter()
 const tournamentStore = useTournamentStore()
 const tournamentSef = computed(() => String(route.params.tournamentSef ?? ''))
-const tabValues = ['overview', 'participation', 'players', 'schedule', 'rules', 'prizes', 'stream'] as const
+const tabValues = [
+  'overview',
+  'participation',
+  'players',
+  'schedule',
+  'rules',
+  'prizes',
+  'stream',
+] as const
 const defaultTab = 'overview'
 const activeTab = computed({
   get: () => {
@@ -27,9 +35,7 @@ const activeTab = computed({
     return tabValues.includes(queryValue as (typeof tabValues)[number]) ? queryValue : defaultTab
   },
   set: (value) => {
-    const nextValue = tabValues.includes(value as (typeof tabValues)[number])
-      ? value
-      : defaultTab
+    const nextValue = tabValues.includes(value as (typeof tabValues)[number]) ? value : defaultTab
 
     if (route.query.tab !== nextValue) {
       router.replace({
@@ -43,7 +49,7 @@ const activeTab = computed({
 })
 
 const tournament = computed(() =>
-  tournamentSef.value ? tournamentStore.tournaments[tournamentSef.value] ?? null : null,
+  tournamentSef.value ? (tournamentStore.tournaments[tournamentSef.value] ?? null) : null,
 )
 const isLoading = ref(!tournament.value)
 const error = ref<string | null>(null)
@@ -75,7 +81,6 @@ const loadTournament = async () => {
 
 onMounted(loadTournament)
 watch(tournamentSef, loadTournament)
-
 </script>
 
 <template>
@@ -89,49 +94,77 @@ watch(tournamentSef, loadTournament)
 
   <div v-else-if="tournament" class="container mx-auto py-8">
     <div class="rounded-2xl border border-white/10 bg-card overflow-hidden">
-      <TournamentHero :tournament="tournament" class="mb-0 rounded-none border-0 bg-transparent shadow-none ring-0" />
+      <TournamentHero
+        :tournament="tournament"
+        class="mb-0 rounded-none border-0 bg-transparent shadow-none ring-0"
+      />
       <div class="h-px bg-white/10"></div>
       <Tabs v-model="activeTab" class="w-full">
         <div class="p-4 md:p-6">
           <TabsList
-            class="tabs-scroll flex w-full flex-nowrap items-center justify-start gap-2 overflow-x-auto bg-muted/40 p-1.5 text-xs uppercase tracking-wide md:flex-wrap">
-            <TabsTrigger value="overview"
-              class="cursor-pointer flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground">
+            class="tabs-scroll flex w-full flex-nowrap items-center justify-start gap-2 overflow-x-auto bg-muted/40 p-1.5 text-xs uppercase tracking-wide md:flex-wrap"
+          >
+            <TabsTrigger
+              value="overview"
+              class="cursor-pointer flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground"
+            >
               {{ t('tournament.tabs.overview') }}
             </TabsTrigger>
-            <TabsTrigger value="participation"
-              class="cursor-pointer flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground">
+            <TabsTrigger
+              value="participation"
+              class="cursor-pointer flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground"
+            >
               {{ t('tournament.tabs.participation') }}
             </TabsTrigger>
-            <TabsTrigger value="players"
-              class="cursor-pointer flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground">
+            <TabsTrigger
+              value="players"
+              class="cursor-pointer flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground"
+            >
               {{ t('tournament.tabs.players') }}
             </TabsTrigger>
-            <TabsTrigger value="schedule"
-              class="cursor-pointer flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground">
+            <TabsTrigger
+              value="schedule"
+              class="cursor-pointer flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground"
+            >
               {{ t('tournament.tabs.schedule') }}
             </TabsTrigger>
-            <TabsTrigger value="rules"
-              class="cursor-pointer flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground">
+            <TabsTrigger
+              value="rules"
+              class="cursor-pointer flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground"
+            >
               {{ t('tournament.tabs.rules') }}
             </TabsTrigger>
-            <TabsTrigger value="prizes"
-              class="cursor-pointer flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground">
+            <TabsTrigger
+              value="prizes"
+              class="cursor-pointer flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground"
+            >
               {{ t('tournament.tabs.prizes') }}
             </TabsTrigger>
-            <TabsTrigger value="stream"
-              class="cursor-pointer flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground">
+            <TabsTrigger
+              value="stream"
+              class="cursor-pointer flex-none px-3 py-2 data-[state=active]:bg-white/5 data-[state=active]:text-foreground"
+            >
               {{ t('tournament.tabs.stream') }}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" class="mt-6">
-            <OverviewTab :organizers="tournament.organizers || []"
-              :description="tournament.markdown?.description || ''" />
+            <OverviewTab
+              :organizers="tournament.organizers || []"
+              :description="tournament.markdown?.description || ''"
+              :summary="tournament.results?.summary"
+              :placements="tournament.results?.placements"
+              :mvp="tournament.results?.mvp"
+              :vod-url="tournament.media?.vod_url"
+              :bracket-url="tournament.media?.bracket_url"
+            />
           </TabsContent>
 
           <TabsContent value="participation" class="mt-6">
-            <ParticipationTab :eligibility="tournament.eligibility" :registration="tournament.registration" />
+            <ParticipationTab
+              :eligibility="tournament.eligibility"
+              :registration="tournament.registration"
+            />
           </TabsContent>
 
           <TabsContent value="players" class="mt-6">
@@ -143,7 +176,10 @@ watch(tournamentSef, loadTournament)
           </TabsContent>
 
           <TabsContent value="rules" class="mt-6">
-            <RulesTab :rules="tournament.rules || {}" :regulation="tournament.markdown?.full_regulation" />
+            <RulesTab
+              :rules="tournament.rules || {}"
+              :regulation="tournament.markdown?.full_regulation"
+            />
           </TabsContent>
 
           <TabsContent value="prizes" class="mt-6">

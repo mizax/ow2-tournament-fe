@@ -9,7 +9,6 @@ vi.mock('vue-i18n', () => ({
   }),
 }))
 
-
 const setup = (registrationStart?: string) => {
   return shallowMount(TournamentHero, {
     props: {
@@ -62,6 +61,8 @@ describe('TournamentHero', () => {
   })
 
   it('shows registration button when start is not provided', () => {
+    vi.setSystemTime(new Date('2023-12-31T00:00:00Z'))
+
     const wrapper = setup()
 
     expect(wrapper.findComponent({ name: 'RegistrationSmartButton' }).exists()).toBe(true)
