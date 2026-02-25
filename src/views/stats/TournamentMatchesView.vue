@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { fetchTournamentMatches } from '@/services/publicStatsApi'
+import { Card } from '@/components/ui/card'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -56,39 +57,65 @@ onMounted(async () => {
       <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
     </div>
 
-    <div v-else-if="error" class="text-center py-20 text-muted-foreground">
-      {{ error }}
-    </div>
+    <div v-else-if="error" class="text-center py-20 text-muted-foreground">{{ error }}</div>
 
     <div v-else-if="matches.length === 0" class="text-center py-20 text-muted-foreground">
       {{ t('stats.no-data') }}
     </div>
 
-    <div v-else class="space-y-4">
-      <router-link
-        v-for="match in matches"
-        :key="match.id"
-        :to="`/match/${match.id}`"
-        class="block rounded-xl border border-white/10 bg-card hover:bg-white/5 transition-colors p-4"
-      >
-        <div class="flex items-center justify-between gap-4">
-          <span class="font-semibold text-lg truncate">{{ match.home_team }}</span>
-          <span class="text-xl font-bold tabular-nums shrink-0">
-            {{ match.home_score ?? '–' }} : {{ match.away_score ?? '–' }}
-          </span>
-          <span class="font-semibold text-lg truncate text-right">{{ match.away_team }}</span>
-        </div>
-
-        <div v-if="match.maps.length > 0" class="mt-3 flex flex-wrap gap-2">
-          <div
-            v-for="map in match.maps"
-            :key="map.map_order"
-            class="rounded-md bg-muted/50 px-3 py-1 text-sm flex items-center gap-2"
-          >
-            <span class="text-muted-foreground">{{ map.map_name ?? t('stats.map') }}</span>
-            <span class="font-medium tabular-nums">{{ map.home_score }}:{{ map.away_score }}</span>
+    <div v-else class="space-y-3">
+      <router-link v-for="match in matches" :key="match.id" :to="`/tournament/${tournamentSef}/match/${match.id}`">
+        <Card class="p-5 gap-0 hover:bg-white/5 transition-colors cursor-pointer">
+          <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+            <span class="font-semibold text-base leading-tight">{{ match.home_team }}</span>
+            <div class="flex items-center gap-2 shrink-0">
+              <span
+                :class="[
+                  'text-2xl font-bold tabular-nums',
+                  match.home_score != null &&
+                  match.away_score != null &&
+                  match.home_score > match.away_score
+                    ? 'text-emerald-400'
+                    : 'text-foreground',
+                ]"
+              >
+                {{ match.home_score ?? '–' }}
+              </span>
+              <span class="text-muted-foreground font-medium">:</span>
+              <span
+                :class="[
+                  'text-2xl font-bold tabular-nums',
+                  match.home_score != null &&
+                  match.away_score != null &&
+                  match.away_score > match.home_score
+                    ? 'text-emerald-400'
+                    : 'text-foreground',
+                ]"
+              >
+                {{ match.away_score ?? '–' }}
+              </span>
+            </div>
+            <span class="font-semibold text-base leading-tight text-right">{{ match.away_team }}</span>
           </div>
-        </div>
+
+          <div v-if="match.maps.length > 0" class="mt-3 flex flex-wrap gap-1.5">
+            <div
+              v-for="map in match.maps"
+              :key="map.map_order"
+              :class="[
+                'rounded-md px-2.5 py-1 text-xs flex items-center gap-1.5',
+                map.home_score > map.away_score
+                  ? 'bg-emerald-950/50 text-emerald-300/80'
+                  : map.home_score < map.away_score
+                    ? 'bg-rose-950/50 text-rose-300/80'
+                    : 'bg-muted/50 text-muted-foreground',
+              ]"
+            >
+              <span>{{ map.map_name ?? t('stats.map') }}</span>
+              <span class="font-semibold tabular-nums">{{ map.home_score }}:{{ map.away_score }}</span>
+            </div>
+          </div>
+        </Card>
       </router-link>
     </div>
   </div>

@@ -4,6 +4,15 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { fetchMatchStats } from '@/services/publicStatsApi'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card, CardContent } from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -48,6 +57,7 @@ interface MatchStatsResponse {
   maps: MapStats[]
 }
 
+const tournamentSef = String(route.params.tournamentSef ?? '')
 const matchId = Number(route.params.matchId)
 const stats = ref<MatchStatsResponse | null>(null)
 const isLoading = ref(true)
@@ -102,10 +112,10 @@ function groupByTeam(players: PlayerStats[]): Record<string, PlayerStats[]> {
   <div class="container mx-auto py-8 px-4">
     <div class="mb-6">
       <router-link
-        to="/"
+        :to="`/tournament/${tournamentSef}/matches`"
         class="text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
-        ← {{ t('stats.back') }}
+        ← {{ t('stats.back-to-tournament') }}
       </router-link>
     </div>
 
@@ -119,18 +129,18 @@ function groupByTeam(players: PlayerStats[]): Record<string, PlayerStats[]> {
 
     <div v-else-if="stats" class="space-y-6">
       <!-- Match header -->
-      <div class="rounded-xl border border-white/10 bg-card p-6 text-center">
-        <div class="flex items-center justify-center gap-6">
-          <span class="text-xl font-bold">{{ stats.home_team }}</span>
-          <span class="text-3xl font-bold tabular-nums text-primary px-4">
-            {{ t('stats.vs') }}
-          </span>
-          <span class="text-xl font-bold">{{ stats.away_team }}</span>
-        </div>
-      </div>
+      <Card>
+        <CardContent>
+          <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-4 text-center">
+            <span class="text-xl font-bold text-emerald-300/90">{{ stats.home_team }}</span>
+            <span class="text-2xl font-bold text-muted-foreground/50 px-4">vs</span>
+            <span class="text-xl font-bold text-rose-300/90">{{ stats.away_team }}</span>
+          </div>
+        </CardContent>
+      </Card>
 
       <!-- Maps tabs -->
-      <div v-if="stats.maps.length > 0" class="rounded-xl border border-white/10 bg-card overflow-hidden">
+      <Card v-if="stats.maps.length > 0" class="p-0 gap-0 overflow-hidden">
         <Tabs v-model="activeMap">
           <div class="p-4 border-b border-white/10">
             <TabsList class="flex flex-wrap gap-2 bg-muted/40 p-1">
@@ -159,7 +169,10 @@ function groupByTeam(players: PlayerStats[]): Record<string, PlayerStats[]> {
               :key="rIdx"
               class="mb-6 last:mb-0"
             >
-              <div v-if="map.rounds.length > 1" class="mb-3 text-sm font-medium text-muted-foreground uppercase tracking-wide">
+              <div
+                v-if="map.rounds.length > 1"
+                class="mb-3 text-sm font-medium text-muted-foreground uppercase tracking-wide"
+              >
                 {{ t('stats.round') }} {{ roundData.round ?? rIdx + 1 }}
               </div>
 
@@ -168,57 +181,69 @@ function groupByTeam(players: PlayerStats[]): Record<string, PlayerStats[]> {
                 :key="teamName"
                 class="mb-4 last:mb-0"
               >
-                <div class="mb-2 text-sm font-semibold text-muted-foreground">{{ teamName }}</div>
+                <div
+                  :class="[
+                    'mb-2 text-sm font-semibold pl-2 border-l-2',
+                    teamName === stats?.home_team
+                      ? 'border-emerald-500/60 text-emerald-300/80'
+                      : teamName === stats?.away_team
+                        ? 'border-rose-500/60 text-rose-300/80'
+                        : 'border-white/20 text-muted-foreground',
+                  ]"
+                >
+                  {{ teamName }}
+                </div>
+
                 <div class="overflow-x-auto">
-                  <table class="w-full text-sm">
-                    <thead>
-                      <tr class="border-b border-white/10 text-xs text-muted-foreground uppercase">
-                        <th class="py-2 pr-3 text-left font-medium">{{ t('stats.player') }}</th>
-                        <th class="py-2 pr-3 text-left font-medium">{{ t('stats.hero') }}</th>
-                        <th class="py-2 pr-3 text-right font-medium">{{ t('stats.kills') }}</th>
-                        <th class="py-2 pr-3 text-right font-medium">{{ t('stats.deaths') }}</th>
-                        <th class="py-2 pr-3 text-right font-medium">{{ t('stats.kd') }}</th>
-                        <th class="py-2 pr-3 text-right font-medium">{{ t('stats.damage') }}</th>
-                        <th class="py-2 pr-3 text-right font-medium">{{ t('stats.healing') }}</th>
-                        <th class="py-2 pr-3 text-right font-medium">{{ t('stats.blocked') }}</th>
-                        <th class="py-2 pr-3 text-right font-medium">{{ t('stats.ults') }}</th>
-                        <th class="py-2 text-right font-medium">{{ t('stats.time') }}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr
+                  <Table>
+                    <TableHeader>
+                      <TableRow class="border-white/10 hover:bg-transparent">
+                        <TableHead class="text-xs uppercase text-muted-foreground font-medium">{{ t('stats.player') }}</TableHead>
+                        <TableHead class="text-xs uppercase text-muted-foreground font-medium">{{ t('stats.hero') }}</TableHead>
+                        <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{ t('stats.kills') }}</TableHead>
+                        <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{ t('stats.deaths') }}</TableHead>
+                        <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{ t('stats.kd') }}</TableHead>
+                        <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{ t('stats.damage') }}</TableHead>
+                        <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{ t('stats.healing') }}</TableHead>
+                        <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{ t('stats.blocked') }}</TableHead>
+                        <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{ t('stats.ults') }}</TableHead>
+                        <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{ t('stats.time') }}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow
                         v-for="player in teamPlayers"
                         :key="player.player_id"
-                        class="border-b border-white/5 hover:bg-white/5 transition-colors"
+                        class="border-white/5"
                       >
-                        <td class="py-2 pr-3">
+                        <TableCell>
                           <router-link
                             :to="`/player/${player.player_id}`"
                             class="font-medium hover:text-primary transition-colors"
                           >
                             {{ player.nickname }}
                           </router-link>
-                        </td>
-                        <td class="py-2 pr-3 text-muted-foreground">{{ player.hero_name }}</td>
-                        <td class="py-2 pr-3 text-right tabular-nums">{{ formatNumber(player.kills) }}</td>
-                        <td class="py-2 pr-3 text-right tabular-nums">{{ formatNumber(player.deaths) }}</td>
-                        <td class="py-2 pr-3 text-right tabular-nums">{{ kd(player.kills, player.deaths) }}</td>
-                        <td class="py-2 pr-3 text-right tabular-nums">{{ formatNumber(player.damage) }}</td>
-                        <td class="py-2 pr-3 text-right tabular-nums">{{ formatNumber(player.healing) }}</td>
-                        <td class="py-2 pr-3 text-right tabular-nums">{{ formatNumber(player.damage_blocked) }}</td>
-                        <td class="py-2 pr-3 text-right tabular-nums">
+                        </TableCell>
+                        <TableCell class="text-muted-foreground">{{ player.hero_name }}</TableCell>
+                        <TableCell class="text-right tabular-nums">{{ formatNumber(player.kills) }}</TableCell>
+                        <TableCell class="text-right tabular-nums">{{ formatNumber(player.deaths) }}</TableCell>
+                        <TableCell class="text-right tabular-nums">{{ kd(player.kills, player.deaths) }}</TableCell>
+                        <TableCell class="text-right tabular-nums">{{ formatNumber(player.damage) }}</TableCell>
+                        <TableCell class="text-right tabular-nums">{{ formatNumber(player.healing) }}</TableCell>
+                        <TableCell class="text-right tabular-nums">{{ formatNumber(player.damage_blocked) }}</TableCell>
+                        <TableCell class="text-right tabular-nums">
                           {{ formatNumber(player.ults_used) }}/{{ formatNumber(player.ults_earned) }}
-                        </td>
-                        <td class="py-2 text-right tabular-nums">{{ formatTime(player.time_played) }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                        </TableCell>
+                        <TableCell class="text-right tabular-nums">{{ formatTime(player.time_played) }}</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
                 </div>
               </div>
             </div>
           </TabsContent>
         </Tabs>
-      </div>
+      </Card>
 
       <div v-else class="text-center py-10 text-muted-foreground">
         {{ t('stats.no-data') }}
