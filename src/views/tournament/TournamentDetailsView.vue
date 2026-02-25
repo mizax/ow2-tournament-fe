@@ -99,6 +99,14 @@ watch(tournamentSef, loadTournament)
         class="mb-0 rounded-none border-0 bg-transparent shadow-none ring-0"
       />
       <div class="h-px bg-white/10"></div>
+      <div class="px-4 pt-4 md:px-6 md:pt-6">
+        <router-link
+          :to="`/tournament/${tournament.id}/matches`"
+          class="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-muted/40 px-4 py-2 text-sm font-medium hover:bg-white/5 transition-colors"
+        >
+          {{ t('stats.matches') }}
+        </router-link>
+      </div>
       <Tabs v-model="activeTab" class="w-full">
         <div class="p-4 md:p-6">
           <TabsList

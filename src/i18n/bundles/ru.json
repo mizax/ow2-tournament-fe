@@ -231,6 +231,33 @@
       "empty": "—"
     }
   },
+  "stats": {
+    "matches": "Матчи",
+    "match": "Матч",
+    "match-history": "История матчей",
+    "player-profile": "Профиль игрока",
+    "kills": "Убийства",
+    "deaths": "Смерти",
+    "damage": "Урон",
+    "healing": "Лечение",
+    "blocked": "Заблокировано",
+    "ults": "Ульты",
+    "time": "Время",
+    "round": "Раунд",
+    "map": "Карта",
+    "maps": "Карты",
+    "vs": "vs",
+    "kd": "K/D",
+    "player": "Игрок",
+    "hero": "Герой",
+    "team": "Команда",
+    "tournament": "Турнир",
+    "division": "Дивизион",
+    "back": "Назад",
+    "back-to-tournament": "Назад к турниру",
+    "loading": "Загрузка...",
+    "no-data": "Нет данных"
+  },
   "manager": {
     "common": {
       "not_available": "Нет данных"
@@ -244,7 +271,31 @@
     "tournaments": {
       "id": "ID: {id}",
       "registrations": "Заявок: {count}",
-      "manage": "Управлять заявками"
+      "manage": "Управлять заявками",
+      "load_logs": "Загрузить логи"
+    },
+    "logs": {
+      "title": "Загрузка логов",
+      "tournament_id": "ID турнира: {id}",
+      "loading_matches": "Загрузка матчей...",
+      "load_error": "Не удалось загрузить матчи.",
+      "select_match": "Выберите матч",
+      "select_files": "Файлы логов (.txt)",
+      "drop_hint": "Перетащите файлы сюда или нажмите чтобы выбрать",
+      "upload_btn": "Загрузить",
+      "uploading": "Загрузка...",
+      "upload_success": "Успешно загружено файлов: {count}",
+      "upload_failed_all": "Не удалось загрузить ни один файл.",
+      "upload_partial": "Загружено: {succeeded}, ошибок: {failed}",
+      "errors": {
+        "duplicate_log": "Этот лог уже загружен для данного матча",
+        "unsupported_version": "Неподдерживаемая версия лог-файла",
+        "team_not_found": "Команда не найдена в турнире",
+        "player_not_found": "Игрок не найден в команде",
+        "map_not_found": "Карта не найдена",
+        "parse_error": "Ошибка разбора файла",
+        "invalid_encoding": "Файл содержит недопустимые символы"
+      }
     },
     "registrations": {
       "back": "Назад к панели",

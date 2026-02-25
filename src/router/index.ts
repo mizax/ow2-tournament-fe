@@ -64,6 +64,21 @@ const router = createRouter({
       ],
     },
     {
+      path: '/tournament/:tournamentSef/matches',
+      name: 'tournament-matches',
+      component: () => import('@/views/stats/TournamentMatchesView.vue'),
+    },
+    {
+      path: '/match/:matchId',
+      name: 'match-detail',
+      component: () => import('@/views/stats/MatchDetailView.vue'),
+    },
+    {
+      path: '/player/:playerId',
+      name: 'player-profile',
+      component: () => import('@/views/stats/PlayerProfileView.vue'),
+    },
+    {
       path: '/auth/callback',
       name: 'authCallback',
       component: AuthCallbackView,
@@ -81,6 +96,15 @@ const router = createRouter({
       path: '/manager/tournaments/:tournamentId/registrations',
       name: 'manager-registrations',
       component: () => import('@/views/ManagerRegistrationsView.vue'),
+      meta: {
+        requiresAuth: true,
+        allowedRoles: [UserRole.ADMIN, UserRole.TOURNAMENT_MANAGER],
+      },
+    },
+    {
+      path: '/manager/tournaments/:tournamentId/logs',
+      name: 'manager-logs',
+      component: () => import('@/views/ManagerLogsView.vue'),
       meta: {
         requiresAuth: true,
         allowedRoles: [UserRole.ADMIN, UserRole.TOURNAMENT_MANAGER],
