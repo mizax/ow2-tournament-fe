@@ -74,7 +74,7 @@ const router = createRouter({
       component: () => import('@/views/stats/MatchDetailView.vue'),
     },
     {
-      path: '/player/:playerId',
+      path: '/tournament/:tournamentSef/player/:playerId',
       name: 'player-profile',
       component: () => import('@/views/stats/PlayerProfileView.vue'),
     },

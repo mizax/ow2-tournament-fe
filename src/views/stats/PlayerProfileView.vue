@@ -3,7 +3,10 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { fetchPlayer, fetchPlayerMatches } from '@/services/publicStatsApi'
+import { formatNumber, kd } from '@/lib/statsFormatting'
+import type { PlayerProfile, PlayerMatchSummary } from '@/types/stats'
 import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   Table,
@@ -17,33 +20,8 @@ import {
 const { t } = useI18n()
 const route = useRoute()
 
-interface PlayerProfile {
-  id: number
-  nickname: string
-  role: string | null
-  registration_id: number | null
-  battletag: string | null
-  team_name: string
-  tournament_title: string
-  tournament_sef: string
-  division_name: string | null
-}
 
-interface PlayerMatchSummary {
-  match_id: number
-  home_team: string
-  away_team: string
-  home_score: number | null
-  away_score: number | null
-  tournament_title: string
-  maps_played: number
-  kills: number | null
-  deaths: number | null
-  damage: number | null
-  healing: number | null
-  time_played: number | null
-}
-
+const tournamentSef = String(route.params.tournamentSef ?? '')
 const playerId = Number(route.params.playerId)
 const profile = ref<PlayerProfile | null>(null)
 const matchHistory = ref<PlayerMatchSummary[]>([])
@@ -71,23 +49,6 @@ onMounted(async () => {
   isLoading.value = false
 })
 
-function formatNumber(val: number | null | undefined): string {
-  if (val == null) return '—'
-  return Math.round(val).toLocaleString()
-}
-
-function kd(kills: number | null, deaths: number | null): string {
-  if (kills == null || deaths == null) return '—'
-  if (deaths === 0) return kills > 0 ? '∞' : '0'
-  return (kills / deaths).toFixed(2)
-}
-
-const roleLabels: Record<string, string> = {
-  tank: 'Танк',
-  damage: 'Урон',
-  support: 'Поддержка',
-  flex: 'Флекс',
-}
 
 const roleClasses: Record<string, string> = {
   tank: 'border-blue-500/30 bg-blue-500/15 text-blue-400',
@@ -111,15 +72,23 @@ const overallKD = computed(() => {
   <div class="container mx-auto py-8 px-4">
     <div class="mb-6">
       <router-link
-        to="/"
+        :to="`/tournament/${tournamentSef}/matches`"
         class="text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
-        ← {{ t('stats.back') }}
+        ← {{ t('stats.back-to-tournament') }}
       </router-link>
     </div>
 
-    <div v-if="isLoading" class="flex justify-center py-20">
-      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+    <div v-if="isLoading" class="space-y-4">
+      <Skeleton class="h-28 w-full rounded-2xl" />
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <Skeleton v-for="i in 4" :key="i" class="h-20 w-full rounded-2xl" />
+      </div>
+      <Skeleton class="h-6 w-40 rounded" />
+      <div class="space-y-2">
+        <Skeleton class="h-9 w-full rounded-lg" />
+        <Skeleton v-for="i in 5" :key="i" class="h-11 w-full rounded-lg" />
+      </div>
     </div>
 
     <div v-else-if="error" class="text-center py-20 text-muted-foreground">
@@ -142,7 +111,7 @@ const overallKD = computed(() => {
               variant="outline"
               :class="roleClasses[profile.role] ?? 'border-primary/30 bg-primary/10 text-primary'"
             >
-              {{ roleLabels[profile.role] ?? profile.role }}
+              {{ t(`registration.roles.${profile.role}`, profile.role) }}
             </Badge>
           </div>
 
