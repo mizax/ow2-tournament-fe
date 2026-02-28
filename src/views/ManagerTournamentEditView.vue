@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { toast } from 'vue-sonner'
 import { useI18n } from 'vue-i18n'
 import { Spinner } from '@/components/ui/spinner'
@@ -13,7 +13,6 @@ import {
 import type { TournamentEditFormValues } from '@/types/tournament-manager'
 
 const route = useRoute()
-const router = useRouter()
 const { t } = useI18n()
 
 const tournamentId = computed(() => String(route.params.tournamentId ?? ''))
@@ -67,7 +66,6 @@ const handleSubmit = async (payload: TournamentEditFormValues) => {
 
   if (response.success) {
     toast.success(t('manager.tournament_edit.view.toasts.updated'))
-    await router.push({ name: 'manager-registrations', params: { tournamentId: tournamentId.value } })
     return
   }
 

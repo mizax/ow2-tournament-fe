@@ -134,7 +134,7 @@ describe('ManagerTournamentEditView', () => {
     expect(toastError).toHaveBeenCalledWith('t:manager.tournament_edit.view.toasts.sef_title_taken')
   })
 
-  it('redirects to registrations on success', async () => {
+  it('stays on edit page on success', async () => {
     fetchManagedTournamentMock.mockResolvedValueOnce({ success: true, data: mockTournament })
     updateManagedTournamentMock.mockResolvedValueOnce({ success: true, data: mockTournament })
 
@@ -144,9 +144,7 @@ describe('ManagerTournamentEditView', () => {
     await wrapper.find('[data-testid="submit-edit"]').trigger('click')
     await flushPromises()
 
-    expect(routerMock.push).toHaveBeenCalledWith({
-      name: 'manager-registrations',
-      params: { tournamentId: '42' },
-    })
+    expect(toastSuccess).toHaveBeenCalledWith('t:manager.tournament_edit.view.toasts.updated')
+    expect(routerMock.push).not.toHaveBeenCalled()
   })
 })
