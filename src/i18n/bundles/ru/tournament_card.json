@@ -1,0 +1,6 @@
+{
+  "tournament_card": {
+    "details": "Подробнее",
+    "registrations": "Участников: {count}"
+  }
+}

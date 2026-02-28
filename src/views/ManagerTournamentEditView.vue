@@ -66,7 +66,7 @@ const handleSubmit = async (payload: TournamentEditFormValues) => {
   const response = await updateManagedTournament(tournamentId.value, payload)
 
   if (response.success) {
-    toast.success('Турнир обновлён')
+    toast.success(t('manager.tournament_edit.view.toasts.updated'))
     await router.push({ name: 'manager-registrations', params: { tournamentId: tournamentId.value } })
     return
   }
@@ -77,7 +77,7 @@ const handleSubmit = async (payload: TournamentEditFormValues) => {
       : response.errorCode
 
   if (errorKey === 'sef_title_taken') {
-    toast.error('SEF title уже занят')
+    toast.error(t('manager.tournament_edit.view.toasts.sef_title_taken'))
     return
   }
 
@@ -94,12 +94,12 @@ const handleSubmit = async (payload: TournamentEditFormValues) => {
       aria-live="polite"
     >
       <Spinner class="animate-spin" />
-      <span>Загрузка турнира...</span>
+      <span>{{ t('manager.tournament_edit.view.loading') }}</span>
     </div>
 
     <Card v-else-if="values">
       <CardHeader>
-        <CardTitle>Редактирование турнира «{{ title }}»</CardTitle>
+        <CardTitle>{{ t('manager.tournament_edit.view.title', { title }) }}</CardTitle>
       </CardHeader>
       <CardContent>
         <TournamentEditForm :initial-values="values" :on-submit="handleSubmit" />
@@ -108,16 +108,16 @@ const handleSubmit = async (payload: TournamentEditFormValues) => {
 
     <Card v-else-if="loadError">
       <CardHeader>
-        <CardTitle>Не удалось загрузить турнир</CardTitle>
+        <CardTitle>{{ t('manager.tournament_edit.view.load_failed_title') }}</CardTitle>
       </CardHeader>
       <CardContent class="space-y-3">
-        <p class="text-sm text-muted-foreground">Проверьте доступ и попробуйте снова.</p>
+        <p class="text-sm text-muted-foreground">{{ t('manager.tournament_edit.view.load_failed_description') }}</p>
         <button
           type="button"
           class="inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           @click="loadTournament"
         >
-          Повторить
+          {{ t('manager.tournament_edit.view.retry') }}
         </button>
       </CardContent>
     </Card>

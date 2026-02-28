@@ -1,0 +1,20 @@
+{
+  "validation": {
+    "twitch": {
+      "required": "Укажите Twitch"
+    },
+    "discord": {
+      "required": "Укажите Discord"
+    },
+    "primary_role": {
+      "required": "Выберите основную роль"
+    },
+    "secondary_role": {
+      "required": "Выберите второстепенную роль",
+      "same_as_primary": "Основная и второстепенная роли должны отличаться"
+    },
+    "rules_accepted": {
+      "required": "Необходимо подтвердить согласие с правилами"
+    }
+  }
+}

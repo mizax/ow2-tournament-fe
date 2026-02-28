@@ -1,0 +1,280 @@
+{
+  "manager": {
+    "common": {
+      "not_available": "Нет данных"
+    },
+    "dashboard": {
+      "title": "Панель менеджера",
+      "subtitle": "Выберите турнир для управления заявками.",
+      "loading": "Загрузка управляемых турниров...",
+      "empty": "Нет доступных турниров."
+    },
+    "tournaments": {
+      "id": "ID: {id}",
+      "registrations": "Заявок: {count}",
+      "manage": "Управлять заявками",
+      "edit": "Редактировать турнир",
+      "load_logs": "Загрузить логи"
+    },
+    "tournament_edit": {
+      "tabs": {
+        "main": "Основное",
+        "organizers": "Организаторы",
+        "eligibility": "Требования",
+        "registration": "Регистрация",
+        "teams": "Команды",
+        "schedule": "Расписание",
+        "match_format": "Формат матчей",
+        "prize": "Призовой фонд",
+        "stream": "Трансляция",
+        "results": "Результаты",
+        "media": "Медиа",
+        "rules": "Правила"
+      },
+      "sections": {
+        "main": "Основные поля",
+        "organizers": "Организаторы",
+        "eligibility": "Требования",
+        "subscription_requirements": "Требования к подписке",
+        "registration": "Регистрация",
+        "checkin": "Чек-ин",
+        "teams": "Команды",
+        "schedule": "Расписание",
+        "match_format": "Формат матчей",
+        "prize": "Призовой фонд",
+        "stream": "Трансляция",
+        "results": "Результаты",
+        "media": "Медиа",
+        "rules": "Правила"
+      },
+      "fields": {
+        "title": "Название",
+        "sef_title": "SEF-адрес",
+        "discipline": "Дисциплина",
+        "format": "Формат",
+        "type": "Тип",
+        "status": "Статус",
+        "description": "Описание",
+        "min_rank": "Мин. ранг",
+        "verification_battletag": "Battletag для верификации",
+        "min_competitive_hours": "Мин. часов в рейтинге",
+        "min_calibrated_seasons": "Мин. откалиброванных сезонов",
+        "wins_current_season": "Побед на основной роли в сезоне",
+        "twitch_channel": "Twitch-канал",
+        "donation_amount": "Сумма доната (₽)",
+        "donation_url": "Ссылка для доната",
+        "eligibility_notes": "Заметки к требованиям",
+        "registration_start": "Начало регистрации",
+        "registration_deadline": "Дедлайн регистрации",
+        "from": "С",
+        "to": "До",
+        "platform": "Платформа",
+        "platform_url": "Ссылка на платформу",
+        "players_per_team": "Игроков в команде",
+        "team_format": "Формат команды",
+        "group_stage": "Групповой этап",
+        "playoff": "Плей-офф",
+        "final": "Финал",
+        "currency": "Валюта",
+        "channel": "Канал",
+        "tournament_summary": "Итог турнира",
+        "mvp": "MVP",
+        "vod_url": "Ссылка на VOD",
+        "bracket_url": "Ссылка на сетку",
+        "version": "Версия",
+        "last_update": "Последнее обновление",
+        "full_rules_url": "Ссылка на правила",
+        "full_regulation": "Полный регламент"
+      },
+      "columns": {
+        "role": "Роль",
+        "name": "Имя",
+        "contact": "Контакт",
+        "day": "День",
+        "date": "Дата",
+        "stage": "Этап",
+        "start": "Начало",
+        "place": "Место",
+        "amount": "Сумма",
+        "team": "Команда",
+        "captain_battletag": "Battletag капитана"
+      },
+      "placeholders": {
+        "select_status": "Выберите статус",
+        "min_rank": "Например: Diamond 5",
+        "verification_battletag": "Player#1234",
+        "twitch_channel": "twitch.tv/channel",
+        "url": "https://..."
+      },
+      "hints": {
+        "sef_title": "Только строчные буквы, цифры и дефис. Используется в URL.",
+        "schedule_required": "Расписание обязательно. Добавлена пустая строка, заполните ее перед сохранением."
+      },
+      "actions": {
+        "add": "Добавить",
+        "add_place": "Добавить место",
+        "save": "Сохранить турнир",
+        "saving": "Сохранение..."
+      },
+      "empty": "Список пуст",
+      "view": {
+        "title": "Редактирование турнира «{title}»",
+        "loading": "Загрузка турнира...",
+        "load_failed_title": "Не удалось загрузить турнир",
+        "load_failed_description": "Проверьте доступ и попробуйте снова.",
+        "retry": "Повторить",
+        "toasts": {
+          "updated": "Турнир обновлён",
+          "sef_title_taken": "SEF title уже занят"
+        }
+      }
+    },
+    "logs": {
+      "title": "Загрузка логов",
+      "tournament_id": "ID турнира: {id}",
+      "loading_matches": "Загрузка матчей...",
+      "load_error": "Не удалось загрузить матчи.",
+      "select_match": "Выберите матч",
+      "select_files": "Файлы логов (.txt)",
+      "drop_hint": "Перетащите файлы сюда или нажмите чтобы выбрать",
+      "upload_btn": "Загрузить",
+      "uploading": "Загрузка...",
+      "upload_success": "Успешно загружено файлов: {count}",
+      "upload_failed_all": "Не удалось загрузить ни один файл.",
+      "upload_partial": "Загружено: {succeeded}, ошибок: {failed}",
+      "errors": {
+        "duplicate_log": "Этот лог уже загружен для данного матча",
+        "unsupported_version": "Неподдерживаемая версия лог-файла",
+        "team_not_found": "Команда не найдена в турнире",
+        "player_not_found": "Игрок не найден в команде",
+        "map_not_found": "Карта не найдена",
+        "parse_error": "Ошибка разбора файла",
+        "invalid_encoding": "Файл содержит недопустимые символы"
+      }
+    },
+    "registrations": {
+      "back": "Назад к панели",
+      "title": "Управление заявками",
+      "tournament_id": "ID турнира: {id}",
+      "loading": "Загрузка заявок...",
+      "invalid_tournament": "Некорректный ID турнира.",
+      "load_error": "Не удалось загрузить заявки.",
+      "empty": "Заявки не найдены.",
+      "filters": {
+        "title": "Фильтры",
+        "search_label": "Поиск по BattleTag",
+        "search_placeholder": "Введите BattleTag",
+        "status_label": "Статусы",
+        "status_placeholder": "Выберите статусы",
+        "status_selected": "Выбрано: {count}",
+        "per_page_label": "На странице",
+        "per_page_placeholder": "Выберите количество",
+        "show_settings": "Настройки",
+        "hide_settings": "Скрыть настройки",
+        "reset": "Сбросить фильтры",
+        "refresh": "Обновить",
+        "sort": {
+          "label": "Сортировка",
+          "placeholder": "Выберите сортировку",
+          "created_desc": "Создана: новые сверху",
+          "created_asc": "Создана: старые сверху",
+          "updated_desc": "Обновлена: новые сверху",
+          "updated_asc": "Обновлена: старые сверху"
+        }
+      },
+      "pagination": {
+        "page": "Всего {total} · {perPage} на странице",
+        "prev": "Назад",
+        "next": "Вперед"
+      },
+      "table": {
+        "id": "ID",
+        "battletag": "BattleTag",
+        "status": "Статус",
+        "roles": "Роли",
+        "created": "Создана",
+        "updated": "Обновлена"
+      }
+    },
+    "statuses": {
+      "pending": "Ожидает",
+      "processing": "На рассмотрении",
+      "accepted": "Принята",
+      "action_required": "Требуется действие",
+      "declined": "Отклонена",
+      "deleted": "Удалена"
+    },
+    "action_statuses": {
+      "pending": "Ожидает",
+      "resolved": "Закрыто"
+    },
+    "details": {
+      "title": "Заявка №{id}",
+      "subtitle": "Детали заявки",
+      "loading": "Загрузка заявки...",
+      "select_prompt": "Выберите заявку, чтобы увидеть детали.",
+      "summary": {
+        "status": "Статус",
+        "primary_role": "Основная роль",
+        "secondary_role": "Вторичная роль",
+        "created": "Создана",
+        "updated": "Обновлена"
+      },
+      "update_status": {
+        "title": "Изменить статус",
+        "placeholder": "Выберите статус",
+        "decline_reason": "Причина отказа",
+        "decline_placeholder": "Укажите причину",
+        "requested_action": "Запрошенное действие",
+        "requested_action_placeholder": "Опишите требуемое действие",
+        "submit": "Обновить статус"
+      },
+      "role_rankings": {
+        "title": "Ранжирование ролей",
+        "placeholder": "Ранг",
+        "submit": "Сохранить ранги",
+        "validation": "Укажите хотя бы один ранг"
+      },
+      "requested_actions": {
+        "title": "Запрошенные действия",
+        "empty": "Запрошенных действий нет.",
+        "resolve": "Закрыть"
+      },
+      "comments": {
+        "title": "Комментарии",
+        "empty": "Комментариев пока нет.",
+        "placeholder": "Добавить внутренний комментарий",
+        "submit": "Добавить комментарий"
+      },
+      "info": {
+        "title": "Информация о заявке",
+        "twitch": "Twitch",
+        "discord": "Discord",
+        "alt_accounts": "Альт-аккаунты",
+        "guarantors": "Поручители",
+        "rules_accepted": "Правила приняты",
+        "decline_reason": "Причина отказа",
+        "ip_address": "IP-адрес",
+        "user_agent": "User Agent",
+        "geoip": "GeoIP",
+        "location": "Локация",
+        "timezone": "Часовой пояс",
+        "provider": "Провайдер",
+        "additional_info": "Доп. информация",
+        "yes": "Да",
+        "no": "Нет"
+      },
+      "toasts": {
+        "load_error": "Не удалось загрузить детали заявки.",
+        "status_updated": "Статус обновлен",
+        "status_update_error": "Не удалось обновить статус",
+        "comment_added": "Комментарий добавлен",
+        "comment_error": "Не удалось добавить комментарий",
+        "rankings_updated": "Ранги обновлены",
+        "rankings_error": "Не удалось обновить ранги",
+        "action_resolved": "Действие закрыто",
+        "action_resolve_error": "Не удалось закрыть действие"
+      }
+    }
+  }
+}

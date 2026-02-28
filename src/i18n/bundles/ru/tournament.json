@@ -1,0 +1,173 @@
+{
+  "tournament": {
+    "error": {
+      "loading": "Ошибка загрузки турнира"
+    },
+    "tabs": {
+      "navigation": "Разделы турнира",
+      "overview": "Общее",
+      "participation": "Участие",
+      "players": "Игроки",
+      "schedule": "Расписание",
+      "rules": "Правила",
+      "prizes": "Награды",
+      "stream": "Трансляция"
+    },
+    "hero": {
+      "prize_pool": "Призовой фонд",
+      "registration_opens_in": "Регистрация откроется через {time}",
+      "registration_closed": "Регистрация завершена",
+      "tournament_finished": "Турнир завершен"
+    },
+    "status": {
+      "upcoming": "Скоро",
+      "ongoing": "Идет сейчас",
+      "finished": "Завершен"
+    },
+    "list": {
+      "title": "Все турниры",
+      "empty_title": "Пока пусто",
+      "empty_description": "Список турниров появится позже. Загляните на главную, чтобы увидеть ближайшие турниры."
+    },
+    "overview": {
+      "organizers": "Организаторы",
+      "results": "Итоги турнира",
+      "mvp": "MVP",
+      "vod": "Запись трансляции",
+      "bracket": "Турнирная сетка"
+    },
+    "participation": {
+      "eligibility": "Требования к участникам",
+      "registration": "Регистрация",
+      "checkin": "Чек-ин",
+      "start": "Начало регистрации",
+      "deadline": "Дедлайн регистрации",
+      "min_rank": "Минимальный ранг",
+      "min_hours": "Минимально соревновательных часов",
+      "min_seasons": "Минимально откалиброванных сезонов",
+      "wins_current_season": "Побед в текущем сезоне (основная роль)",
+      "subscription": "Подписка",
+      "twitch_channel": "Twitch канал",
+      "donation": "Донат (при отсутствии сабки)",
+      "donation_url": "(Ссылка)",
+      "verification_btag": "BattleTag для верификации",
+      "check-in-platform": "Платформа"
+    },
+    "schedule": {
+      "day": "День",
+      "stage": "Этап",
+      "date": "Дата",
+      "start": "Начало"
+    },
+    "rules": {
+      "full_rules": "Полный регламент (Google Docs)",
+      "version": "Версия",
+      "last_update": "Последнее обновление"
+    },
+    "prizes": {
+      "place": "Место",
+      "prize": "Приз"
+    },
+    "stream": {
+      "watch_on_twitch": "Смотреть на Twitch",
+      "live_participants": "Участники в эфире сейчас",
+      "live_loading": "Проверяем кто сейчас стримит",
+      "live_empty": "Сейчас никто из участников не стримит",
+      "live_load_error": "Не удалось загрузить список live-стримов",
+      "live_viewers": "Зрителей: {count}"
+    },
+    "players": {
+      "search_label": "Поиск",
+      "search_placeholder": "Введите BattleTag",
+      "count": "Показано: {shown} из {total}",
+      "loading": "Загрузка списка игроков",
+      "empty": "Пока нет заявок",
+      "empty_search": "Никого не нашли по этому запросу",
+      "load_error": "Не удалось загрузить список заявок"
+    },
+    "registration_form": {
+      "title": "Подача заявки на участие в турнире",
+      "battletag": {
+        "label": "BattleTag",
+        "empty": "Не указан",
+        "errors": {
+          "format": "Введите корректный BattleTag"
+        }
+      },
+      "alt_accounts": {
+        "label": "Другие аккаунты",
+        "placeholder": "Введите BattleTag и нажмите Enter",
+        "tooltip": "BattleTag'и дополнительных аккаунтов (Смурфы)"
+      },
+      "guarantors": {
+        "label": "Поручители",
+        "placeholder": "Введите BattleTag или Discord и нажмите Enter",
+        "tooltip": "BattleTag'и поручителей",
+        "errors": {
+          "format": "Введите корректный BattleTag или Discord"
+        }
+      },
+      "twitch": {
+        "label": "Twitch",
+        "prefix": "https://twitch.tv/",
+        "placeholder": "Введите никнейм",
+        "errors": {
+          "min": "Минимум 4 символа",
+          "max": "Максимум 25 символов",
+          "allowed": "Допустимы только латинские буквы, цифры и _",
+          "starts_with_underscore": "Ник не может начинаться с _"
+        }
+      },
+      "discord": {
+        "label": "Discord",
+        "placeholder": "Введите имя пользователя Discord",
+        "errors": {
+          "format": "Введите корректное имя пользователя Discord"
+        }
+      },
+      "roles": {
+        "primary": "Основная роль",
+        "secondary": "Второстепенная роль",
+        "placeholder": "Выберите роль",
+        "options": {
+          "tank": "Танк",
+          "damage": "Урон",
+          "support": "Поддержка",
+          "flex": "Флекс"
+        },
+        "errors": {
+          "required": "Выберите роль",
+          "duplicate": "Основная и второстепенная роли должны отличаться"
+        }
+      },
+      "additional_info": {
+        "label": "Дополнительная информация",
+        "placeholder": "Напишите дополнительную информацию",
+        "count": "Символов: {current} из {max}",
+        "errors": {
+          "max": "Не более {max} символов"
+        }
+      },
+      "rules": {
+        "label": "Подтверждаю свое согласие с правилами проведения турнира",
+        "errors": {
+          "required": "Необходимо подтвердить согласие с правилами"
+        }
+      },
+      "tooltip_label": "Информация о поле",
+      "submit": "Отправить заявку"
+    },
+    "registration_status": {
+      "title": "Статус Вашей заявки на участие в турнире",
+      "subtitle": "Номер заявки: {id}",
+      "status": "Статус",
+      "created_at": "Создано",
+      "updated_at": "Обновлено",
+      "info_title": "Данные заявки",
+      "steps_title": "Следующие шаги",
+      "manager_comment_title": "Комментарий организатора",
+      "decline_reason_title": "Причина отказа",
+      "empty": "—"
+    }
+  }
+}
