@@ -77,7 +77,7 @@ onMounted(async () => {
         <h1 class="brand-title mt-2 text-4xl leading-[0.92] sm:text-5xl lg:text-6xl">
           {{ t('home.hero_title') }}
         </h1>
-        <p class="mt-3 text-sm leading-6 text-muted-foreground">
+        <p class="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
           {{ t('home.about') }}
         </p>
         <div v-if="tournaments.length > 0" class="mt-5 flex flex-wrap gap-2">
@@ -125,7 +125,6 @@ onMounted(async () => {
         />
       </div>
     </section>
-
   </div>
 </template>
 
