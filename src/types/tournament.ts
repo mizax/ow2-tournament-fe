@@ -1,3 +1,8 @@
+export interface TournamentPodiumPlace {
+  place: number
+  team_name: string
+}
+
 export interface Tournament {
   title: string
   uri: string
@@ -7,4 +12,5 @@ export interface Tournament {
   status?: 'upcoming' | 'ongoing' | 'finished'
   prize_pool?: string
   registration_count?: number
+  podium?: TournamentPodiumPlace[]
 }

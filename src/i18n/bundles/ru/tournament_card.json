@@ -1,6 +1,8 @@
 {
   "tournament_card": {
-    "details": "Подробнее",
-    "registrations": "Участников: {count}"
+    "details": "Открыть",
+    "registrations": "Участников: {count}",
+    "podium_title": "Призёры",
+    "podium_place": "{place} место"
   }
 }

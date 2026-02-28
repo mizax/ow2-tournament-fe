@@ -5,6 +5,7 @@ import HomeView from '@/views/HomeView.vue'
 import { fetchWithoutAuth } from '@/services/apiService'
 import type { Tournament } from '@/types/tournament'
 import { stubWithSlot } from './testUtils'
+import { Empty } from '@/components/ui/empty'
 
 vi.mock('@/services/apiService', () => ({
   fetchWithoutAuth: vi.fn(),
@@ -56,7 +57,7 @@ describe('HomeView', () => {
     await flushPromises()
     await nextTick()
 
-    expect(wrapper.text()).toContain('home.noTournaments')
+    expect(wrapper.findComponent(Empty).exists()).toBe(true)
   })
 
   it('renders tournament cards when data present', async () => {
