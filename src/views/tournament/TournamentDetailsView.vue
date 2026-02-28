@@ -174,6 +174,7 @@ watch(tournamentSef, loadTournament)
           <ParticipationTab
             :eligibility="tournament.eligibility"
             :registration="tournament.registration"
+            :notes="tournament.markdown?.notes"
           />
         </TabsContent>
 

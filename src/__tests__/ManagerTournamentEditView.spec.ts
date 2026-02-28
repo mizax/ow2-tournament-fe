@@ -99,8 +99,8 @@ describe('ManagerTournamentEditView', () => {
     await flushPromises()
 
     expect(wrapper.find('[data-testid="edit-form"]').exists()).toBe(false)
-    expect(wrapper.text()).toContain('Не удалось загрузить турнир')
-    expect(wrapper.text()).toContain('Повторить')
+    expect(wrapper.text()).toContain('t:manager.tournament_edit.view.load_failed_title')
+    expect(wrapper.text()).toContain('t:manager.tournament_edit.view.retry')
   })
 
   it('retry button re-fetches the tournament', async () => {
@@ -131,7 +131,7 @@ describe('ManagerTournamentEditView', () => {
     await wrapper.find('[data-testid="submit-edit"]').trigger('click')
     await flushPromises()
 
-    expect(toastError).toHaveBeenCalledWith('SEF title уже занят')
+    expect(toastError).toHaveBeenCalledWith('t:manager.tournament_edit.view.toasts.sef_title_taken')
   })
 
   it('redirects to registrations on success', async () => {

@@ -3,11 +3,26 @@ import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Copyable } from '@/components/ui/copyable'
+import { type CustomAttrs, VueMarkdown } from '@crazydos/vue-markdown'
 import { useI18n } from 'vue-i18n'
 import { format } from 'date-fns'
 import { DATE_FORMAT_EXTENDED } from '@/util/date.ts'
 
 const { t } = useI18n()
+
+const customAttrs: CustomAttrs = {
+  a: (node) => {
+    if (
+      typeof node.properties?.href === 'string' &&
+      !node.properties.href.startsWith(window.location.protocol + '//' + window.location.host) &&
+      !node.properties.href.startsWith('#')
+    ) {
+      return { target: '_blank', rel: 'noopener noreferrer' }
+    } else {
+      return {}
+    }
+  },
+}
 
 interface Eligibility {
   min_rank?: string
@@ -36,9 +51,10 @@ interface Registration {
 interface Props {
   eligibility?: Eligibility
   registration?: Registration
+  notes?: string
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 </script>
 
 <template>
@@ -119,6 +135,15 @@ defineProps<Props>()
               {{ t('tournament.participation.donation_url') }}
             </a>
           </p>
+        </div>
+
+        <div v-if="props.notes" class="mt-5 space-y-2 text-sm">
+          <h4 class="text-xs uppercase tracking-wide text-muted-foreground">
+            {{ t('tournament.participation.notes') }}
+          </h4>
+          <div class="prose prose-sm md:prose-base leading-7 text-muted-foreground dark:prose-invert max-w-none">
+            <VueMarkdown :markdown="props.notes" :customAttrs="customAttrs" />
+          </div>
         </div>
       </div>
     </section>
