@@ -39,7 +39,7 @@ const onUpdate = (value: number | undefined) => {
   >
     <NumberFieldContent>
       <NumberFieldDecrement aria-label="Уменьшить" />
-      <UiNumberFieldInput :placeholder="props.placeholder" />
+      <UiNumberFieldInput class="dark:bg-input/30" :placeholder="props.placeholder" />
       <NumberFieldIncrement aria-label="Увеличить" />
     </NumberFieldContent>
   </NumberField>
