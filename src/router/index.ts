@@ -106,6 +106,15 @@ const router = createRouter({
       },
     },
     {
+      path: '/manager/tournaments/:tournamentId/edit',
+      name: 'manager-tournament-edit',
+      component: () => import('@/views/ManagerTournamentEditView.vue'),
+      meta: {
+        requiresAuth: true,
+        allowedRoles: [UserRole.ADMIN, UserRole.TOURNAMENT_MANAGER],
+      },
+    },
+    {
       path: '/401-forbidden',
       name: 'forbidden',
       component: ForbiddenView,

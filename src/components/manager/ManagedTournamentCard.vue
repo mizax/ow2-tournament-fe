@@ -39,6 +39,13 @@ const { t } = useI18n()
       <Button
         variant="outline"
         :as="RouterLink"
+        :to="{ name: 'manager-tournament-edit', params: { tournamentId: tournament.id } }"
+      >
+        {{ t('manager.tournaments.edit') }}
+      </Button>
+      <Button
+        variant="outline"
+        :as="RouterLink"
         :to="{ name: 'manager-logs', params: { tournamentId: tournament.id } }"
       >
         {{ t('manager.tournaments.load_logs') }}
