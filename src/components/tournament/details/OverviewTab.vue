@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { type CustomAttrs, VueMarkdown } from '@crazydos/vue-markdown'
 import { computed } from 'vue'
@@ -56,13 +55,9 @@ const isALink = (text: string) =>
 </script>
 
 <template>
-  <Card class="gap-2 bg-transparent shadow-none ring-0">
-    <CardHeader>
-      <CardTitle class="text-lg font-semibold tracking-tight">{{
-        t('tournament.tabs.overview')
-      }}</CardTitle>
-    </CardHeader>
-    <CardContent class="space-y-6">
+  <section class="space-y-6">
+    <h2 class="text-lg font-semibold tracking-tight">{{ t('tournament.tabs.overview') }}</h2>
+    <div class="space-y-6">
       <div
         v-if="description"
         class="prose prose-sm md:prose-base leading-7 text-muted-foreground dark:prose-invert max-w-none"
@@ -96,11 +91,19 @@ const isALink = (text: string) =>
             </p>
             <p v-if="vodUrl" class="text-muted-foreground">
               {{ t('tournament.overview.vod') }}:
-              <a :href="vodUrl" target="_blank" class="hover:underline">{{ vodUrl }}</a>
+              <a :href="vodUrl" target="_blank" rel="noopener noreferrer" class="hover:underline">{{
+                vodUrl
+              }}</a>
             </p>
             <p v-if="bracketUrl" class="text-muted-foreground">
               {{ t('tournament.overview.bracket') }}:
-              <a :href="bracketUrl" target="_blank" class="hover:underline">{{ bracketUrl }}</a>
+              <a
+                :href="bracketUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hover:underline"
+                >{{ bracketUrl }}</a
+              >
             </p>
           </div>
         </div>
@@ -120,6 +123,7 @@ const isALink = (text: string) =>
                 ><a
                   :href="org.contact"
                   target="_blank"
+                  rel="noopener noreferrer"
                   class="text-muted-foreground hover:underline"
                   >{{ org.contact }}</a
                 ></span
@@ -129,6 +133,6 @@ const isALink = (text: string) =>
           </li>
         </ul>
       </div>
-    </CardContent>
-  </Card>
+    </div>
+  </section>
 </template>

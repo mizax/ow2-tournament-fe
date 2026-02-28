@@ -6,7 +6,6 @@ import { fetchMatchStats } from '@/services/publicStatsApi'
 import { mergePlayerHeroes, groupPlayersByTeam } from '@/lib/matchStats'
 import type { PlayerStats, MatchStatsResponse, ProcessedMap } from '@/types/stats'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import MatchTeamStats from '@/components/stats/MatchTeamStats.vue'
 
@@ -34,7 +33,6 @@ onMounted(async () => {
   }
   isLoading.value = false
 })
-
 
 function togglePlayer(key: string) {
   const next = new Set(expandedPlayers.value)
@@ -65,18 +63,22 @@ const processedMaps = computed<ProcessedMap[]>(() => {
 </script>
 
 <template>
-  <div class="container mx-auto py-8 px-4">
-    <div class="mb-6">
+  <div class="page-shell">
+    <section class="page-head">
       <router-link
-        :to="`/tournament/${tournamentSef}/matches`"
+        :to="{
+          name: 'tournament-details-home',
+          params: { tournamentSef },
+          query: { tab: 'matches' },
+        }"
         class="text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
         ← {{ t('stats.back-to-tournament') }}
       </router-link>
-    </div>
+    </section>
 
     <!-- Skeleton loading -->
-    <div v-if="isLoading" class="space-y-4">
+    <div v-if="isLoading" class="space-y-4" role="status" aria-live="polite">
       <Skeleton class="h-16 w-full rounded-2xl" />
       <Skeleton class="h-10 w-1/2 rounded-xl" />
       <div class="space-y-2 pt-2">
@@ -85,32 +87,35 @@ const processedMaps = computed<ProcessedMap[]>(() => {
       </div>
     </div>
 
-    <div v-else-if="error" class="text-center py-20 text-muted-foreground">
+    <div v-else-if="error" class="text-center py-20 text-muted-foreground" role="alert">
       {{ error }}
     </div>
 
     <div v-else-if="stats" class="space-y-6">
       <!-- Match header -->
-      <Card>
-        <CardContent>
-          <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-4 text-center">
-            <span class="text-xl font-bold text-sky-300/90">{{ stats.home_team }}</span>
-            <span class="text-2xl font-bold text-muted-foreground/50 px-4">vs</span>
-            <span class="text-xl font-bold text-red-300/90">{{ stats.away_team }}</span>
-          </div>
-        </CardContent>
-      </Card>
+      <section class="border-b border-border/60 pb-4">
+        <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-4 text-center">
+          <span class="text-xl font-bold text-primary">{{ stats.home_team }}</span>
+          <span class="px-4 text-2xl font-bold text-muted-foreground/50">vs</span>
+          <span class="text-xl font-bold text-destructive">{{ stats.away_team }}</span>
+        </div>
+      </section>
 
       <!-- Maps tabs -->
-      <Card v-if="processedMaps.length > 0" class="p-0 gap-0 overflow-hidden">
+      <section
+        v-if="processedMaps.length > 0"
+        class="overflow-hidden rounded-xl border border-border/70 bg-background/35"
+      >
         <Tabs v-model="activeMap">
-          <div class="p-4 border-b border-white/10">
-            <TabsList class="flex flex-wrap gap-2 bg-muted/40 p-1">
+          <div class="border-b border-border/70 p-4">
+            <TabsList
+              class="flex flex-wrap items-end gap-2 border-b border-border/70 bg-transparent p-0"
+            >
               <TabsTrigger
                 v-for="map in processedMaps"
                 :key="map.map_order"
                 :value="String(map.map_order)"
-                class="cursor-pointer px-3 py-1.5 text-sm data-[state=active]:bg-white/5 data-[state=active]:text-foreground"
+                class="cursor-pointer px-3 py-1.5 text-sm data-[state=active]:text-foreground"
               >
                 {{ map.map_name ?? `${t('stats.map')} ${map.map_order}` }}
                 <span v-if="map.mode_name" class="ml-1 text-xs text-muted-foreground">
@@ -126,11 +131,7 @@ const processedMaps = computed<ProcessedMap[]>(() => {
             :value="String(map.map_order)"
             class="p-4"
           >
-            <div
-              v-for="(roundData, rIdx) in map.rounds"
-              :key="rIdx"
-              class="mb-6 last:mb-0"
-            >
+            <div v-for="(roundData, rIdx) in map.rounds" :key="rIdx" class="mb-6 last:mb-0">
               <div
                 v-if="map.rounds.length > 1"
                 class="mb-3 text-sm font-medium text-muted-foreground uppercase tracking-wide"
@@ -154,7 +155,7 @@ const processedMaps = computed<ProcessedMap[]>(() => {
             </div>
           </TabsContent>
         </Tabs>
-      </Card>
+      </section>
 
       <div v-else class="text-center py-10 text-muted-foreground">
         {{ t('stats.no-data') }}

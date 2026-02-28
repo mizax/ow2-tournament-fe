@@ -64,11 +64,6 @@ const router = createRouter({
       ],
     },
     {
-      path: '/tournament/:tournamentSef/matches',
-      name: 'tournament-matches',
-      component: () => import('@/views/stats/TournamentMatchesView.vue'),
-    },
-    {
       path: '/tournament/:tournamentSef/match/:matchId',
       name: 'match-detail',
       component: () => import('@/views/stats/MatchDetailView.vue'),

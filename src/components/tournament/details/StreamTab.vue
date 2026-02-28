@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { fetchWithoutAuth } from '@/services/apiService'
 import { useI18n } from 'vue-i18n'
@@ -37,8 +36,7 @@ const hasOfficialChannel = computed(() => officialChannel.value.length > 0)
 
 const formatViewerCount = (value: number) => new Intl.NumberFormat('ru-RU').format(value)
 
-const liveThumbnailUrl = (url: string) =>
-  url.replace('{width}', '640').replace('{height}', '360')
+const liveThumbnailUrl = (url: string) => url.replace('{width}', '640').replace('{height}', '360')
 
 const loadLiveStreams = async () => {
   const loadId = ++currentLoadId
@@ -89,11 +87,9 @@ watch(() => props.tournamentSef, loadLiveStreams)
 </script>
 
 <template>
-  <Card class="bg-transparent shadow-none ring-0">
-    <CardHeader>
-      <CardTitle class="text-lg font-semibold tracking-tight">{{ t('tournament.tabs.stream') }}</CardTitle>
-    </CardHeader>
-    <CardContent class="space-y-8 text-sm leading-6">
+  <section class="space-y-8 text-sm leading-6">
+    <h2 class="text-lg font-semibold tracking-tight">{{ t('tournament.tabs.stream') }}</h2>
+    <div class="space-y-8">
       <div v-if="hasOfficialChannel" class="flex flex-col items-center justify-center py-6">
         <Tv class="w-16 h-16 mb-4 text-primary" />
         <h3 class="text-xl font-semibold mb-4">{{ officialChannel }}</h3>
@@ -109,13 +105,20 @@ watch(() => props.tournamentSef, loadLiveStreams)
       </div>
 
       <div class="space-y-4">
-        <h3 class="text-base font-semibold tracking-tight">{{ t('tournament.stream.live_participants') }}</h3>
+        <h3 class="text-base font-semibold tracking-tight">
+          {{ t('tournament.stream.live_participants') }}
+        </h3>
 
-        <div v-if="isLoadingLiveStreams" class="flex items-center justify-center py-8 text-muted-foreground">
+        <div
+          v-if="isLoadingLiveStreams"
+          class="flex items-center justify-center py-8 text-muted-foreground"
+          role="status"
+          aria-live="polite"
+        >
           {{ t('tournament.stream.live_loading') }}
         </div>
 
-        <div v-else-if="liveStreamsError" class="py-8 text-center text-destructive">
+        <div v-else-if="liveStreamsError" class="py-8 text-center text-destructive" role="alert">
           {{ liveStreamsError }}
         </div>
 
@@ -127,7 +130,7 @@ watch(() => props.tournamentSef, loadLiveStreams)
           <li
             v-for="streamItem in liveStreams"
             :key="streamItem.user_login"
-            class="overflow-hidden rounded-xl border border-white/10 bg-muted/20"
+            class="overflow-hidden rounded-xl border border-border/60 bg-background/35"
           >
             <a
               :href="`https://twitch.tv/${streamItem.user_login}`"
@@ -139,6 +142,8 @@ watch(() => props.tournamentSef, loadLiveStreams)
                 :src="liveThumbnailUrl(streamItem.thumbnail_url)"
                 :alt="streamItem.user_name"
                 class="h-40 w-full object-cover"
+                loading="lazy"
+                decoding="async"
               />
             </a>
             <div class="space-y-2 px-4 py-3">
@@ -148,7 +153,11 @@ watch(() => props.tournamentSef, loadLiveStreams)
                   <p class="text-xs text-muted-foreground">@{{ streamItem.user_login }}</p>
                 </div>
                 <p class="text-xs text-muted-foreground">
-                  {{ t('tournament.stream.live_viewers', { count: formatViewerCount(streamItem.viewer_count) }) }}
+                  {{
+                    t('tournament.stream.live_viewers', {
+                      count: formatViewerCount(streamItem.viewer_count),
+                    })
+                  }}
                 </p>
               </div>
               <p class="line-clamp-2 text-sm">{{ streamItem.title }}</p>
@@ -159,6 +168,6 @@ watch(() => props.tournamentSef, loadLiveStreams)
           </li>
         </ul>
       </div>
-    </CardContent>
-  </Card>
+    </div>
+  </section>
 </template>

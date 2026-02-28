@@ -7,7 +7,6 @@ import { formatNumber, kd } from '@/lib/statsFormatting'
 import type { PlayerProfile, PlayerMatchSummary } from '@/types/stats'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Card, CardContent } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -19,7 +18,6 @@ import {
 
 const { t } = useI18n()
 const route = useRoute()
-
 
 const tournamentSef = String(route.params.tournamentSef ?? '')
 const playerId = Number(route.params.playerId)
@@ -49,7 +47,6 @@ onMounted(async () => {
   isLoading.value = false
 })
 
-
 const roleClasses: Record<string, string> = {
   tank: 'border-blue-500/30 bg-blue-500/15 text-blue-400',
   damage: 'border-rose-500/30 bg-rose-500/15 text-rose-400',
@@ -69,17 +66,21 @@ const overallKD = computed(() => {
 </script>
 
 <template>
-  <div class="container mx-auto py-8 px-4">
-    <div class="mb-6">
+  <div class="page-shell">
+    <section class="page-head">
       <router-link
-        :to="`/tournament/${tournamentSef}/matches`"
+        :to="{
+          name: 'tournament-details-home',
+          params: { tournamentSef },
+          query: { tab: 'matches' },
+        }"
         class="text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
         ← {{ t('stats.back-to-tournament') }}
       </router-link>
-    </div>
+    </section>
 
-    <div v-if="isLoading" class="space-y-4">
+    <div v-if="isLoading" class="space-y-4" role="status" aria-live="polite">
       <Skeleton class="h-28 w-full rounded-2xl" />
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <Skeleton v-for="i in 4" :key="i" class="h-20 w-full rounded-2xl" />
@@ -91,101 +92,124 @@ const overallKD = computed(() => {
       </div>
     </div>
 
-    <div v-else-if="error" class="text-center py-20 text-muted-foreground">
+    <div v-else-if="error" class="text-center py-20 text-muted-foreground" role="alert">
       {{ error }}
     </div>
 
     <div v-else-if="profile" class="space-y-6">
       <!-- Player card -->
-      <Card>
-        <CardContent>
-          <div class="flex flex-wrap items-start gap-4">
-            <div class="flex-1 min-w-0">
-              <h1 class="text-2xl font-bold truncate">{{ profile.nickname }}</h1>
-              <div v-if="profile.battletag" class="mt-1 text-sm text-muted-foreground">
-                {{ profile.battletag }}
-              </div>
+      <section class="space-y-4 border-b border-border/60 pb-4">
+        <div class="flex flex-wrap items-start gap-4">
+          <div class="flex-1 min-w-0">
+            <h1 class="page-title truncate">{{ profile.nickname }}</h1>
+            <div v-if="profile.battletag" class="mt-1 text-sm text-muted-foreground">
+              {{ profile.battletag }}
             </div>
-            <Badge
-              v-if="profile.role"
-              variant="outline"
-              :class="roleClasses[profile.role] ?? 'border-primary/30 bg-primary/10 text-primary'"
-            >
-              {{ t(`registration.roles.${profile.role}`, profile.role) }}
-            </Badge>
           </div>
+          <Badge
+            v-if="profile.role"
+            variant="outline"
+            :class="roleClasses[profile.role] ?? 'border-primary/30 bg-primary/10 text-primary'"
+          >
+            {{ t(`registration.roles.${profile.role}`, profile.role) }}
+          </Badge>
+        </div>
 
-          <div class="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-            <span>
-              {{ t('stats.team') }}:
-              <span class="text-foreground font-medium">{{ profile.team_name }}</span>
-            </span>
-            <span>
-              {{ t('stats.tournament') }}:
-              <router-link
-                :to="`/tournament/${profile.tournament_sef}`"
-                class="text-primary hover:underline"
-              >
-                {{ profile.tournament_title }}
-              </router-link>
-            </span>
-            <span v-if="profile.division_name">
-              {{ t('stats.division') }}:
-              <span class="text-foreground font-medium">{{ profile.division_name }}</span>
-            </span>
-          </div>
-        </CardContent>
-      </Card>
+        <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+          <span>
+            {{ t('stats.team') }}:
+            <span class="text-foreground font-medium">{{ profile.team_name }}</span>
+          </span>
+          <span>
+            {{ t('stats.tournament') }}:
+            <router-link
+              :to="`/tournament/${profile.tournament_sef}`"
+              class="text-primary hover:underline"
+            >
+              {{ profile.tournament_title }}
+            </router-link>
+          </span>
+          <span v-if="profile.division_name">
+            {{ t('stats.division') }}:
+            <span class="text-foreground font-medium">{{ profile.division_name }}</span>
+          </span>
+        </div>
+      </section>
 
       <!-- Aggregate stats -->
-      <div v-if="matchHistory.length > 0" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <Card class="p-4 gap-1 text-center">
-          <div class="text-2xl font-bold tabular-nums">{{ matchHistory.length }}</div>
-          <div class="text-xs text-muted-foreground uppercase tracking-wide">{{ t('stats.matches') }}</div>
-        </Card>
-        <Card class="p-4 gap-1 text-center">
-          <div class="text-2xl font-bold tabular-nums">{{ overallKD }}</div>
-          <div class="text-xs text-muted-foreground uppercase tracking-wide">{{ t('stats.kd') }}</div>
-        </Card>
-        <Card class="p-4 gap-1 text-center">
-          <div class="text-2xl font-bold tabular-nums">{{ avgDamage.toLocaleString() }}</div>
-          <div class="text-xs text-muted-foreground uppercase tracking-wide">{{ t('stats.damage') }}/матч</div>
-        </Card>
-        <Card class="p-4 gap-1 text-center">
-          <div class="text-2xl font-bold tabular-nums">{{ totalKills.toLocaleString() }}</div>
-          <div class="text-xs text-muted-foreground uppercase tracking-wide">{{ t('stats.kills') }}</div>
-        </Card>
-      </div>
+      <dl
+        v-if="matchHistory.length > 0"
+        class="grid grid-cols-2 gap-x-6 gap-y-4 border-y border-border/60 py-4 sm:grid-cols-4"
+      >
+        <div>
+          <dt class="text-xs uppercase tracking-[0.08em] text-muted-foreground">
+            {{ t('stats.matches') }}
+          </dt>
+          <dd class="mt-1 text-2xl font-bold tabular-nums">{{ matchHistory.length }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs uppercase tracking-[0.08em] text-muted-foreground">
+            {{ t('stats.kd') }}
+          </dt>
+          <dd class="mt-1 text-2xl font-bold tabular-nums">{{ overallKD }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs uppercase tracking-[0.08em] text-muted-foreground">
+            {{ t('stats.damage') }}/матч
+          </dt>
+          <dd class="mt-1 text-2xl font-bold tabular-nums">{{ avgDamage.toLocaleString() }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs uppercase tracking-[0.08em] text-muted-foreground">
+            {{ t('stats.kills') }}
+          </dt>
+          <dd class="mt-1 text-2xl font-bold tabular-nums">{{ totalKills.toLocaleString() }}</dd>
+        </div>
+      </dl>
 
       <!-- Match history -->
       <div>
-        <h2 class="text-lg font-semibold mb-3">{{ t('stats.match-history') }}</h2>
+        <h2 class="section-title mb-3">{{ t('stats.match-history') }}</h2>
 
         <div
           v-if="matchHistory.length === 0"
-          class="text-center py-10 text-muted-foreground rounded-xl border border-white/10 bg-card"
+          class="rounded-xl border border-border/70 bg-card/70 py-10 text-center text-muted-foreground"
         >
           {{ t('stats.no-data') }}
         </div>
 
-        <Card v-else class="p-0 gap-0 overflow-hidden">
+        <div v-else class="overflow-hidden rounded-xl border border-border/70 bg-background/35">
           <Table>
             <TableHeader>
-              <TableRow class="border-white/10 hover:bg-transparent">
-                <TableHead class="text-xs uppercase text-muted-foreground font-medium">{{ t('stats.match') }}</TableHead>
-                <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{ t('stats.maps') }}</TableHead>
-                <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{ t('stats.kills') }}</TableHead>
-                <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{ t('stats.deaths') }}</TableHead>
-                <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{ t('stats.kd') }}</TableHead>
-                <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{ t('stats.damage') }}</TableHead>
-                <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{ t('stats.healing') }}</TableHead>
+              <TableRow class="border-border/70 bg-muted/40 hover:bg-muted/40">
+                <TableHead class="text-xs uppercase text-muted-foreground font-medium">{{
+                  t('stats.match')
+                }}</TableHead>
+                <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{
+                  t('stats.maps')
+                }}</TableHead>
+                <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{
+                  t('stats.kills')
+                }}</TableHead>
+                <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{
+                  t('stats.deaths')
+                }}</TableHead>
+                <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{
+                  t('stats.kd')
+                }}</TableHead>
+                <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{
+                  t('stats.damage')
+                }}</TableHead>
+                <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{
+                  t('stats.healing')
+                }}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               <TableRow
                 v-for="match in matchHistory"
                 :key="match.match_id"
-                class="border-white/5"
+                class="border-border/40"
               >
                 <TableCell>
                   <router-link
@@ -196,20 +220,32 @@ const overallKD = computed(() => {
                       {{ match.home_team }} {{ t('stats.vs') }} {{ match.away_team }}
                     </div>
                     <div class="text-xs text-muted-foreground mt-0.5">
-                      {{ match.tournament_title }} · {{ match.home_score ?? '–' }}:{{ match.away_score ?? '–' }}
+                      {{ match.tournament_title }} · {{ match.home_score ?? '–' }}:{{
+                        match.away_score ?? '–'
+                      }}
                     </div>
                   </router-link>
                 </TableCell>
                 <TableCell class="text-right tabular-nums">{{ match.maps_played }}</TableCell>
-                <TableCell class="text-right tabular-nums">{{ formatNumber(match.kills) }}</TableCell>
-                <TableCell class="text-right tabular-nums">{{ formatNumber(match.deaths) }}</TableCell>
-                <TableCell class="text-right tabular-nums">{{ kd(match.kills, match.deaths) }}</TableCell>
-                <TableCell class="text-right tabular-nums">{{ formatNumber(match.damage) }}</TableCell>
-                <TableCell class="text-right tabular-nums">{{ formatNumber(match.healing) }}</TableCell>
+                <TableCell class="text-right tabular-nums">{{
+                  formatNumber(match.kills)
+                }}</TableCell>
+                <TableCell class="text-right tabular-nums">{{
+                  formatNumber(match.deaths)
+                }}</TableCell>
+                <TableCell class="text-right tabular-nums">{{
+                  kd(match.kills, match.deaths)
+                }}</TableCell>
+                <TableCell class="text-right tabular-nums">{{
+                  formatNumber(match.damage)
+                }}</TableCell>
+                <TableCell class="text-right tabular-nums">{{
+                  formatNumber(match.healing)
+                }}</TableCell>
               </TableRow>
             </TableBody>
           </Table>
-        </Card>
+        </div>
       </div>
     </div>
   </div>

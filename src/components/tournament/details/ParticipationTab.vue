@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
@@ -44,11 +43,11 @@ defineProps<Props>()
 
 <template>
   <div class="space-y-6">
-    <Card v-if="eligibility" class="bg-transparent shadow-none ring-0">
-      <CardHeader>
-        <CardTitle class="text-lg font-semibold tracking-tight">{{ t('tournament.participation.eligibility') }}</CardTitle>
-      </CardHeader>
-      <CardContent class="text-sm leading-6">
+    <section v-if="eligibility" class="space-y-4 text-sm leading-6">
+      <h2 class="text-lg font-semibold tracking-tight">
+        {{ t('tournament.participation.eligibility') }}
+      </h2>
+      <div>
         <Table class="text-sm">
           <TableBody>
             <TableRow v-if="eligibility.min_rank">
@@ -94,13 +93,16 @@ defineProps<Props>()
         </Table>
 
         <div v-if="eligibility.subscription" class="mt-5 space-y-2 text-sm">
-          <h4 class="text-xs uppercase tracking-wide text-muted-foreground">{{ t('tournament.participation.subscription') }}</h4>
+          <h4 class="text-xs uppercase tracking-wide text-muted-foreground">
+            {{ t('tournament.participation.subscription') }}
+          </h4>
           <p v-if="eligibility.subscription.twitch_channel">
             {{ t('tournament.participation.twitch_channel') }}:
             <a
               :href="`https://twitch.tv/${eligibility.subscription.twitch_channel}`"
               class="text-muted-foreground hover:underline"
               target="_blank"
+              rel="noopener noreferrer"
               >{{ eligibility.subscription.twitch_channel }}
             </a>
           </p>
@@ -118,20 +120,24 @@ defineProps<Props>()
             </a>
           </p>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
 
-    <Card v-if="registration" class="bg-transparent shadow-none ring-0">
-      <CardHeader>
-        <CardTitle class="text-lg font-semibold tracking-tight">{{ t('tournament.participation.registration') }}</CardTitle>
-      </CardHeader>
-      <CardContent class="space-y-4 text-sm leading-6">
+    <section v-if="registration" class="space-y-4 text-sm leading-6 border-t border-border/60 pt-4">
+      <h2 class="text-lg font-semibold tracking-tight">
+        {{ t('tournament.participation.registration') }}
+      </h2>
+      <div class="space-y-4">
         <div v-if="registration.start">
-          <p class="text-xs uppercase tracking-wide text-muted-foreground">{{ t('tournament.participation.start') }}</p>
+          <p class="text-xs uppercase tracking-wide text-muted-foreground">
+            {{ t('tournament.participation.start') }}
+          </p>
           <p>{{ format(registration.start, DATE_FORMAT_EXTENDED) }}</p>
         </div>
         <div v-if="registration.deadline">
-          <p class="text-xs uppercase tracking-wide text-muted-foreground">{{ t('tournament.participation.deadline') }}</p>
+          <p class="text-xs uppercase tracking-wide text-muted-foreground">
+            {{ t('tournament.participation.deadline') }}
+          </p>
           <p>{{ format(registration.deadline, DATE_FORMAT_EXTENDED) }}</p>
         </div>
         <Alert v-if="registration.checkin">
@@ -153,7 +159,7 @@ defineProps<Props>()
             </p>
           </AlertDescription>
         </Alert>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   </div>
 </template>

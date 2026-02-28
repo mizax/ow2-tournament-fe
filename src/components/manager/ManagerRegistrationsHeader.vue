@@ -19,7 +19,7 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <div class="flex flex-col gap-2">
+  <div class="rounded-2xl border border-border/70 bg-card/70 px-5 py-5 md:px-6 md:py-6">
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
@@ -37,11 +37,11 @@ const { t } = useI18n()
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>
-    <div>
-      <h1 class="text-2xl font-semibold tracking-tight">
+    <div class="mt-3">
+      <h1 class="text-4xl leading-[0.92] sm:text-5xl">
         {{ props.title || t('manager.registrations.title') }}
       </h1>
-      <p class="text-sm text-muted-foreground">
+      <p class="mt-2 text-sm text-muted-foreground">
         {{ t('manager.registrations.tournament_id', { id: props.tournamentId }) }}
       </p>
     </div>

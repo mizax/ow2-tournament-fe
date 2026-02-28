@@ -10,9 +10,12 @@ import { computed, onMounted, ref } from 'vue'
 import { fetchWithAuth } from '@/services/apiService.ts'
 import { useDebounceFn } from '@vueuse/core'
 
-const props = withDefaults(defineProps<{ tournamentUri: string; isRegistrationClosed?: boolean }>(), {
-  isRegistrationClosed: false,
-})
+const props = withDefaults(
+  defineProps<{ tournamentUri: string; isRegistrationClosed?: boolean }>(),
+  {
+    isRegistrationClosed: false,
+  },
+)
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -20,7 +23,9 @@ const { isAuthenticated } = storeToRefs(authStore)
 const router = useRouter()
 const authReady = useAuthReady()
 const loading = ref(false)
-const requestStatusResponse = ref<{ status: string | null; request_id: number | null } | undefined>(undefined)
+const requestStatusResponse = ref<{ status: string | null; request_id: number | null } | undefined>(
+  undefined,
+)
 
 const loadRequestStatusInner = async () => {
   if (isAuthenticated.value) {
@@ -96,7 +101,7 @@ const buttonConfig = computed(() => {
     return {
       is: Button,
       text: t('registration.smart_button.register'),
-      classes: 'bg-[oklch(0.6265_0.2171_141.88)] text-lg cursor-pointer',
+      classes: 'bg-primary text-primary-foreground hover:bg-primary/90 text-lg cursor-pointer',
       action: () =>
         router.push({
           name: 'tournament-registration',
@@ -118,35 +123,38 @@ const buttonConfig = computed(() => {
         return {
           is: Button,
           text: t('registration.smart_button.already_registered'),
-          classes: 'bg-[oklch(0.5_0.1751_141.88)] text-lg cursor-pointer',
+          classes: 'bg-primary text-primary-foreground hover:bg-primary/90 text-lg cursor-pointer',
           action: navigateToRequestStatusPage,
         }
       case 'DECLINED':
         return {
           is: Button,
           text: t('registration.smart_button.declined'),
-          classes: 'bg-black text-lg text-white cursor-pointer',
+          classes:
+            'bg-destructive text-primary-foreground hover:bg-destructive/90 text-lg cursor-pointer',
           action: navigateToRequestStatusPage,
         }
       case 'PENDING':
         return {
           is: Button,
           text: t('registration.smart_button.pending'),
-          classes: 'bg-[oklch(0.764_0.1392_100.59)] text-lg cursor-pointer',
+          classes: 'bg-accent text-accent-foreground hover:bg-accent/90 text-lg cursor-pointer',
           action: navigateToRequestStatusPage,
         }
       case 'PROCESSING':
         return {
           is: Button,
           text: t('registration.smart_button.processing'),
-          classes: 'bg-[oklch(0.5412_0.1357_50.82)] text-lg cursor-pointer',
+          classes:
+            'bg-secondary text-secondary-foreground hover:bg-secondary/85 text-lg cursor-pointer',
           action: navigateToRequestStatusPage,
         }
       case 'ACTION_REQUIRED':
         return {
           is: Button,
           text: t('registration.smart_button.action_required'),
-          classes: 'bg-[oklch(0.4588_0.1702_15.88)] text-md cursor-pointer',
+          classes:
+            'bg-destructive/90 text-primary-foreground hover:bg-destructive/80 text-md cursor-pointer',
           action: navigateToRequestStatusPage,
         }
       default:

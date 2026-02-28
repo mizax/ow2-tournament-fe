@@ -1,6 +1,63 @@
 @layer components {
   .chip {
-    @apply inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-medium
-    bg-muted/25 text-muted-foreground ring-1 ring-white/5;
+    @apply inline-flex items-center rounded-md border border-border/70 px-2.5 py-1 text-[11px] font-semibold text-secondary-foreground;
+    background: linear-gradient(
+      140deg,
+      color-mix(in oklch, var(--color-secondary) 72%, var(--color-primary) 28%),
+      color-mix(in oklch, var(--color-secondary) 78%, var(--color-accent) 22%)
+    );
+  }
+
+  .brand-panel {
+    @apply border border-border/70;
+    background: linear-gradient(
+      165deg,
+      color-mix(in oklch, var(--color-card) 94%, var(--color-accent) 6%),
+      color-mix(in oklch, var(--color-card) 88%, var(--color-primary) 12%)
+    );
+  }
+
+  .brand-header {
+    @apply border-b border-border/70;
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklch, var(--color-card) 92%, var(--color-background) 8%),
+      color-mix(in oklch, var(--color-card) 84%, var(--color-primary) 16%)
+    );
+  }
+
+  .brand-footer {
+    border-top: 1px solid color-mix(in oklch, var(--color-border) 78%, transparent);
+    background: color-mix(in oklch, var(--color-card) 78%, var(--color-accent) 22%);
+  }
+
+  .brand-title {
+    color: color-mix(in oklch, var(--color-foreground) 85%, var(--color-primary) 15%);
+  }
+
+  .page-shell {
+    @apply w-full space-y-6 md:space-y-8;
+  }
+
+  .page-head {
+    @apply px-1 py-2 md:px-2;
+  }
+
+  .page-kicker {
+    @apply text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground;
+  }
+
+  .page-title {
+    font-size: clamp(2rem, 3.5vw, 3.25rem);
+    line-height: 0.92;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+
+  .section-title {
+    font-size: clamp(1.5rem, 2.4vw, 2.25rem);
+    line-height: 0.95;
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
 }

@@ -17,22 +17,31 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container mx-auto py-10">
-    <div class="space-y-1 text-center mb-8">
-      <h1 class="text-2xl font-semibold tracking-tight">{{ t('manager.dashboard.title') }}</h1>
-      <p class="text-sm text-muted-foreground">{{ t('manager.dashboard.subtitle') }}</p>
-    </div>
+  <div class="page-shell">
+    <section class="page-head">
+      <p class="page-kicker">Control Room</p>
+      <h1 class="page-title mt-2">{{ t('manager.dashboard.title') }}</h1>
+      <p class="mt-3 text-sm text-muted-foreground">{{ t('manager.dashboard.subtitle') }}</p>
+    </section>
 
-    <div v-if="loading" class="flex items-center justify-center gap-2 text-muted-foreground">
+    <div
+      v-if="loading"
+      class="flex items-center justify-center gap-2 text-muted-foreground"
+      role="status"
+      aria-live="polite"
+    >
       <Spinner class="animate-spin" />
       <span>{{ t('manager.dashboard.loading') }}</span>
     </div>
 
-    <div v-else-if="!tournaments.length" class="text-center text-sm text-muted-foreground">
+    <div
+      v-else-if="!tournaments.length"
+      class="border-y border-dashed border-border/80 py-10 text-center text-sm text-muted-foreground"
+    >
       {{ t('manager.dashboard.empty') }}
     </div>
 
-    <div v-else class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div v-else class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
       <ManagedTournamentCard
         v-for="tournament in tournaments"
         :key="tournament.id"

@@ -38,15 +38,15 @@ const tournamentStatus = computed<'upcoming' | 'ongoing' | 'finished'>(() => {
 
 <template>
   <Card
-    class="overflow-hidden transition-transform duration-200 transform-gpu will-change-transform hover:-translate-y-0.5 gap-4"
+    class="group overflow-hidden gap-4 border border-border/70 bg-card/75 transition duration-200 transform-gpu will-change-transform hover:border-primary/25"
   >
     <CardHeader>
       <CardTitle
-        class="text-3xl font-semibold tracking-tight leading-[1.05] truncate"
+        class="max-w-full truncate max-sm:text-2xl text-3xl font-semibold leading-[0.95]"
         :title="tournament.title"
         >{{ tournament.title }}</CardTitle
       >
-      <div class="flex gap-2 pt-1">
+      <div class="flex flex-wrap gap-2 pt-1.5">
         <span class="chip">{{ t(`tournament.status.${tournamentStatus}`) }}</span>
         <span class="chip">{{ tournament.discipline }}</span>
         <span class="chip">{{ tournament.format }}</span>
@@ -56,23 +56,26 @@ const tournamentStatus = computed<'upcoming' | 'ongoing' | 'finished'>(() => {
       </div>
     </CardHeader>
     <CardContent class="flex flex-col justify-between gap-3">
-      <span class="text-sm text-muted-foreground">
+      <span class="text-sm text-muted-foreground/90">
         {{ format(startDate, DATE_FORMAT) }} - {{ format(endDate, DATE_FORMAT) }}
       </span>
       <div class="flex justify-between items-baseline">
         <div v-if="tournament.prize_pool">
-          <span class="text-sm text-muted-foreground/80"
+          <span class="text-xs uppercase tracking-[0.08em] text-muted-foreground/85"
             >{{ t('tournament.hero.prize_pool') }}:
           </span>
-          <span class="text-sm font-medium text-foreground">{{ tournament.prize_pool }}</span>
+          <span class="ml-1 text-sm font-semibold text-foreground">{{
+            tournament.prize_pool
+          }}</span>
         </div>
         <Button
-          class="text-sm text-muted-foreground hover:text-foreground hover:underline underline-offset-4 group px-0 gap-0"
+          class="px-0 text-sm text-primary hover:text-primary/80 hover:no-underline"
           :as="RouterLink"
           variant="link"
           :to="`/tournament/${tournament.uri}`"
         >
-          {{ t('tournament_card.details') }} →
+          {{ t('tournament_card.details') }}
+          <span class="transition-transform group-hover:translate-x-0.5">→</span>
         </Button>
       </div>
     </CardContent>

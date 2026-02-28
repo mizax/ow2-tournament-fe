@@ -23,8 +23,8 @@ const selectedFiles = ref<File[]>([])
 const uploading = ref(false)
 const uploadResults = ref<{ name: string; success: boolean; error?: string }[]>([])
 
-const selectedMatch = computed(() =>
-  matches.value.find((m) => m.id === selectedMatchId.value) ?? null,
+const selectedMatch = computed(
+  () => matches.value.find((m) => m.id === selectedMatchId.value) ?? null,
 )
 
 onMounted(async () => {
@@ -58,6 +58,11 @@ function onDragOver(event: DragEvent) {
   event.preventDefault()
 }
 
+function selectMatch(matchId: number) {
+  selectedMatchId.value = matchId
+  uploadResults.value = []
+}
+
 async function uploadFiles() {
   if (!selectedMatchId.value || !selectedFiles.value.length) return
 
@@ -74,7 +79,7 @@ async function uploadFiles() {
         const rawKey =
           res.errorData && typeof res.errorData === 'object' && 'error' in res.errorData
             ? String((res.errorData as { error: string }).error)
-            : res.errorCode ?? 'unknown_error'
+            : (res.errorCode ?? 'unknown_error')
         const suffix = rawKey.split('.').pop() ?? rawKey
         const errMsg = te(`manager.logs.errors.${suffix}`)
           ? t(`manager.logs.errors.${suffix}`)
@@ -101,57 +106,80 @@ async function uploadFiles() {
 </script>
 
 <template>
-  <div class="container mx-auto py-10 max-w-3xl">
-    <div class="flex items-center gap-4 mb-8">
-      <Button variant="ghost" size="sm" :as="RouterLink" :to="{ name: 'manager-dashboard' }">
-        ← {{ t('manager.registrations.back') }}
-      </Button>
+  <div class="page-shell mx-auto max-w-4xl py-8">
+    <section class="page-head">
+      <div class="mb-4">
+        <Button variant="ghost" size="sm" :as="RouterLink" :to="{ name: 'manager-dashboard' }">
+          ← {{ t('manager.registrations.back') }}
+        </Button>
+      </div>
       <div>
-        <h1 class="text-2xl font-semibold tracking-tight">{{ t('manager.logs.title') }}</h1>
-        <p class="text-sm text-muted-foreground">
+        <p class="page-kicker">Log Parser</p>
+        <h1 class="page-title mt-2">{{ t('manager.logs.title') }}</h1>
+        <p class="mt-2 text-sm text-muted-foreground">
           {{ t('manager.logs.tournament_id', { id: tournamentId }) }}
         </p>
       </div>
-    </div>
+    </section>
 
-    <div v-if="matchesLoading" class="flex items-center gap-2 text-muted-foreground mb-6">
+    <div
+      v-if="matchesLoading"
+      class="flex items-center gap-2 text-muted-foreground"
+      role="status"
+      aria-live="polite"
+    >
       <Spinner class="animate-spin" />
       <span>{{ t('manager.logs.loading_matches') }}</span>
     </div>
 
-    <div v-else-if="matchesError" class="text-sm text-destructive mb-6">{{ matchesError }}</div>
+    <div
+      v-else-if="matchesError"
+      class="rounded-2xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+      role="alert"
+    >
+      {{ matchesError }}
+    </div>
 
     <div v-else class="space-y-6">
-      <!-- Match selector -->
-      <div class="space-y-2">
-        <label class="text-sm font-medium">{{ t('manager.logs.select_match') }}</label>
+      <section class="space-y-3">
+        <label class="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">{{
+          t('manager.logs.select_match')
+        }}</label>
         <div class="grid gap-2">
           <button
             v-for="match in matches"
             :key="match.id"
-            class="flex items-center justify-between rounded-md border px-4 py-3 text-sm text-left transition-colors hover:bg-accent"
-            :class="selectedMatchId === match.id ? 'border-primary bg-accent' : 'border-border'"
-            @click="selectedMatchId = match.id; uploadResults = []"
+            type="button"
+            :aria-pressed="selectedMatchId === match.id"
+            class="flex items-center justify-between rounded-lg border border-border/60 bg-background/40 px-4 py-3 text-left text-sm transition-colors hover:border-primary/35 hover:bg-primary/8"
+            :class="selectedMatchId === match.id ? 'border-primary/50 bg-primary/10' : ''"
+            @click="selectMatch(match.id)"
           >
             <span class="font-medium">
               {{ match.home_team_name }} vs {{ match.away_team_name }}
             </span>
-            <span class="text-muted-foreground text-xs">
+            <span class="text-xs text-muted-foreground">
               #{{ match.id }} · {{ match.home_score }}:{{ match.away_score }}
             </span>
           </button>
         </div>
-      </div>
+      </section>
 
-      <!-- File drop zone -->
-      <div v-if="selectedMatchId" class="space-y-2">
-        <label class="text-sm font-medium">{{ t('manager.logs.select_files') }}</label>
+      <section v-if="selectedMatchId" class="space-y-3 border-t border-border/60 pt-4">
+        <label class="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">{{
+          t('manager.logs.select_files')
+        }}</label>
         <div
-          class="rounded-md border-2 border-dashed border-border p-8 text-center cursor-pointer hover:border-primary transition-colors"
-          :class="selectedFiles.length ? 'border-primary' : ''"
+          role="button"
+          tabindex="0"
+          :aria-label="t('manager.logs.select_files')"
+          class="cursor-pointer rounded-xl border-2 border-dashed border-border/75 bg-background/35 p-8 text-center transition-colors hover:border-primary/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+          :class="selectedFiles.length ? 'border-primary/60 bg-primary/8' : 'bg-background/40'"
           @drop="onDrop"
           @dragover="onDragOver"
           @click="fileInput?.click()"
+          @keydown.enter.prevent="fileInput?.click()"
+          @keydown.space.prevent="fileInput?.click()"
         >
           <input
             ref="fileInput"
@@ -164,18 +192,17 @@ async function uploadFiles() {
           <p v-if="!selectedFiles.length" class="text-sm text-muted-foreground">
             {{ t('manager.logs.drop_hint') }}
           </p>
-          <ul v-else class="text-sm text-left space-y-1">
+          <ul v-else class="space-y-1 text-left text-sm">
             <li v-for="file in selectedFiles" :key="file.name" class="text-foreground">
               {{ file.name }}
             </li>
           </ul>
         </div>
-      </div>
+      </section>
 
-      <!-- Upload button -->
-      <div v-if="selectedMatchId && selectedFiles.length" class="flex gap-3 items-center">
+      <div v-if="selectedMatchId && selectedFiles.length" class="flex items-center gap-3">
         <Button :disabled="uploading" @click="uploadFiles">
-          <Spinner v-if="uploading" class="animate-spin mr-2 h-4 w-4" />
+          <Spinner v-if="uploading" class="mr-2 h-4 w-4 animate-spin" />
           {{ uploading ? t('manager.logs.uploading') : t('manager.logs.upload_btn') }}
         </Button>
         <span v-if="selectedMatch" class="text-sm text-muted-foreground">
@@ -183,16 +210,19 @@ async function uploadFiles() {
         </span>
       </div>
 
-      <!-- Results -->
       <div v-if="uploadResults.length" class="space-y-1">
         <div
           v-for="result in uploadResults"
           :key="result.name"
-          class="flex items-start gap-2 text-sm rounded-md px-3 py-2"
-          :class="result.success ? 'bg-green-50 text-green-800 dark:bg-green-950 dark:text-green-300' : 'bg-red-50 text-red-800 dark:bg-red-950 dark:text-red-300'"
+          class="flex items-start gap-2 rounded-md border px-3 py-2 text-sm"
+          :class="
+            result.success
+              ? 'border-primary/30 bg-primary/14 text-primary'
+              : 'border-destructive/30 bg-destructive/14 text-destructive'
+          "
         >
-          <span class="font-mono font-medium shrink-0">{{ result.name }}</span>
-          <span v-if="result.error" class="text-xs opacity-80">— {{ result.error }}</span>
+          <span class="shrink-0 font-medium">{{ result.name }}</span>
+          <span v-if="result.error" class="text-xs opacity-80">- {{ result.error }}</span>
         </div>
       </div>
     </div>

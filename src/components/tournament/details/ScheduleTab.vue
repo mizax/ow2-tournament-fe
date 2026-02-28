@@ -1,6 +1,12 @@
 <script setup lang="ts">
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { useI18n } from 'vue-i18n'
 import { DATE_FORMAT } from '@/util/date.ts'
 import { format } from 'date-fns'
@@ -22,11 +28,9 @@ defineProps<Props>()
 </script>
 
 <template>
-  <Card class="bg-transparent shadow-none ring-0">
-    <CardHeader>
-      <CardTitle class="text-lg font-semibold tracking-tight">{{ t('tournament.tabs.schedule') }}</CardTitle>
-    </CardHeader>
-    <CardContent class="text-sm leading-6">
+  <section class="space-y-4 text-sm leading-6">
+    <h2 class="text-lg font-semibold tracking-tight">{{ t('tournament.tabs.schedule') }}</h2>
+    <div>
       <Table>
         <TableHeader>
           <TableRow>
@@ -45,6 +49,6 @@ defineProps<Props>()
           </TableRow>
         </TableBody>
       </Table>
-    </CardContent>
-  </Card>
+    </div>
+  </section>
 </template>

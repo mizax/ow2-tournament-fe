@@ -52,3 +52,9 @@ npm run test:unit
 ```sh
 npm run lint
 ```
+
+## Frontend quality bar
+
+Use the project playbook before merge:
+
+- [Frontend Impeccable Playbook](docs/FRONTEND_IMPECCABLE.md)

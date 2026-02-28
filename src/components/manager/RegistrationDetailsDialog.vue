@@ -29,6 +29,7 @@ import RegistrationDetailsRequestInfo from '@/components/manager/registration-de
 import RegistrationDetailsStatusControl from '@/components/manager/registration-details/RegistrationDetailsStatusControl.vue'
 import RegistrationDetailsRoleRankings from '@/components/manager/registration-details/RegistrationDetailsRoleRankings.vue'
 import { Separator } from '@/components/ui/separator'
+import { getRegistrationStatusBadgeClasses } from '@/lib/registrationStatusUi'
 
 const props = defineProps<{ open: boolean; registrationId: number | null }>()
 const emit = defineEmits<{ (e: 'update:open', value: boolean): void }>()
@@ -126,25 +127,6 @@ const actionStatusLabel = (status?: 'PENDING' | 'RESOLVED') => {
       return t('manager.action_statuses.resolved')
     default:
       return t('manager.common.not_available')
-  }
-}
-
-const statusBadgeClasses = (status?: RegistrationStatus) => {
-  switch (status) {
-    case 'ACCEPTED':
-      return 'bg-[oklch(0.5_0.1751_141.88)]'
-    case 'DECLINED':
-      return 'bg-black text-white'
-    case 'PENDING':
-      return 'bg-[oklch(0.764_0.1392_100.59)] text-black'
-    case 'PROCESSING':
-      return 'bg-[oklch(0.5412_0.1357_50.82)] text-white'
-    case 'ACTION_REQUIRED':
-      return 'bg-[oklch(0.4588_0.1702_15.88)] text-white'
-    case 'DELETED':
-      return 'bg-muted text-muted-foreground'
-    default:
-      return 'bg-muted text-muted-foreground'
   }
 }
 
@@ -308,7 +290,9 @@ const resolveAction = async (actionId: number) => {
       class="h-dvh w-full max-w-none rounded-none p-0 bg-background sm:h-auto sm:max-w-4xl sm:rounded-lg lg:max-w-5xl my-0 sm:my-8"
       @open-auto-focus.prevent
     >
-      <DialogHeader class="border-b px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 sm:px-6 sm:py-4">
+      <DialogHeader
+        class="border-b px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 sm:px-6 sm:py-4"
+      >
         <DialogTitle class="text-xl font-semibold tracking-tight">
           {{ t('manager.details.title', { id: registrationDetails?.registration.id ?? '' }) }}
         </DialogTitle>
@@ -323,14 +307,16 @@ const resolveAction = async (actionId: number) => {
           <span v-else>{{ t('manager.details.subtitle') }}</span>
           <Badge
             v-if="registrationDetails?.registration.status"
-            :class="`${statusBadgeClasses(registrationDetails.registration.status)} text-[0.7rem] uppercase tracking-wide`"
+            :class="`${getRegistrationStatusBadgeClasses(registrationDetails.registration.status)} text-[0.7rem] uppercase tracking-wide`"
           >
             {{ statusLabel(registrationDetails.registration.status) }}
           </Badge>
         </DialogDescription>
       </DialogHeader>
 
-      <div class="min-h-dvh bg-background space-y-5 px-4 pt-4 pb-10 sm:min-h-0 sm:bg-transparent sm:space-y-6 sm:px-6 sm:py-6">
+      <div
+        class="min-h-dvh bg-background space-y-5 px-4 pt-4 pb-10 sm:min-h-0 sm:bg-transparent sm:space-y-6 sm:px-6 sm:py-6"
+      >
         <div
           v-if="isLoading && !registrationDetails"
           class="flex items-center justify-center gap-2 text-muted-foreground"
@@ -356,7 +342,7 @@ const resolveAction = async (actionId: number) => {
 
               <RegistrationDetailsActions
                 :actions="registrationDetails.requested_actions"
-                :status-badge-classes="statusBadgeClasses"
+                :status-badge-classes="getRegistrationStatusBadgeClasses"
                 :action-status-label="actionStatusLabel"
                 :format-date="formatDate"
                 @resolve="resolveAction"

@@ -75,19 +75,19 @@ const isDesktop = useMediaQuery('(min-width: 640px)')
 </script>
 
 <template>
-  <details :open="isDesktop" class="rounded-lg bg-muted/5 ring-1 ring-white/5 p-3">
+  <details :open="isDesktop" class="rounded-2xl border border-border/70 bg-card/60 p-3.5">
     <summary
-      class="sm:hidden text-sm font-semibold tracking-tight list-none flex items-center justify-between cursor-pointer select-none"
+      class="sm:hidden list-none cursor-pointer select-none text-sm font-semibold tracking-tight flex items-center justify-between"
     >
       <span>{{ t('manager.registrations.filters.title') }}</span>
-      <span class="text-xs uppercase tracking-wide text-muted-foreground">
+      <span class="text-xs uppercase tracking-[0.08em] text-muted-foreground">
         {{ selectedStatusLabel }}
       </span>
     </summary>
     <div class="space-y-3 pt-3 sm:pt-0">
       <div class="flex flex-col gap-3 sm:gap-4 lg:flex-row lg:items-end">
         <div class="flex-1 space-y-1">
-          <Label class="text-xs uppercase text-muted-foreground">
+          <Label class="text-xs uppercase tracking-[0.08em] text-muted-foreground">
             {{ t('manager.registrations.filters.search_label') }}
           </Label>
           <Input
@@ -96,7 +96,7 @@ const isDesktop = useMediaQuery('(min-width: 640px)')
           />
         </div>
         <div class="min-w-0 sm:min-w-[220px] space-y-1">
-          <Label class="text-xs uppercase text-muted-foreground">
+          <Label class="text-xs uppercase tracking-[0.08em] text-muted-foreground">
             {{ t('manager.registrations.filters.status_label') }}
           </Label>
           <Select v-model="localSelectedStatuses" multiple>
@@ -106,11 +106,7 @@ const isDesktop = useMediaQuery('(min-width: 640px)')
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem
-                v-for="status in props.statusOptions"
-                :key="status"
-                :value="status"
-              >
+              <SelectItem v-for="status in props.statusOptions" :key="status" :value="status">
                 {{ t(`manager.statuses.${status.toLowerCase()}`) }}
               </SelectItem>
             </SelectContent>
@@ -129,30 +125,42 @@ const isDesktop = useMediaQuery('(min-width: 640px)')
             </PopoverTrigger>
             <PopoverContent align="end" class="w-72 space-y-3">
               <div class="space-y-1">
-                <Label class="text-xs uppercase text-muted-foreground">
+                <Label class="text-xs uppercase tracking-[0.08em] text-muted-foreground">
                   {{ t('manager.registrations.filters.sort.label') }}
                 </Label>
                 <Select v-model="localSort">
                   <SelectTrigger>
-                    <SelectValue :placeholder="t('manager.registrations.filters.sort.placeholder')" />
+                    <SelectValue
+                      :placeholder="t('manager.registrations.filters.sort.placeholder')"
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem v-for="option in props.sortOptions" :key="option.value" :value="option.value">
+                    <SelectItem
+                      v-for="option in props.sortOptions"
+                      :key="option.value"
+                      :value="option.value"
+                    >
                       {{ option.label }}
                     </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div class="space-y-1">
-                <Label class="text-xs uppercase text-muted-foreground">
+                <Label class="text-xs uppercase tracking-[0.08em] text-muted-foreground">
                   {{ t('manager.registrations.filters.per_page_label') }}
                 </Label>
                 <Select v-model="localPerPage">
                   <SelectTrigger>
-                    <SelectValue :placeholder="t('manager.registrations.filters.per_page_placeholder')" />
+                    <SelectValue
+                      :placeholder="t('manager.registrations.filters.per_page_placeholder')"
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem v-for="value in props.perPageOptions" :key="value" :value="String(value)">
+                    <SelectItem
+                      v-for="value in props.perPageOptions"
+                      :key="value"
+                      :value="String(value)"
+                    >
                       {{ value }}
                     </SelectItem>
                   </SelectContent>

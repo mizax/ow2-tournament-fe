@@ -16,6 +16,7 @@ import {
 import { RoleValue } from '@/components/tournament/registration/types'
 import type { RegistrationStatus, RegistrationSummary } from '@/types/registrationManager'
 import { useI18n } from 'vue-i18n'
+import { getRegistrationStatusBadgeClasses } from '@/lib/registrationStatusUi'
 
 const props = defineProps<{
   registrations: RegistrationSummary[]
@@ -54,25 +55,6 @@ const roleLabel = (role?: RoleValue | null) => {
   }
 }
 
-const statusBadgeClasses = (status?: RegistrationStatus) => {
-  switch (status) {
-    case 'ACCEPTED':
-      return 'bg-[oklch(0.5_0.1751_141.88)]'
-    case 'DECLINED':
-      return 'bg-black text-white'
-    case 'PENDING':
-      return 'bg-[oklch(0.764_0.1392_100.59)] text-black'
-    case 'PROCESSING':
-      return 'bg-[oklch(0.5412_0.1357_50.82)] text-white'
-    case 'ACTION_REQUIRED':
-      return 'bg-[oklch(0.4588_0.1702_15.88)] text-white'
-    case 'DELETED':
-      return 'bg-muted text-muted-foreground'
-    default:
-      return 'bg-muted text-muted-foreground'
-  }
-}
-
 const statusLabel = (status?: RegistrationStatus) => {
   switch (status) {
     case 'PENDING':
@@ -94,10 +76,10 @@ const statusLabel = (status?: RegistrationStatus) => {
 </script>
 
 <template>
-  <div class="rounded-lg border">
+  <div class="overflow-hidden rounded-2xl border border-border/70 bg-card/70">
     <Table>
       <TableHeader>
-        <TableRow>
+        <TableRow class="bg-muted/40 hover:bg-muted/40">
           <TableHead>{{ t('manager.registrations.table.id') }}</TableHead>
           <TableHead>{{ t('manager.registrations.table.battletag') }}</TableHead>
           <TableHead>{{ t('manager.registrations.table.status') }}</TableHead>
@@ -115,7 +97,11 @@ const statusLabel = (status?: RegistrationStatus) => {
       <TableBody>
         <TableRow v-if="props.loading">
           <TableCell :colspan="6">
-            <div class="flex items-center justify-center gap-2 py-6 text-muted-foreground">
+            <div
+              class="flex items-center justify-center gap-2 py-6 text-muted-foreground"
+              role="status"
+              aria-live="polite"
+            >
               <Spinner class="animate-spin" />
               <span>{{ t('manager.registrations.loading') }}</span>
             </div>
@@ -124,7 +110,7 @@ const statusLabel = (status?: RegistrationStatus) => {
         <TableRow
           v-for="registration in props.registrations"
           :key="registration.id"
-          class="cursor-pointer hover:bg-muted/30"
+          class="cursor-pointer hover:bg-primary/8"
           @click="emit('open', registration.id)"
         >
           <TableCell class="font-medium">{{ registration.id }}</TableCell>
@@ -142,7 +128,7 @@ const statusLabel = (status?: RegistrationStatus) => {
             </div>
           </Copyable>
           <TableCell>
-            <Badge :class="statusBadgeClasses(registration.status)">
+            <Badge :class="getRegistrationStatusBadgeClasses(registration.status)">
               {{ statusLabel(registration.status) }}
             </Badge>
           </TableCell>

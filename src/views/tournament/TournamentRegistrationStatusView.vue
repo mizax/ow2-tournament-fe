@@ -10,6 +10,7 @@ import { fetchWithAuth } from '@/services/apiService'
 import { format } from 'date-fns'
 import { DATE_FORMAT_EXTENDED } from '@/util/date'
 import { RoleValue } from '@/components/tournament/registration/types'
+import { getRegistrationStatusBadgeClasses } from '@/lib/registrationStatusUi'
 
 interface RegistrationDetailsResponse {
   tournamentTitle: string
@@ -86,22 +87,9 @@ const statusLabel = computed(() => {
   }
 })
 
-const statusBadgeClasses = computed(() => {
-  switch (registrationDetails.value?.status) {
-    case 'ACCEPTED':
-      return 'bg-[oklch(0.5_0.1751_141.88)]'
-    case 'DECLINED':
-      return 'bg-black text-white'
-    case 'PENDING':
-      return 'bg-[oklch(0.764_0.1392_100.59)] text-black'
-    case 'PROCESSING':
-      return 'bg-[oklch(0.5412_0.1357_50.82)] text-white'
-    case 'ACTION_REQUIRED':
-      return 'bg-[oklch(0.4588_0.1702_15.88)] text-white'
-    default:
-      return 'bg-destructive text-white'
-  }
-})
+const statusBadgeClasses = computed(() =>
+  getRegistrationStatusBadgeClasses(registrationDetails.value?.status),
+)
 
 const showManagerComment = computed(
   () =>
@@ -113,7 +101,9 @@ const showDeclineReason = computed(
     registrationDetails.value?.status === 'DECLINED' && registrationDetails.value?.declineReason,
 )
 const showSteps = computed(() =>
-  ['PENDING', 'PROCESSING', 'ACCEPTED', 'ACTION_REQUIRED', 'DECLINED'].includes(registrationDetails.value?.status ?? ''),
+  ['PENDING', 'PROCESSING', 'ACCEPTED', 'ACTION_REQUIRED', 'DECLINED'].includes(
+    registrationDetails.value?.status ?? '',
+  ),
 )
 const showActionsPanel = computed(
   () => showSteps.value || showManagerComment.value || showDeclineReason.value,
@@ -175,15 +165,23 @@ watch(registrationId, loadRegistrationDetails)
                 &laquo;{{ registrationDetails.tournamentTitle }}&raquo;
               </RouterLink>
             </CardTitle>
-            <Badge :class="statusBadgeClasses" class="text-sm md:text-base">{{ statusLabel }}</Badge>
+            <Badge :class="statusBadgeClasses" class="text-sm md:text-base">{{
+              statusLabel
+            }}</Badge>
           </div>
           <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
             <span>{{ t('tournament.registration_status.subtitle', { id: registrationId }) }}</span>
-            <span>{{ t('tournament.registration_status.created_at') }}: {{ formatDate(registrationDetails.createdAt) }}</span>
-            <span>{{ t('tournament.registration_status.updated_at') }}: {{ formatDate(registrationDetails.updatedAt) }}</span>
+            <span
+              >{{ t('tournament.registration_status.created_at') }}:
+              {{ formatDate(registrationDetails.createdAt) }}</span
+            >
+            <span
+              >{{ t('tournament.registration_status.updated_at') }}:
+              {{ formatDate(registrationDetails.updatedAt) }}</span
+            >
           </div>
         </CardHeader>
-        <div class="h-px bg-white/10"></div>
+        <div class="h-px bg-border/70"></div>
         <CardContent class="space-y-6 py-6">
           <div
             class="grid gap-6"
@@ -195,16 +193,23 @@ watch(registrationId, loadRegistrationDetails)
               </h3>
               <dl class="grid gap-y-3 text-sm">
                 <div class="grid grid-cols-1 gap-1 md:grid-cols-[220px_1fr]">
-                  <dt class="font-medium text-muted-foreground">{{ t('tournament.registration_form.battletag.label') }}</dt>
-                  <dd>{{ registrationDetails.battleTag || t('tournament.registration_status.empty') }}</dd>
+                  <dt class="font-medium text-muted-foreground">
+                    {{ t('tournament.registration_form.battletag.label') }}
+                  </dt>
+                  <dd>
+                    {{ registrationDetails.battleTag || t('tournament.registration_status.empty') }}
+                  </dd>
                 </div>
                 <div class="grid grid-cols-1 gap-1 md:grid-cols-[220px_1fr]">
-                  <dt class="font-medium text-muted-foreground">{{ t('tournament.registration_form.twitch.label') }}</dt>
+                  <dt class="font-medium text-muted-foreground">
+                    {{ t('tournament.registration_form.twitch.label') }}
+                  </dt>
                   <dd>
                     <a
                       v-if="registrationDetails.twitch"
                       :href="`https://twitch.tv/${registrationDetails.twitch}`"
                       target="_blank"
+                      rel="noopener noreferrer"
                       class="text-muted-foreground hover:underline"
                     >
                       {{ registrationDetails.twitch }}
@@ -213,37 +218,44 @@ watch(registrationId, loadRegistrationDetails)
                   </dd>
                 </div>
                 <div class="grid grid-cols-1 gap-1 md:grid-cols-[220px_1fr]">
-                  <dt class="font-medium text-muted-foreground">{{ t('tournament.registration_form.discord.label') }}</dt>
-                  <dd>{{ registrationDetails.discord || t('tournament.registration_status.empty') }}</dd>
+                  <dt class="font-medium text-muted-foreground">
+                    {{ t('tournament.registration_form.discord.label') }}
+                  </dt>
+                  <dd>
+                    {{ registrationDetails.discord || t('tournament.registration_status.empty') }}
+                  </dd>
                 </div>
                 <div class="grid grid-cols-1 gap-1 md:grid-cols-[220px_1fr]">
-                  <dt class="font-medium text-muted-foreground">{{ t('tournament.registration_form.roles.primary') }}</dt>
+                  <dt class="font-medium text-muted-foreground">
+                    {{ t('tournament.registration_form.roles.primary') }}
+                  </dt>
                   <dd>
-                    <span
-                      v-if="registrationDetails.primaryRole"
-                      class="chip"
-                    >
+                    <span v-if="registrationDetails.primaryRole" class="chip">
                       {{ roleLabel(registrationDetails.primaryRole) }}
                     </span>
                     <span v-else>{{ t('tournament.registration_status.empty') }}</span>
                   </dd>
                 </div>
                 <div class="grid grid-cols-1 gap-1 md:grid-cols-[220px_1fr]">
-                  <dt class="font-medium text-muted-foreground">{{ t('tournament.registration_form.roles.secondary') }}</dt>
+                  <dt class="font-medium text-muted-foreground">
+                    {{ t('tournament.registration_form.roles.secondary') }}
+                  </dt>
                   <dd>
-                    <span
-                      v-if="registrationDetails.secondaryRole"
-                      class="chip"
-                    >
+                    <span v-if="registrationDetails.secondaryRole" class="chip">
                       {{ roleLabel(registrationDetails.secondaryRole) }}
                     </span>
                     <span v-else>{{ t('tournament.registration_status.empty') }}</span>
                   </dd>
                 </div>
                 <div class="grid grid-cols-1 gap-1 md:grid-cols-[220px_1fr]">
-                  <dt class="font-medium text-muted-foreground">{{ t('tournament.registration_form.alt_accounts.label') }}</dt>
+                  <dt class="font-medium text-muted-foreground">
+                    {{ t('tournament.registration_form.alt_accounts.label') }}
+                  </dt>
                   <dd>
-                    <div v-if="registrationDetails.altAccounts?.length" class="flex flex-wrap gap-2">
+                    <div
+                      v-if="registrationDetails.altAccounts?.length"
+                      class="flex flex-wrap gap-2"
+                    >
                       <span
                         v-for="altAccount in registrationDetails.altAccounts"
                         :key="altAccount"
@@ -256,7 +268,9 @@ watch(registrationId, loadRegistrationDetails)
                   </dd>
                 </div>
                 <div class="grid grid-cols-1 gap-1 md:grid-cols-[220px_1fr]">
-                  <dt class="font-medium text-muted-foreground">{{ t('tournament.registration_form.guarantors.label') }}</dt>
+                  <dt class="font-medium text-muted-foreground">
+                    {{ t('tournament.registration_form.guarantors.label') }}
+                  </dt>
                   <dd>
                     <div v-if="registrationDetails.guarantors?.length" class="flex flex-wrap gap-2">
                       <span
@@ -271,8 +285,15 @@ watch(registrationId, loadRegistrationDetails)
                   </dd>
                 </div>
                 <div class="grid grid-cols-1 gap-1 md:grid-cols-[220px_1fr]">
-                  <dt class="font-medium text-muted-foreground">{{ t('tournament.registration_form.additional_info.label') }}</dt>
-                  <dd>{{ registrationDetails.additionalInfo || t('tournament.registration_status.empty') }}</dd>
+                  <dt class="font-medium text-muted-foreground">
+                    {{ t('tournament.registration_form.additional_info.label') }}
+                  </dt>
+                  <dd>
+                    {{
+                      registrationDetails.additionalInfo ||
+                      t('tournament.registration_status.empty')
+                    }}
+                  </dd>
                 </div>
               </dl>
             </section>
@@ -284,7 +305,9 @@ watch(registrationId, loadRegistrationDetails)
                 </h3>
                 <dl class="grid gap-y-3 text-sm">
                   <div class="grid grid-cols-1 gap-1 md:grid-cols-[220px_1fr]">
-                    <dt class="font-medium text-muted-foreground">{{ t('tournament.participation.verification_btag') }}</dt>
+                    <dt class="font-medium text-muted-foreground">
+                      {{ t('tournament.participation.verification_btag') }}
+                    </dt>
                     <dd>
                       <Copyable
                         v-if="registrationDetails.verificationBattletag"
@@ -299,13 +322,16 @@ watch(registrationId, loadRegistrationDetails)
                     </dd>
                   </div>
                   <div class="grid grid-cols-1 gap-1 md:grid-cols-[220px_1fr]">
-                    <dt class="font-medium text-muted-foreground">{{ t('tournament.participation.twitch_channel') }}</dt>
+                    <dt class="font-medium text-muted-foreground">
+                      {{ t('tournament.participation.twitch_channel') }}
+                    </dt>
                     <dd>
                       <a
                         v-if="registrationDetails.twitchChannel"
                         :href="`https://twitch.tv/${registrationDetails.twitchChannel}`"
                         class="text-muted-foreground hover:underline"
                         target="_blank"
+                        rel="noopener noreferrer"
                       >
                         {{ registrationDetails.twitchChannel }}
                       </a>
@@ -313,7 +339,9 @@ watch(registrationId, loadRegistrationDetails)
                     </dd>
                   </div>
                   <div class="grid grid-cols-1 gap-1 md:grid-cols-[220px_1fr]">
-                    <dt class="font-medium text-muted-foreground">{{ t('tournament.participation.donation') }}</dt>
+                    <dt class="font-medium text-muted-foreground">
+                      {{ t('tournament.participation.donation') }}
+                    </dt>
                     <dd>
                       <span
                         v-if="
@@ -329,14 +357,20 @@ watch(registrationId, loadRegistrationDetails)
                 </dl>
               </template>
 
-              <div v-if="showManagerComment" class="rounded-xl border border-white/10 bg-muted/30 p-4">
+              <div
+                v-if="showManagerComment"
+                class="rounded-xl border border-border/60 bg-muted/30 p-4"
+              >
                 <p class="text-xs uppercase tracking-wide text-muted-foreground">
                   {{ t('tournament.registration_status.manager_comment_title') }}
                 </p>
                 <p class="mt-2 text-sm">{{ registrationDetails.managerComment }}</p>
               </div>
 
-              <div v-if="showDeclineReason" class="rounded-xl border border-white/10 bg-muted/30 p-4">
+              <div
+                v-if="showDeclineReason"
+                class="rounded-xl border border-border/60 bg-muted/30 p-4"
+              >
                 <p class="text-xs uppercase tracking-wide text-muted-foreground">
                   {{ t('tournament.registration_status.decline_reason_title') }}
                 </p>

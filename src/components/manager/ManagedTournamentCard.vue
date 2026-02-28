@@ -11,9 +11,11 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <Card class="h-full">
+  <Card
+    class="group h-full border border-border/70 bg-card/75 transition-colors hover:border-primary/25"
+  >
     <CardHeader class="space-y-1">
-      <CardTitle class="text-lg">{{ tournament.title }}</CardTitle>
+      <CardTitle class="text-3xl leading-[0.95]">{{ tournament.title }}</CardTitle>
       <p class="text-xs text-muted-foreground">
         {{ t('manager.tournaments.id', { id: tournament.id }) }}
       </p>
@@ -22,13 +24,23 @@ const { t } = useI18n()
       </p>
     </CardHeader>
     <CardContent class="flex flex-col gap-3">
-      <p v-if="typeof tournament.registration_count === 'number'" class="text-sm">
+      <p
+        v-if="typeof tournament.registration_count === 'number'"
+        class="text-sm text-muted-foreground"
+      >
         {{ t('manager.tournaments.registrations', { count: tournament.registration_count }) }}
       </p>
-      <Button :as="RouterLink" :to="{ name: 'manager-registrations', params: { tournamentId: tournament.id } }">
+      <Button
+        :as="RouterLink"
+        :to="{ name: 'manager-registrations', params: { tournamentId: tournament.id } }"
+      >
         {{ t('manager.tournaments.manage') }}
       </Button>
-      <Button variant="outline" :as="RouterLink" :to="{ name: 'manager-logs', params: { tournamentId: tournament.id } }">
+      <Button
+        variant="outline"
+        :as="RouterLink"
+        :to="{ name: 'manager-logs', params: { tournamentId: tournament.id } }"
+      >
         {{ t('manager.tournaments.load_logs') }}
       </Button>
     </CardContent>

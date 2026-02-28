@@ -26,20 +26,14 @@ const registrations = computed(
 const loading = computed(
   () => managerStore.registrationsLoadingByTournament[tournamentId.value] ?? false,
 )
-const total = computed(
-  () => managerStore.registrationsTotalByTournament[tournamentId.value] ?? 0,
-)
+const total = computed(() => managerStore.registrationsTotalByTournament[tournamentId.value] ?? 0)
 
 const errorMessage = ref<string | null>(null)
 
 const sheetOpen = ref(false)
 const selectedRegistrationId = ref<number | null>(null)
 const battletagSearch = ref('')
-const selectedStatuses = ref<RegistrationStatus[]>([
-  'PENDING',
-  'PROCESSING',
-  'ACTION_REQUIRED',
-])
+const selectedStatuses = ref<RegistrationStatus[]>(['PENDING', 'PROCESSING', 'ACTION_REQUIRED'])
 const sortValue = ref('created_at:desc')
 const page = ref(1)
 const perPage = ref(50)
@@ -100,11 +94,7 @@ const openRegistration = (registrationId: number) => {
 
 const resetFilters = async () => {
   battletagSearch.value = ''
-  selectedStatuses.value = [
-    'PENDING',
-    'PROCESSING',
-    'ACTION_REQUIRED',
-  ]
+  selectedStatuses.value = ['PENDING', 'PROCESSING', 'ACTION_REQUIRED']
   sortValue.value = 'created_at:desc'
   perPage.value = 50
   page.value = 1
@@ -157,7 +147,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="container mx-auto py-8 space-y-6">
+  <div class="page-shell">
     <ManagerRegistrationsHeader
       :title="tournament?.title || t('manager.registrations.title')"
       :tournament-id="tournamentId"
@@ -181,7 +171,8 @@ onMounted(async () => {
 
     <div
       v-if="errorMessage"
-      class="rounded-lg border border-destructive/40 bg-destructive/10 p-4"
+      class="rounded-2xl border border-destructive/40 bg-destructive/10 p-4"
+      role="alert"
     >
       <p class="text-sm text-destructive">{{ errorMessage }}</p>
     </div>

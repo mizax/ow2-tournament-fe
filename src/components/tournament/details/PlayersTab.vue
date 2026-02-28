@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Spinner } from '@/components/ui/spinner'
@@ -80,10 +79,10 @@ watch(() => props.tournamentSef, loadRegistrations)
 </script>
 
 <template>
-  <Card class="gap-2 bg-transparent shadow-none ring-0">
-    <CardHeader class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+  <section class="space-y-4">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div class="space-y-1">
-        <CardTitle class="text-lg font-semibold tracking-tight">{{ t('tournament.tabs.players') }}</CardTitle>
+        <h2 class="text-lg font-semibold tracking-tight">{{ t('tournament.tabs.players') }}</h2>
         <p class="text-xs text-muted-foreground">{{ countLabel }}</p>
       </div>
       <div class="w-full max-w-xs space-y-1">
@@ -92,14 +91,19 @@ watch(() => props.tournamentSef, loadRegistrations)
         </Label>
         <Input v-model="search" :placeholder="t('tournament.players.search_placeholder')" />
       </div>
-    </CardHeader>
-    <CardContent>
-      <div v-if="isLoading" class="flex items-center justify-center gap-2 py-10 text-muted-foreground">
+    </div>
+    <div>
+      <div
+        v-if="isLoading"
+        class="flex items-center justify-center gap-2 py-10 text-muted-foreground"
+        role="status"
+        aria-live="polite"
+      >
         <Spinner class="size-4 animate-spin" />
         <span class="text-sm">{{ t('tournament.players.loading') }}</span>
       </div>
 
-      <div v-else-if="error" class="py-10 text-center text-destructive">
+      <div v-else-if="error" class="py-10 text-center text-destructive" role="alert">
         {{ error }}
       </div>
 
@@ -112,19 +116,21 @@ watch(() => props.tournamentSef, loadRegistrations)
           <li
             v-for="(player, index) in filteredRegistrations"
             :key="`${player.battletag}-${index}`"
-            class="flex items-center gap-3 rounded-xl border border-white/10 bg-muted/20 px-3 py-2"
+            class="flex items-center gap-3 rounded-xl border border-border/60 bg-background/35 px-3 py-2"
           >
             <img
               :src="roleIcon(player.primary_role)"
               :alt="player.primary_role ?? RoleValue.FLEX"
               class="h-8 w-8"
+              loading="lazy"
+              decoding="async"
             />
             <span class="font-medium text-foreground truncate">{{ player.battletag }}</span>
           </li>
         </ul>
       </div>
-    </CardContent>
-  </Card>
+    </div>
+  </section>
 </template>
 
 <style scoped></style>

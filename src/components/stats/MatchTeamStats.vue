@@ -12,11 +12,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Progress } from '@/components/ui/progress'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 const props = defineProps<{
   team: ProcessedTeam
@@ -41,12 +37,12 @@ function playerKey(playerId: number): string {
   <div>
     <div
       :class="[
-        'mb-2 text-sm font-semibold pl-2 border-l-2',
+        'mb-2 border-l-2 pl-2 text-sm font-semibold uppercase tracking-[0.08em]',
         team.teamName === homeTeam
-          ? 'border-sky-500/60 text-sky-300/80'
+          ? 'border-primary/60 text-primary'
           : team.teamName === awayTeam
-            ? 'border-red-500/60 text-red-300/80'
-            : 'border-white/20 text-muted-foreground',
+            ? 'border-destructive/60 text-destructive'
+            : 'border-border/70 text-muted-foreground',
       ]"
     >
       {{ team.teamName }}
@@ -55,10 +51,14 @@ function playerKey(playerId: number): string {
     <div class="overflow-x-auto">
       <Table>
         <TableHeader>
-          <TableRow class="border-white/10 hover:bg-transparent">
+          <TableRow class="border-border/70 bg-muted/35 hover:bg-muted/35">
             <TableHead class="w-8 p-0"></TableHead>
-            <TableHead class="text-xs uppercase text-muted-foreground font-medium">{{ t('stats.player') }}</TableHead>
-            <TableHead class="text-xs uppercase text-muted-foreground font-medium">{{ t('stats.hero') }}</TableHead>
+            <TableHead class="text-xs uppercase text-muted-foreground font-medium">{{
+              t('stats.player')
+            }}</TableHead>
+            <TableHead class="text-xs uppercase text-muted-foreground font-medium">{{
+              t('stats.hero')
+            }}</TableHead>
             <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">
               <Tooltip>
                 <TooltipTrigger class="cursor-default">{{ t('stats.elims') }}</TooltipTrigger>
@@ -95,8 +95,13 @@ function playerKey(playerId: number): string {
                 <TooltipContent>{{ t('stats.kad-tooltip') }}</TooltipContent>
               </Tooltip>
             </TableHead>
-            <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right min-w-[130px]">{{ t('stats.hero-damage') }}</TableHead>
-            <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{ t('stats.healing') }}</TableHead>
+            <TableHead
+              class="text-xs uppercase text-muted-foreground font-medium text-right min-w-[130px]"
+              >{{ t('stats.hero-damage') }}</TableHead
+            >
+            <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{
+              t('stats.healing')
+            }}</TableHead>
             <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">
               <Tooltip>
                 <TooltipTrigger class="cursor-default">{{ t('stats.blocked') }}</TooltipTrigger>
@@ -109,7 +114,9 @@ function playerKey(playerId: number): string {
                 <TooltipContent>Ultimates Used / Earned</TooltipContent>
               </Tooltip>
             </TableHead>
-            <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{ t('stats.time') }}</TableHead>
+            <TableHead class="text-xs uppercase text-muted-foreground font-medium text-right">{{
+              t('stats.time')
+            }}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -118,7 +125,7 @@ function playerKey(playerId: number): string {
             <TableRow
               :class="[
                 'border-white/5 transition-colors',
-                group.rows.length > 1 ? 'cursor-pointer hover:bg-white/5' : '',
+                group.rows.length > 1 ? 'cursor-pointer hover:bg-primary/8' : '',
               ]"
               @click="group.rows.length > 1 && emit('toggle-player', playerKey(group.player_id))"
             >
@@ -137,6 +144,8 @@ function playerKey(playerId: number): string {
                     :alt="group.role ? t(`registration.roles.${group.role}`, group.role) : ''"
                     :title="group.role ? t(`registration.roles.${group.role}`, group.role) : ''"
                     class="h-4 w-4 shrink-0 brightness-0 invert opacity-50"
+                    loading="lazy"
+                    decoding="async"
                   />
                   <router-link
                     :to="`/tournament/${tournamentSef}/player/${group.player_id}`"
@@ -155,18 +164,23 @@ function playerKey(playerId: number): string {
                       :src="hero.url"
                       :alt="hero.name"
                       :title="hero.name"
-                      class="h-8 w-8 rounded-full object-cover object-top ring-1 ring-white/10"
+                      class="h-8 w-8 rounded-full object-cover object-top ring-1 ring-border/80"
+                      loading="lazy"
+                      decoding="async"
                     />
                     <span
                       v-else
-                      class="rounded px-1.5 py-0.5 text-xs bg-white/5 text-muted-foreground"
-                    >{{ hero.name }}</span>
+                      class="rounded bg-muted/60 px-1.5 py-0.5 text-xs text-muted-foreground"
+                      >{{ hero.name }}</span
+                    >
                   </template>
                 </div>
               </TableCell>
               <TableCell class="text-right tabular-nums">
                 <Tooltip>
-                  <TooltipTrigger class="cursor-default">{{ formatNumber(group.elims) }}</TooltipTrigger>
+                  <TooltipTrigger class="cursor-default">{{
+                    formatNumber(group.elims)
+                  }}</TooltipTrigger>
                   <TooltipContent>
                     <div class="text-xs space-y-0.5">
                       <div>Solo: {{ formatNumber(group.solo_kills) }}</div>
@@ -176,17 +190,27 @@ function playerKey(playerId: number): string {
                   </TooltipContent>
                 </Tooltip>
               </TableCell>
-              <TableCell class="text-right tabular-nums">{{ formatNumber(group.final_blows) }}</TableCell>
+              <TableCell class="text-right tabular-nums">{{
+                formatNumber(group.final_blows)
+              }}</TableCell>
               <TableCell class="text-right tabular-nums">
                 <Tooltip v-if="group.env_deaths > 0">
-                  <TooltipTrigger class="cursor-default">{{ formatNumber(group.deaths) }}</TooltipTrigger>
+                  <TooltipTrigger class="cursor-default">{{
+                    formatNumber(group.deaths)
+                  }}</TooltipTrigger>
                   <TooltipContent>Env: {{ formatNumber(group.env_deaths) }}</TooltipContent>
                 </Tooltip>
                 <span v-else>{{ formatNumber(group.deaths) }}</span>
               </TableCell>
-              <TableCell class="text-right tabular-nums">{{ formatNumber(group.assists) }}</TableCell>
-              <TableCell class="text-right tabular-nums">{{ kd(group.elims, group.deaths) }}</TableCell>
-              <TableCell class="text-right tabular-nums">{{ kad(group.elims, group.assists, group.deaths) }}</TableCell>
+              <TableCell class="text-right tabular-nums">{{
+                formatNumber(group.assists)
+              }}</TableCell>
+              <TableCell class="text-right tabular-nums">{{
+                kd(group.elims, group.deaths)
+              }}</TableCell>
+              <TableCell class="text-right tabular-nums">{{
+                kad(group.elims, group.assists, group.deaths)
+              }}</TableCell>
               <TableCell class="text-right tabular-nums min-w-[130px]">
                 <div class="flex flex-col gap-1 items-end">
                   <span>{{ formatNumber(group.hero_damage) }}</span>
@@ -196,12 +220,18 @@ function playerKey(playerId: number): string {
                   />
                 </div>
               </TableCell>
-              <TableCell class="text-right tabular-nums">{{ formatNumber(group.healing) }}</TableCell>
-              <TableCell class="text-right tabular-nums">{{ formatNumber(group.damage_blocked) }}</TableCell>
+              <TableCell class="text-right tabular-nums">{{
+                formatNumber(group.healing)
+              }}</TableCell>
+              <TableCell class="text-right tabular-nums">{{
+                formatNumber(group.damage_blocked)
+              }}</TableCell>
               <TableCell class="text-right tabular-nums">
                 {{ formatNumber(group.ults_used) }}/{{ formatNumber(group.ults_earned) }}
               </TableCell>
-              <TableCell class="text-right tabular-nums">{{ formatTime(group.time_played) }}</TableCell>
+              <TableCell class="text-right tabular-nums">{{
+                formatTime(group.time_played)
+              }}</TableCell>
             </TableRow>
 
             <!-- Per-hero detail rows (visible when expanded) -->
@@ -209,7 +239,7 @@ function playerKey(playerId: number): string {
               <TableRow
                 v-for="row in group.rows"
                 :key="row.hero_name"
-                class="border-white/5 bg-white/[0.02]"
+                class="border-border/40 bg-muted/20"
               >
                 <TableCell></TableCell>
                 <TableCell></TableCell>
@@ -219,24 +249,47 @@ function playerKey(playerId: number): string {
                       v-if="row.heroUrl"
                       :src="row.heroUrl"
                       :alt="row.hero_name"
-                      class="h-6 w-6 rounded-full object-cover object-top ring-1 ring-white/10 opacity-70"
+                      class="h-6 w-6 rounded-full object-cover object-top ring-1 ring-border/80 opacity-70"
+                      loading="lazy"
+                      decoding="async"
                     />
                     <span class="text-xs text-muted-foreground/60">{{ row.hero_name }}</span>
                   </div>
                 </TableCell>
-                <TableCell class="text-right tabular-nums text-sm text-muted-foreground/60">{{ formatNumber(row.elims) }}</TableCell>
-                <TableCell class="text-right tabular-nums text-sm text-muted-foreground/60">{{ formatNumber(row.final_blows) }}</TableCell>
-                <TableCell class="text-right tabular-nums text-sm text-muted-foreground/60">{{ formatNumber(row.deaths) }}</TableCell>
-                <TableCell class="text-right tabular-nums text-sm text-muted-foreground/60">{{ formatNumber(row.assists) }}</TableCell>
-                <TableCell class="text-right tabular-nums text-sm text-muted-foreground/60">{{ kd(row.elims, row.deaths) }}</TableCell>
-                <TableCell class="text-right tabular-nums text-sm text-muted-foreground/60">{{ kad(row.elims, row.assists, row.deaths) }}</TableCell>
-                <TableCell class="text-right tabular-nums text-sm text-muted-foreground/60 min-w-[130px]">{{ formatNumber(row.hero_damage) }}</TableCell>
-                <TableCell class="text-right tabular-nums text-sm text-muted-foreground/60">{{ formatNumber(row.healing) }}</TableCell>
-                <TableCell class="text-right tabular-nums text-sm text-muted-foreground/60">{{ formatNumber(row.damage_blocked) }}</TableCell>
+                <TableCell class="text-right tabular-nums text-sm text-muted-foreground/60">{{
+                  formatNumber(row.elims)
+                }}</TableCell>
+                <TableCell class="text-right tabular-nums text-sm text-muted-foreground/60">{{
+                  formatNumber(row.final_blows)
+                }}</TableCell>
+                <TableCell class="text-right tabular-nums text-sm text-muted-foreground/60">{{
+                  formatNumber(row.deaths)
+                }}</TableCell>
+                <TableCell class="text-right tabular-nums text-sm text-muted-foreground/60">{{
+                  formatNumber(row.assists)
+                }}</TableCell>
+                <TableCell class="text-right tabular-nums text-sm text-muted-foreground/60">{{
+                  kd(row.elims, row.deaths)
+                }}</TableCell>
+                <TableCell class="text-right tabular-nums text-sm text-muted-foreground/60">{{
+                  kad(row.elims, row.assists, row.deaths)
+                }}</TableCell>
+                <TableCell
+                  class="text-right tabular-nums text-sm text-muted-foreground/60 min-w-[130px]"
+                  >{{ formatNumber(row.hero_damage) }}</TableCell
+                >
+                <TableCell class="text-right tabular-nums text-sm text-muted-foreground/60">{{
+                  formatNumber(row.healing)
+                }}</TableCell>
+                <TableCell class="text-right tabular-nums text-sm text-muted-foreground/60">{{
+                  formatNumber(row.damage_blocked)
+                }}</TableCell>
                 <TableCell class="text-right tabular-nums text-sm text-muted-foreground/60">
                   {{ formatNumber(row.ults_used) }}/{{ formatNumber(row.ults_earned) }}
                 </TableCell>
-                <TableCell class="text-right tabular-nums text-sm text-muted-foreground/60">{{ formatTime(row.time_played) }}</TableCell>
+                <TableCell class="text-right tabular-nums text-sm text-muted-foreground/60">{{
+                  formatTime(row.time_played)
+                }}</TableCell>
               </TableRow>
             </template>
           </template>
