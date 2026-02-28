@@ -19,6 +19,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import DatePickerField from '@/components/shared/DatePickerField.vue'
 import DateTimePickerField from '@/components/shared/DateTimePickerField.vue'
+import MarkdownEditorField from '@/components/shared/MarkdownEditorField.vue'
 import NumberFieldInput from '@/components/shared/NumberFieldInput.vue'
 import type {
   TournamentEditFormValues,
@@ -302,7 +303,7 @@ syncRules()
             <div class="space-y-3">
               <div class="space-y-1">
                 <FieldLabel>{{ t('manager.tournament_edit.fields.description') }}</FieldLabel>
-                <Textarea
+                <MarkdownEditorField
                   :model-value="markdown.description"
                   class="min-h-[140px]"
                   @update:model-value="(value) => { markdown.description = value as string; syncMarkdown() }"
@@ -358,7 +359,7 @@ syncRules()
             <Separator />
             <div class="space-y-1">
               <FieldLabel>{{ t('manager.tournament_edit.fields.eligibility_notes') }}</FieldLabel>
-              <Textarea
+              <MarkdownEditorField
                 :model-value="markdown.notes"
                 class="min-h-[120px]"
                 @update:model-value="(value) => { markdown.notes = value as string; syncMarkdown() }"
@@ -505,7 +506,10 @@ syncRules()
             <Separator />
             <div class="space-y-1">
               <FieldLabel>{{ t('manager.tournament_edit.fields.full_regulation') }}</FieldLabel>
-              <Textarea
+              <p class="text-xs text-muted-foreground">
+                {{ t('manager.tournament_edit.hints.full_regulation_toc') }}
+              </p>
+              <MarkdownEditorField
                 :model-value="markdown.full_regulation"
                 class="min-h-[400px] font-mono text-sm"
                 @update:model-value="(value) => { markdown.full_regulation = value as string; syncMarkdown() }"
