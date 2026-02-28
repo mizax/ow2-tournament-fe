@@ -113,5 +113,5 @@ const heroSlugMap: Record<string, string> = {
 export function heroImageUrl(heroName: string): string | undefined {
   const slug = heroSlugMap[heroName.toLowerCase().trim()]
   if (!slug) return undefined
-  return `/heroes/${slug}.png`
+  return `/assets/img/heroes/${slug}.png`
 }

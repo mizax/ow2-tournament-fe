@@ -2,7 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import type { PlayerStats } from '@/types/stats'
 
 vi.mock('@/lib/heroImage', () => ({
-  heroImageUrl: (name: string) => (name === 'Tracer' ? '/heroes/tracer.png' : undefined),
+  heroImageUrl: (name: string) =>
+    name === 'Tracer' ? '/assets/img/heroes/tracer.png' : undefined,
 }))
 
 // Import after mock is set up
@@ -62,7 +63,7 @@ describe('mergePlayerHeroes', () => {
       makePlayer({ hero_name: 'Widowmaker' }),
     ]
     const [group] = mergePlayerHeroes(players)
-    expect(group.heroes[0].url).toBe('/heroes/tracer.png')
+    expect(group.heroes[0].url).toBe('/assets/img/heroes/tracer.png')
     expect(group.heroes[1].url).toBeUndefined()
   })
 
@@ -98,7 +99,7 @@ describe('mergePlayerHeroes', () => {
       makePlayer({ hero_name: 'Widowmaker' }),
     ]
     const [group] = mergePlayerHeroes(players)
-    expect(group.rows[0].heroUrl).toBe('/heroes/tracer.png')
+    expect(group.rows[0].heroUrl).toBe('/assets/img/heroes/tracer.png')
     expect(group.rows[1].heroUrl).toBeUndefined()
   })
 

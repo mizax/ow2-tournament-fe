@@ -140,7 +140,7 @@ function playerKey(playerId: number): string {
                 <div class="flex items-center gap-2">
                   <img
                     v-if="group.role && group.role !== 'flex'"
-                    :src="`/roles/${group.role}.svg`"
+                    :src="`/assets/img/roles/${group.role}.svg`"
                     :alt="group.role ? t(`registration.roles.${group.role}`, group.role) : ''"
                     :title="group.role ? t(`registration.roles.${group.role}`, group.role) : ''"
                     class="h-4 w-4 shrink-0 brightness-0 invert opacity-50"
