@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from 'vitest'
-import { fetchManagedTournament, updateManagedTournament } from '@/services/tournamentManagerApi'
+import {
+  createTournament,
+  fetchManagedTournament,
+  updateManagedTournament,
+} from '@/services/tournamentManagerApi'
 import { fetchWithAuth } from '@/services/apiService'
 import type { TournamentEditFormValues } from '@/types/tournament-manager'
 
@@ -38,6 +42,23 @@ describe('tournamentManagerApi', () => {
       expect.objectContaining({
         method: 'PUT',
         body: JSON.stringify(payload),
+      }),
+    )
+  })
+
+  it('createTournament calls POST with correct URL and payload', async () => {
+    fetchWithAuthMock.mockResolvedValueOnce({ success: true })
+
+    await createTournament('New Tournament', 'new-tournament')
+
+    expect(fetchWithAuthMock).toHaveBeenCalledWith(
+      '/api/secured/v1/manager/tournaments',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({
+          title: 'New Tournament',
+          sef_title: 'new-tournament',
+        }),
       }),
     )
   })

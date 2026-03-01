@@ -14,6 +14,7 @@ export interface ManagedTournament {
   id: number
   title: string
   sef?: string
+  status?: string
   start_at?: string
   registration_count?: number
 }

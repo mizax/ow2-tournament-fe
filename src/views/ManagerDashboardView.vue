@@ -1,26 +1,41 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRegistrationManagerStore } from '@/stores/registrationManagerStore'
 import { Spinner } from '@/components/ui/spinner'
 import ManagedTournamentCard from '@/components/manager/ManagedTournamentCard.vue'
 import { useI18n } from 'vue-i18n'
+import { Button } from '@/components/ui/button'
+import { useAuthStore } from '@/stores/authStore'
+import CreateTournamentDialog from '@/components/manager/CreateTournamentDialog.vue'
 
 const managerStore = useRegistrationManagerStore()
+const authStore = useAuthStore()
 const { t } = useI18n()
+const createDialogOpen = ref(false)
 
 const tournaments = computed(() => managerStore.managedTournaments)
 const loading = computed(() => managerStore.managedTournamentsLoading)
+const canCreateTournament = computed(() => authStore.hasAuthority('create_tournament'))
 
 onMounted(() => {
   managerStore.loadManagedTournaments()
 })
+
+const onCreatedTournament = () => {
+  managerStore.loadManagedTournaments()
+}
 </script>
 
 <template>
   <div class="page-shell">
     <section class="page-head">
       <p class="page-kicker">Control Room</p>
-      <h1 class="page-title mt-2">{{ t('manager.dashboard.title') }}</h1>
+      <div class="mt-2 flex flex-wrap items-center justify-between gap-3">
+        <h1 class="page-title">{{ t('manager.dashboard.title') }}</h1>
+        <Button v-if="canCreateTournament" @click="createDialogOpen = true">
+          {{ t('manager.dashboard.create.open') }}
+        </Button>
+      </div>
       <p class="mt-3 text-sm text-muted-foreground">{{ t('manager.dashboard.subtitle') }}</p>
     </section>
 
@@ -48,5 +63,10 @@ onMounted(() => {
         :tournament="tournament"
       />
     </div>
+
+    <CreateTournamentDialog
+      v-model:open="createDialogOpen"
+      @created="onCreatedTournament"
+    />
   </div>
 </template>

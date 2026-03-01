@@ -45,7 +45,7 @@ describe('authStore', () => {
   it('restoreSession returns success when user already loaded', async () => {
     const store = useAuthStore()
     store.token = 'token'
-    store.user = { id: '1', battletag: 'Test#1234', roles: [] } as User
+    store.user = { id: '1', battletag: 'Test#1234', roles: [], authorities: [] } as User
 
     const result = await store.restoreSession()
 

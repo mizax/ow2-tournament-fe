@@ -110,7 +110,7 @@ export interface ManagedTournamentFull {
   match_format?: TournamentMatchFormat
   prize_pool: TournamentPrizePool
   stream?: TournamentStream
-  status?: 'upcoming' | 'ongoing' | 'finished'
+  status?: 'draft' | 'upcoming' | 'ongoing' | 'finished'
   results?: TournamentResults
   media?: TournamentMedia
   markdown?: TournamentMarkdown

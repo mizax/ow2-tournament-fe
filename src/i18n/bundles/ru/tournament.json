@@ -20,6 +20,7 @@
       "tournament_finished": "Турнир завершен"
     },
     "status": {
+      "draft": "Черновик",
       "upcoming": "Скоро",
       "ongoing": "Идет сейчас",
       "finished": "Завершен"

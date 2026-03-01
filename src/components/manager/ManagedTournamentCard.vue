@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { RouterLink } from 'vue-router'
 import type { ManagedTournament } from '@/types/registrationManager'
 import { useI18n } from 'vue-i18n'
@@ -22,6 +23,13 @@ const { t } = useI18n()
       <p v-if="tournament.sef" class="text-xs text-muted-foreground">
         {{ tournament.sef }}
       </p>
+      <Badge
+        v-if="tournament.status === 'draft'"
+        variant="secondary"
+        class="w-fit border border-border/70 bg-background/70 text-[11px] uppercase tracking-[0.08em]"
+      >
+        {{ t('manager.tournaments.draft') }}
+      </Badge>
     </CardHeader>
     <CardContent class="flex flex-col gap-3">
       <p

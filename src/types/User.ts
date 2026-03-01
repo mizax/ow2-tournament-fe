@@ -4,4 +4,5 @@ export interface User {
     id: string
     battletag: string,
     roles: UserRole[],
+    authorities: string[],
 }

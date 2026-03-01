@@ -2,7 +2,7 @@ import {defineStore} from 'pinia'
 import {type RemovableRef, useLocalStorage} from '@vueuse/core'
 import {type ApiResponse, fetchWithAuth, fetchWithoutAuth} from '@/services/apiService'
 import type { User } from "@/types/User.ts";
-import type UserRole from "@/types/UserRole.ts";
+import UserRole from "@/types/UserRole.ts";
 import type { RouteLocationNormalizedGeneric } from 'vue-router'
 
 interface AuthState {
@@ -76,6 +76,10 @@ export const useAuthStore = defineStore('auth', {
   getters: {
     isAuthenticated: (state) => !!state.token,
     hasRole: (state) => (role: UserRole) => state.user?.roles?.includes(role) || false,
+    hasAuthority: (state) => (authority: string) =>
+      state.user?.roles?.includes(UserRole.ADMIN) ||
+      state.user?.authorities?.includes(authority) ||
+      false,
     waitForUser: (state) => async () => state.fetchingUser && (await state.fetchingUser),
   },
 

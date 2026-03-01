@@ -30,7 +30,9 @@ const { t } = useI18n()
 const route = useRoute()
 const managerRoles = [UserRole.ADMIN, UserRole.TOURNAMENT_MANAGER]
 const showManagerLink = computed(() => managerRoles.some((role) => authStore.hasRole(role)))
+const showAdminLink = computed(() => authStore.hasRole(UserRole.ADMIN))
 const isManagerActive = computed(() => route.path.startsWith('/manager'))
+const isAdminActive = computed(() => route.path.startsWith('/admin'))
 </script>
 
 <template>
@@ -65,6 +67,19 @@ const isManagerActive = computed(() => route.path.startsWith('/manager'))
                 </RouterLink>
               </NavigationMenuLink>
             </NavigationMenuItem>
+            <NavigationMenuItem v-if="showAdminLink">
+              <NavigationMenuLink as-child>
+                <RouterLink to="/admin/users" v-slot="{ navigate }" custom>
+                  <button
+                    class="cursor-pointer border-b-2 border-transparent pb-1 text-sm font-semibold uppercase tracking-[0.08em] transition hover:border-primary/40 hover:text-foreground"
+                    :class="isAdminActive ? 'border-primary/70 text-foreground' : 'text-muted-foreground'"
+                    @click.prevent="navigate()"
+                  >
+                    {{ t('nav.admin') }}
+                  </button>
+                </RouterLink>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
       </div>
@@ -87,6 +102,11 @@ const isManagerActive = computed(() => route.path.startsWith('/manager'))
             <DropdownMenuItem v-if="showManagerLink" as-child>
               <RouterLink to="/manager">
                 {{ t('nav.manager') }}
+              </RouterLink>
+            </DropdownMenuItem>
+            <DropdownMenuItem v-if="showAdminLink" as-child>
+              <RouterLink to="/admin/users">
+                {{ t('nav.admin') }}
               </RouterLink>
             </DropdownMenuItem>
             <DropdownMenuItem v-if="isAuthenticated" @click="authStore.logout()">

@@ -115,6 +115,15 @@ const router = createRouter({
       },
     },
     {
+      path: '/admin/users',
+      name: 'admin-users',
+      component: () => import('@/views/AdminUsersView.vue'),
+      meta: {
+        requiresAuth: true,
+        allowedRoles: [UserRole.ADMIN],
+      },
+    },
+    {
       path: '/401-forbidden',
       name: 'forbidden',
       component: ForbiddenView,

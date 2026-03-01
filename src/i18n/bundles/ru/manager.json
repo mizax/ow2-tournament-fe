@@ -7,14 +7,33 @@
       "title": "Панель менеджера",
       "subtitle": "Выберите турнир для управления заявками.",
       "loading": "Загрузка управляемых турниров...",
-      "empty": "Нет доступных турниров."
+      "empty": "Нет доступных турниров.",
+      "create": {
+        "open": "Создать турнир",
+        "title": "Создание турнира",
+        "subtitle": "Новый турнир будет создан как черновик и появится в вашем списке.",
+        "fields": {
+          "title": "Название",
+          "sef_title": "SEF-адрес"
+        },
+        "placeholders": {
+          "title": "Например, Winter Clash 2026",
+          "sef_title": "winter-clash-2026"
+        },
+        "cancel": "Отмена",
+        "submit": "Создать",
+        "creating": "Создание...",
+        "success": "Турнир создан",
+        "error": "Не удалось создать турнир"
+      }
     },
     "tournaments": {
       "id": "ID: {id}",
       "registrations": "Заявок: {count}",
       "manage": "Управлять заявками",
       "edit": "Редактировать турнир",
-      "load_logs": "Загрузить логи"
+      "load_logs": "Загрузить логи",
+      "draft": "Черновик"
     },
     "tournament_edit": {
       "tabs": {
@@ -275,6 +294,37 @@
         "rankings_error": "Не удалось обновить ранги",
         "action_resolved": "Действие закрыто",
         "action_resolve_error": "Не удалось закрыть действие"
+      }
+    }
+  },
+  "admin": {
+    "users": {
+      "kicker": "Admin Console",
+      "title": "Пользователи и права",
+      "subtitle": "Выдавайте и отзывайте право на создание турниров.",
+      "search_title": "Поиск пользователя",
+      "search_placeholder": "Поиск по BattleTag",
+      "loading": "Загрузка пользователей...",
+      "load_error": "Не удалось загрузить пользователей",
+      "mutation_error": "Не удалось изменить право",
+      "authority_granted": "Право выдано",
+      "authority_revoked": "Право отозвано",
+      "no_authorities": "Нет выданных прав",
+      "empty": "Пользователи не найдены",
+      "columns": {
+        "battletag": "BattleTag",
+        "flags": "Флаги",
+        "authorities": "Права",
+        "actions": "Действия"
+      },
+      "flags": {
+        "admin": "Администратор",
+        "banned": "Заблокирован",
+        "user": "Пользователь"
+      },
+      "actions": {
+        "grant_create_tournament": "Дать права менеджера",
+        "revoke_create_tournament": "Отозвать права менеджера"
       }
     }
   }

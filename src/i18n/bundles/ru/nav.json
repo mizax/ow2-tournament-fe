@@ -2,6 +2,7 @@
   "nav": {
     "past_tournaments": "Прошлые турниры",
     "manager": "Организатор",
+    "admin": "Админ",
     "login": "Войти через Battle.net",
     "logout": "Выйти"
   }

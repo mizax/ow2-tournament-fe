@@ -287,9 +287,10 @@ syncRules()
               <form.Field name="status" #default="{ field }">
                 <Field :data-invalid="isInvalid(field)">
                   <FieldLabel>{{ t('manager.tournament_edit.fields.status') }}</FieldLabel>
-                  <Select :model-value="field.state.value" @update:model-value="(value) => field.handleChange(value as 'upcoming' | 'ongoing' | 'finished' | undefined)">
+                  <Select :model-value="field.state.value" @update:model-value="(value) => field.handleChange(value as 'draft' | 'upcoming' | 'ongoing' | 'finished' | undefined)">
                     <SelectTrigger><SelectValue :placeholder="t('manager.tournament_edit.placeholders.select_status')" /></SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="draft">{{ t('tournament.status.draft') }}</SelectItem>
                       <SelectItem value="upcoming">{{ t('tournament.status.upcoming') }}</SelectItem>
                       <SelectItem value="ongoing">{{ t('tournament.status.ongoing') }}</SelectItem>
                       <SelectItem value="finished">{{ t('tournament.status.finished') }}</SelectItem>

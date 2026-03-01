@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { shallowMount } from '@vue/test-utils'
 import TheHeader from '@/components/page-elements/TheHeader.vue'
 import { stubWithSlot } from './testUtils'
+import UserRole from '@/types/UserRole'
 
 const routeMock = vi.hoisted(() => ({ path: '/' }))
 const authStoreMock = vi.hoisted(() => ({
@@ -63,10 +64,18 @@ describe('TheHeader', () => {
   })
 
   it('shows manager link for manager roles', () => {
-    authStoreMock.hasRole.mockReturnValue(true)
+    authStoreMock.hasRole.mockImplementation((role: UserRole) => role === UserRole.TOURNAMENT_MANAGER)
 
     const wrapper = setup()
 
     expect(wrapper.findAllComponents({ name: 'NavigationMenuItem' })).toHaveLength(1)
+  })
+
+  it('shows manager and admin links for admin role', () => {
+    authStoreMock.hasRole.mockImplementation((role: UserRole) => role === UserRole.ADMIN)
+
+    const wrapper = setup()
+
+    expect(wrapper.findAllComponents({ name: 'NavigationMenuItem' })).toHaveLength(2)
   })
 })

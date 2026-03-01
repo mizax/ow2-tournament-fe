@@ -61,7 +61,7 @@ describe('AuthCallbackView', () => {
       success: true,
       data: {
         id_token: 'token',
-        user: { id: '1', battletag: 'Test#1234', roles: [] },
+        user: { id: '1', battletag: 'Test#1234', roles: [], authorities: [] },
       },
     })
 
@@ -75,6 +75,7 @@ describe('AuthCallbackView', () => {
       id: '1',
       battletag: 'Test#1234',
       roles: [],
+      authorities: [],
     })
     expect(routerMock.push).toHaveBeenCalledWith('/home')
     consoleLogSpy.mockRestore()
