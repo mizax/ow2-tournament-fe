@@ -119,7 +119,10 @@ const form = useForm({
     onSubmit: tournamentEditSchema,
   },
   onSubmit: async ({ value }) => {
-    await props.onSubmit(value)
+    await props.onSubmit({
+      ...value,
+      schedule: value.schedule.filter((item) => item.date !== ''),
+    })
   },
 })
 

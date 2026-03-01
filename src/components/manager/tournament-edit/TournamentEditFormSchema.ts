@@ -33,7 +33,7 @@ const checkinSchema = z.object({
   platform_url: z.string().optional(),
 })
 
-const isoDateTimeSchema = z.string().datetime({ offset: true })
+const isoDateTimeSchema = z.string().and(z.iso.datetime({ offset: true }))
 
 const registrationConfigSchema = z.object({
   start: isoDateTimeSchema.optional(),
@@ -43,8 +43,8 @@ const registrationConfigSchema = z.object({
 
 const scheduleItemSchema = z.object({
   day: z.number().int().positive(),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  stage: z.string().min(1),
+  date: z.string(),
+  stage: z.string(),
   start_time: z.string().regex(/^\d{2}:\d{2}$/),
 })
 
@@ -67,10 +67,10 @@ const resultsPlacementSchema = z.object({
 export const tournamentEditSchema = z.object({
   title: z.string().min(3),
   sef_title: sefTitleSchema,
-  discipline: z.string().min(1),
-  format: z.string().min(1),
-  type: z.string().min(1),
-  status: z.enum(['upcoming', 'ongoing', 'finished']).optional(),
+  discipline: z.string(),
+  format: z.string(),
+  type: z.string(),
+  status: z.enum(['draft', 'upcoming', 'ongoing', 'finished']).optional(),
   organizers: z.array(organizerSchema).optional(),
   rules: z
     .object({
@@ -87,7 +87,7 @@ export const tournamentEditSchema = z.object({
       format: z.string().optional(),
     })
     .optional(),
-  schedule: z.array(scheduleItemSchema).min(1),
+  schedule: z.array(scheduleItemSchema),
   match_format: z
     .object({
       group_stage: z.string().optional(),
