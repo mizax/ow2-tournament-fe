@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useForm, type AnyFieldApi } from '@tanstack/vue-form'
 import { useI18n } from 'vue-i18n'
 import { Plus, Trash2 } from 'lucide-vue-next'
@@ -119,10 +119,7 @@ const form = useForm({
     onSubmit: tournamentEditSchema,
   },
   onSubmit: async ({ value }) => {
-    await props.onSubmit({
-      ...value,
-      schedule: value.schedule.filter((item) => item.date !== ''),
-    })
+    await props.onSubmit(value)
   },
 })
 
@@ -130,6 +127,7 @@ const isInvalid = (field: AnyFieldApi) => field.state.meta.isTouched && !field.s
 
 const setFormValue = (path: string, value: unknown) => {
   form.setFieldValue(path as never, value as never)
+  form.validate('change')
 }
 
 const parseTime = (value: string | undefined): string => {
@@ -228,14 +226,47 @@ syncStream()
 syncMedia()
 syncMarkdown()
 syncRules()
+
+const fieldToTab: Record<string, string> = {
+  title: 'main', sef_title: 'main', discipline: 'main',
+  format: 'main', type: 'main', status: 'main',
+  organizers: 'organizers',
+  eligibility: 'eligibility',
+  registration: 'registration',
+  teams: 'teams',
+  schedule: 'schedule',
+  match_format: 'match-format',
+  prize_pool: 'prize',
+  stream: 'stream',
+  results: 'results',
+  media: 'media',
+  rules: 'rules',
+}
+
+const tabsWithErrors = computed(() => {
+  if (form.state.submissionAttempts === 0) return new Set<string>()
+  const result = tournamentEditSchema.safeParse(form.state.values)
+  if (result.success) return new Set<string>()
+  const errorTabs = new Set<string>()
+  for (const issue of result.error.issues) {
+    const tabKey = fieldToTab[String(issue.path[0])]
+    if (tabKey) errorTabs.add(tabKey)
+  }
+  return errorTabs
+})
 </script>
 
 <template>
   <form class="space-y-4" @submit.prevent="form.handleSubmit">
     <Tabs default-value="main" class="w-full">
       <TabsList class="tabs-scroll flex w-full flex-nowrap items-center justify-start gap-1 overflow-x-auto">
-        <TabsTrigger v-for="tab in tabs" :key="tab.key" :value="tab.key">
+        <TabsTrigger v-for="tab in tabs" :key="tab.key" :value="tab.key" class="relative">
           {{ t(tab.labelKey) }}
+          <span
+            v-if="tabsWithErrors.has(tab.key)"
+            class="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-destructive"
+            aria-hidden="true"
+          />
         </TabsTrigger>
       </TabsList>
 
