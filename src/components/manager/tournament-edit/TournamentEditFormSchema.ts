@@ -43,7 +43,7 @@ const registrationConfigSchema = z.object({
 
 const scheduleItemSchema = z.object({
   day: z.number().int().positive(),
-  date: z.string(),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   stage: z.string(),
   start_time: z.string().regex(/^\d{2}:\d{2}$/),
 })
@@ -87,7 +87,7 @@ export const tournamentEditSchema = z.object({
       format: z.string().optional(),
     })
     .optional(),
-  schedule: z.array(scheduleItemSchema),
+  schedule: z.array(scheduleItemSchema).min(1),
   match_format: z
     .object({
       group_stage: z.string().optional(),

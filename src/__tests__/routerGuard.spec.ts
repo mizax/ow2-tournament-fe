@@ -22,6 +22,7 @@ const setupRouter = async (override: AuthOverride = {}) => {
       hasRole: () => false,
       restoreSession: vi.fn().mockResolvedValue({ success: true }),
       waitForUser: vi.fn().mockResolvedValue(null),
+      authorize: vi.fn().mockResolvedValue('auth_failed'),
       ...override,
     }),
   }))
@@ -42,7 +43,7 @@ describe('router guard', () => {
     await router.push('/manager')
     await router.isReady()
 
-    expect(toastError).toHaveBeenCalledWith('Not authenticated')
+    expect(toastError).toHaveBeenCalledWith('Authentication failed')
     expect(router.currentRoute.value.path).toBe('/')
   }, 15000)
 

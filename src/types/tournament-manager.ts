@@ -117,3 +117,19 @@ export interface ManagedTournamentFull {
 }
 
 export type TournamentEditFormValues = Omit<ManagedTournamentFull, 'id'>
+
+export interface TournamentManager {
+  user_id: number
+  battletag: string | null
+  is_owner: boolean
+  can_manage_managers: boolean
+  added_by_user_id: number | null
+  added_by_battletag: string | null
+  added_at: string
+  can_remove: boolean
+}
+
+export interface UserSearchResult {
+  id: number
+  battletag: string | null
+}

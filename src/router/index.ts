@@ -106,6 +106,15 @@ const router = createRouter({
       },
     },
     {
+      path: '/manager/tournaments/:tournamentId/managers',
+      name: 'manager-tournament-managers',
+      component: () => import('@/views/ManagerTournamentManagersView.vue'),
+      meta: {
+        requiresAuth: true,
+        allowedRoles: [UserRole.ADMIN, UserRole.TOURNAMENT_MANAGER],
+      },
+    },
+    {
       path: '/manager/tournaments/:tournamentId/edit',
       name: 'manager-tournament-edit',
       component: () => import('@/views/ManagerTournamentEditView.vue'),
@@ -147,8 +156,11 @@ router.beforeEach(async (to, from, next) => {
   const { requiresAuth, allowedRoles } = { ...defaultMeta, ...to.meta }
 
   if (requiresAuth && !authStore.isAuthenticated) {
-    toast.error('Not authenticated')
-    next('/')
+    const errorCode = await authStore.authorize(to)
+    if (errorCode) {
+      toast.error('Authentication failed')
+      next('/')
+    }
     return
   }
 
