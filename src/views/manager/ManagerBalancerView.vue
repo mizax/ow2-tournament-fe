@@ -28,7 +28,7 @@ onMounted(async () => {
   await store.fetchSavedBalances(tournamentId.value)
 })
 
-async function toggleCheckin(entry: RosterEntry) {
+async function toggleCheckIn(entry: RosterEntry) {
   await store.patchCheckin(tournamentId.value, {
     registration_id: entry.registration_id,
     checked_in: !entry.checked_in,
@@ -36,7 +36,7 @@ async function toggleCheckin(entry: RosterEntry) {
 }
 
 async function runBalance() {
-  if (store.checkedInCount < 2) {
+  if (store.includedCount < 10) {
     toast.error(t('manager.balancer.toasts.min_players'))
     return
   }
@@ -71,7 +71,7 @@ function roleColor(role: string | null): string {
     <div class="mb-6">
       <h1 class="text-2xl font-bold">{{ t('manager.balancer.title') }}</h1>
       <p class="text-sm text-muted-foreground">
-        {{ t('manager.balancer.subtitle', { id: tournamentId, checked: store.checkedInCount, total: store.totalCount }) }}
+        {{ t('manager.balancer.subtitle', { id: tournamentId, included: store.includedCount, total: store.totalCount, checked: store.checkedInCount }) }}
       </p>
     </div>
 
@@ -79,7 +79,20 @@ function roleColor(role: string | null): string {
       <!-- Left: Roster -->
       <Card class="col-span-1 border border-border/70">
         <CardHeader class="pb-2">
-          <CardTitle class="text-base">{{ t('manager.balancer.roster.title') }}</CardTitle>
+          <div class="flex items-center justify-between">
+            <CardTitle class="text-base">{{ t('manager.balancer.roster.title') }}</CardTitle>
+            <div class="flex gap-1">
+              <button
+                class="text-xs text-muted-foreground hover:text-foreground"
+                @click="store.setAllIncluded(true)"
+              >{{ t('manager.balancer.roster.select_all') }}</button>
+              <span class="text-xs text-muted-foreground">/</span>
+              <button
+                class="text-xs text-muted-foreground hover:text-foreground"
+                @click="store.setAllIncluded(false)"
+              >{{ t('manager.balancer.roster.deselect_all') }}</button>
+            </div>
+          </div>
         </CardHeader>
         <CardContent class="p-0">
           <div v-if="store.rosterLoading" class="flex justify-center py-8">
@@ -98,12 +111,12 @@ function roleColor(role: string | null): string {
             >
               <div class="flex items-center gap-2">
                 <Checkbox
-                  :id="`checkin-${entry.registration_id}`"
-                  :checked="entry.checked_in"
-                  @update:checked="toggleCheckin(entry)"
+                  :id="`include-${entry.registration_id}`"
+                  :checked="store.localIncluded[entry.registration_id]"
+                  @update:checked="store.toggleIncluded(entry.registration_id)"
                 />
                 <Label
-                  :for="`checkin-${entry.registration_id}`"
+                  :for="`include-${entry.registration_id}`"
                   class="flex-1 cursor-pointer truncate text-sm"
                 >
                   {{ entry.battletag }}
@@ -112,7 +125,13 @@ function roleColor(role: string | null): string {
                   {{ entry.primary_role ?? '—' }}
                 </span>
                 <button
-                  class="ml-1 text-xs text-muted-foreground hover:text-foreground"
+                  :title="t('manager.balancer.roster.checkin_toggle')"
+                  class="ml-1 flex h-4 w-4 items-center justify-center rounded-full transition-colors"
+                  :class="entry.checked_in ? 'bg-green-500/80 hover:bg-green-400' : 'bg-muted hover:bg-muted-foreground/40'"
+                  @click="toggleCheckIn(entry)"
+                />
+                <button
+                  class="text-xs text-muted-foreground hover:text-foreground"
                   @click="expandedReg = expandedReg === entry.registration_id ? null : entry.registration_id"
                 >
                   {{ expandedReg === entry.registration_id ? '▲' : '▼' }}
@@ -201,7 +220,7 @@ function roleColor(role: string | null): string {
 
           <Button
             class="w-full"
-            :disabled="store.balanceRunning || store.checkedInCount < 2"
+            :disabled="store.balanceRunning || store.includedCount < 10"
             @click="runBalance"
           >
             <span v-if="store.balanceRunning" class="flex items-center gap-2">
@@ -232,8 +251,7 @@ function roleColor(role: string | null): string {
             {{ t('manager.balancer.results.empty') }}
           </div>
 
-          <div v-else class="space-y-2">
-            <!-- Result selection -->
+          <div v-else class="max-h-[70vh] overflow-y-auto space-y-2 pr-1">
             <div
               v-for="(result, idx) in store.balanceResults"
               :key="idx"
@@ -251,49 +269,55 @@ function roleColor(role: string | null): string {
                 {{ t('manager.balancer.results.leftovers_count', { count: result.leftovers.length }) }}
               </div>
             </div>
-
-            <!-- Selected balance preview -->
-            <div v-if="store.selectedBalance" class="mt-4 space-y-3">
-              <div
-                v-for="(team, ti) in store.selectedBalance.teams"
-                :key="team.uuid"
-                class="rounded border border-border/60 p-2"
-              >
-                <div class="flex items-center justify-between">
-                  <span class="text-xs font-semibold">{{ team.name }}</span>
-                  <span class="text-xs text-muted-foreground">{{ team.avgSr.toFixed(0) }} avg SR</span>
-                </div>
-                <ul class="mt-1 space-y-0.5">
-                  <li
-                    v-for="member in team.members"
-                    :key="member.uuid"
-                    class="flex items-center gap-1 text-[11px]"
-                  >
-                    <span :class="roleColor(member.role)" class="w-12">{{ member.role }}</span>
-                    <span class="truncate">{{ member.name }}</span>
-                    <span class="ml-auto text-muted-foreground">{{ member.rank }}</span>
-                  </li>
-                </ul>
-              </div>
-
-              <div v-if="store.selectedBalance.leftovers?.length" class="rounded border border-border/50 p-2 text-xs text-muted-foreground">
-                <div class="font-medium">{{ t('manager.balancer.results.leftovers_title') }}</div>
-                <div v-for="l in store.selectedBalance.leftovers" :key="l.uuid">
-                  {{ l.name }}
-                </div>
-              </div>
-
-              <Button
-                class="w-full"
-                :disabled="saving"
-                @click="saveSelected"
-              >
-                {{ saving ? t('manager.balancer.results.saving') : t('manager.balancer.results.save') }}
-              </Button>
-            </div>
           </div>
         </CardContent>
       </Card>
+    </div>
+
+    <!-- Selected balance preview — full width below columns -->
+    <div v-if="store.selectedBalance" class="mt-4 space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-semibold">
+          {{ t('manager.balancer.results.balance_n', { n: (store.selectedBalanceIndex ?? 0) + 1 }) }}
+          <span class="ml-2 text-muted-foreground font-normal">Δ {{ store.selectedBalance.dispersion.toFixed(0) }} SR</span>
+        </h2>
+        <Button :disabled="saving" @click="saveSelected">
+          {{ saving ? t('manager.balancer.results.saving') : t('manager.balancer.results.save') }}
+        </Button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+        <Card
+          v-for="team in store.selectedBalance.teams"
+          :key="team.uuid"
+          class="border border-border/70"
+        >
+          <CardHeader class="pb-1 pt-3 px-3">
+            <div class="flex items-center justify-between">
+              <CardTitle class="text-sm">{{ team.name }}</CardTitle>
+              <span class="text-xs text-muted-foreground">{{ team.avgSr.toFixed(0) }} SR</span>
+            </div>
+          </CardHeader>
+          <CardContent class="px-3 pb-3 pt-0">
+            <ul class="space-y-1">
+              <li
+                v-for="member in team.members"
+                :key="member.uuid"
+                class="flex items-center gap-1.5 text-xs"
+              >
+                <span :class="['w-10 shrink-0 font-medium', roleColor(member.role)]">{{ member.role }}</span>
+                <span class="truncate">{{ member.name }}</span>
+                <span class="ml-auto shrink-0 text-muted-foreground">{{ member.rank }}</span>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div v-if="store.selectedBalance.leftovers?.length" class="rounded border border-border/50 p-3 text-xs text-muted-foreground">
+        <span class="font-medium">{{ t('manager.balancer.results.leftovers_title') }}:</span>
+        {{ store.selectedBalance.leftovers.map(l => l.name).join(', ') }}
+      </div>
     </div>
   </div>
 </template>

@@ -23,11 +23,11 @@ function makeClass(rank: number, isPrimary: boolean, isSecondary: boolean): {
   }
 }
 
-export function mapRosterToPlayers(roster: RosterEntry[]): Players {
+export function mapRosterToPlayers(roster: RosterEntry[], includedIds: Record<number, boolean>): Players {
   const players: Players = {}
 
   for (const entry of roster) {
-    if (!entry.checked_in) continue
+    if (!includedIds[entry.registration_id]) continue
 
     // Apply overrides if present
     const primaryRole = entry.overrides?.primary_role ?? entry.primary_role ?? null
@@ -65,9 +65,25 @@ export function mapRosterToPlayers(roster: RosterEntry[]): Players {
           ),
         },
       },
+      createdAt: '',
     }
 
     players[String(entry.registration_id)] = player
+  }
+
+  // Auto-assign captains: one per team of 5, spread evenly across SR range.
+  // The balancer requires at least one captain to create teams.
+  const entries = Object.entries(players)
+  const numTeams = Math.floor(entries.length / 5)
+  if (numTeams > 0) {
+    const maxSr = (p: Player) =>
+      Math.max(p.stats.classes.tank.rank, p.stats.classes.dps.rank, p.stats.classes.support.rank)
+    entries.sort((a, b) => maxSr(b[1]) - maxSr(a[1]))
+    const step = Math.floor(entries.length / numTeams)
+    for (let i = 0; i < numTeams; i++) {
+      const entry = entries[i * step]
+      if (entry) players[entry[0]].identity.isCaptain = true
+    }
   }
 
   return players

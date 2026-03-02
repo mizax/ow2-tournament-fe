@@ -21,6 +21,7 @@ const DEFAULT_ADJUST_SR = {
 interface BalancerState {
   roster: RosterEntry[]
   rosterLoading: boolean
+  localIncluded: Record<number, boolean>
   balancerOptions: {
     range: number
     triesCount: number
@@ -39,6 +40,7 @@ export const useBalancerStore = defineStore('balancer', {
   state: (): BalancerState => ({
     roster: [],
     rosterLoading: false,
+    localIncluded: {},
     balancerOptions: {
       range: 200,
       triesCount: 1000,
@@ -55,6 +57,7 @@ export const useBalancerStore = defineStore('balancer', {
 
   getters: {
     checkedInCount: (state) => state.roster.filter((r) => r.checked_in).length,
+    includedCount: (state) => Object.values(state.localIncluded).filter(Boolean).length,
     totalCount: (state) => state.roster.length,
     selectedBalance: (state) =>
       state.selectedBalanceIndex !== null ? state.balanceResults[state.selectedBalanceIndex] : null,
@@ -67,6 +70,12 @@ export const useBalancerStore = defineStore('balancer', {
       this.rosterLoading = false
       if (response.success && response.data) {
         this.roster = response.data.items
+        const anyCheckedIn = response.data.items.some((r) => r.checked_in)
+        const included: Record<number, boolean> = {}
+        for (const r of response.data.items) {
+          included[r.registration_id] = anyCheckedIn ? r.checked_in : true
+        }
+        this.localIncluded = included
       }
       return response
     },
@@ -74,6 +83,7 @@ export const useBalancerStore = defineStore('balancer', {
     async patchCheckin(tournamentId: number, item: CheckinUpdateItem) {
       const response = await patchCheckin(tournamentId, item.registration_id, item)
       if (response.success) {
+        this.localIncluded[item.registration_id] = item.checked_in
         const idx = this.roster.findIndex((r) => r.registration_id === item.registration_id)
         const entry = this.roster[idx]
         if (idx !== -1 && entry) {
@@ -105,7 +115,7 @@ export const useBalancerStore = defineStore('balancer', {
     },
 
     async runBalance() {
-      const players = mapRosterToPlayers(this.roster)
+      const players = mapRosterToPlayers(this.roster, this.localIncluded)
       if (Object.keys(players).length === 0) return
 
       this.balanceRunning = true
@@ -165,8 +175,19 @@ export const useBalancerStore = defineStore('balancer', {
       this.selectedBalanceIndex = index
     },
 
+    toggleIncluded(registrationId: number) {
+      this.localIncluded[registrationId] = !this.localIncluded[registrationId]
+    },
+
+    setAllIncluded(value: boolean) {
+      for (const id in this.localIncluded) {
+        this.localIncluded[id] = value
+      }
+    },
+
     reset() {
       this.roster = []
+      this.localIncluded = {}
       this.balanceResults = []
       this.selectedBalanceIndex = null
     },

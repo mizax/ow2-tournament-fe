@@ -182,10 +182,13 @@
     },
     "balancer": {
       "title": "Балансировщик",
-      "subtitle": "Турнир #{id} — {checked}/{total} с чек-ином",
+      "subtitle": "Турнир #{id} — в балансе: {included}/{total} (чек-ин: {checked})",
       "roster": {
         "title": "Состав",
         "empty": "Нет принятых заявок",
+        "select_all": "Все",
+        "deselect_all": "Сбросить",
+        "checkin_toggle": "Отметить чек-ин",
         "tank_sr": "SR Танк:",
         "damage_sr": "SR Урон:",
         "support_sr": "SR Поддержка:",
@@ -218,7 +221,7 @@
       },
       "toasts": {
         "roster_load_error": "Не удалось загрузить состав",
-        "min_players": "Необходимо минимум 2 игрока с чек-ином",
+        "min_players": "Необходимо минимум 10 игроков (2 команды по 5)",
         "saved": "Вариант сохранён",
         "save_error": "Не удалось сохранить вариант"
       }

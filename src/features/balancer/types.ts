@@ -24,6 +24,7 @@ export type Player = {
   stats: {
     classes: Classes
   }
+  createdAt: string
 }
 
 export type Players = Record<string, Player>

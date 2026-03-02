@@ -4,9 +4,7 @@ let wasmModule: typeof import('@/wasm/owbalancer/owbalancer.js') | null = null
 
 async function getWasm() {
   if (!wasmModule) {
-    const mod = await import('@/wasm/owbalancer/owbalancer.js')
-    await mod.default()
-    wasmModule = mod
+    wasmModule = await import('@/wasm/owbalancer/owbalancer.js')
   }
   return wasmModule
 }
