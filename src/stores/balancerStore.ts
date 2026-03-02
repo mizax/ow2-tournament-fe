@@ -75,9 +75,10 @@ export const useBalancerStore = defineStore('balancer', {
       const response = await patchCheckin(tournamentId, item.registration_id, item)
       if (response.success) {
         const idx = this.roster.findIndex((r) => r.registration_id === item.registration_id)
-        if (idx !== -1) {
+        const entry = this.roster[idx]
+        if (idx !== -1 && entry) {
           this.roster[idx] = {
-            ...this.roster[idx],
+            ...entry,
             checked_in: item.checked_in,
             ...(item.primary_role_override !== undefined ||
             item.secondary_role_override !== undefined ||

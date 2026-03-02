@@ -59,6 +59,7 @@ const setup = () => {
 
 const createTournament = (): TournamentDetails => ({
   id: 'ow2',
+  numeric_id: 1,
   title: 'OW2 Cup',
   discipline: 'ow2',
   format: '5v5',

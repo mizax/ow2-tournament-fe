@@ -20,7 +20,7 @@ export function useBalancerWorker() {
       input.lowRankLimiter,
       input.disallowSecondaryRoles,
       input.adjustSr,
-      input.disableType,
+      String(input.disableType),
       input.dispersionMinimizer,
       input.triesCount,
     )

@@ -33,6 +33,7 @@ describe('tournamentStore', () => {
     const store = useTournamentStore()
     store.tournaments['ow2'] = {
       id: '1',
+      numeric_id: 1,
       title: 'OW2 Cup',
       discipline: 'ow2',
       format: '5v5',
