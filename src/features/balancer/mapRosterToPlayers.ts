@@ -82,7 +82,8 @@ export function mapRosterToPlayers(roster: RosterEntry[], includedIds: Record<nu
     const step = Math.floor(entries.length / numTeams)
     for (let i = 0; i < numTeams; i++) {
       const entry = entries[i * step]
-      if (entry) players[entry[0]].identity.isCaptain = true
+      const player = entry ? players[entry[0]] : undefined
+      if (player) player.identity.isCaptain = true
     }
   }
 
