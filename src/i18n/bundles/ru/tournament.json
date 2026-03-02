@@ -159,6 +159,13 @@
       "tooltip_label": "Информация о поле",
       "submit": "Отправить заявку"
     },
+    "checkin_button": {
+      "checked_in": "Чек-ин пройден",
+      "action": "Пройти чек-ин",
+      "loading": "Обработка...",
+      "success": "Вы успешно прошли чек-ин!",
+      "error_fallback": "Ошибка чек-ина"
+    },
     "registration_status": {
       "title": "Статус Вашей заявки на участие в турнире",
       "subtitle": "Номер заявки: {id}",

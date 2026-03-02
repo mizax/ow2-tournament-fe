@@ -124,6 +124,15 @@ const router = createRouter({
       },
     },
     {
+      path: '/manager/tournaments/:tournamentId/balancer',
+      name: 'manager-tournament-balancer',
+      component: () => import('@/views/manager/ManagerBalancerView.vue'),
+      meta: {
+        requiresAuth: true,
+        allowedRoles: [UserRole.ADMIN, UserRole.TOURNAMENT_MANAGER],
+      },
+    },
+    {
       path: '/admin/users',
       name: 'admin-users',
       component: () => import('@/views/AdminUsersView.vue'),

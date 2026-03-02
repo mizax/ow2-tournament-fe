@@ -1,0 +1,21 @@
+{
+  "name": "owbalancer",
+  "type": "module",
+  "collaborators": [
+    "Artjoms Travkovs <atravkovs@gmail.com>"
+  ],
+  "description": "Overwatch tournament balancer in Rust, WASM",
+  "version": "1.3.0",
+  "files": [
+    "owbalancer_bg.wasm",
+    "owbalancer.js",
+    "owbalancer_bg.js",
+    "owbalancer.d.ts"
+  ],
+  "main": "owbalancer.js",
+  "types": "owbalancer.d.ts",
+  "sideEffects": [
+    "./owbalancer.js",
+    "./snippets/*"
+  ]
+}

@@ -44,6 +44,12 @@ const { t } = useI18n()
           </DropdownMenuItem>
           <DropdownMenuItem
             :as="RouterLink"
+            :to="{ name: 'manager-tournament-balancer', params: { tournamentId: tournament.id } }"
+          >
+            {{ t('manager.tournaments.balancer') }}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            :as="RouterLink"
             :to="{ name: 'manager-logs', params: { tournamentId: tournament.id } }"
           >
             {{ t('manager.tournaments.load_logs') }}

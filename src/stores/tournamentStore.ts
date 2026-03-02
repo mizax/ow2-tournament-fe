@@ -3,6 +3,7 @@ import { fetchWithoutAuth, type ApiResponse } from '@/services/apiService'
 
 export interface TournamentDetails {
   id: string
+  numeric_id: number
   title: string
   discipline: string
   format: string

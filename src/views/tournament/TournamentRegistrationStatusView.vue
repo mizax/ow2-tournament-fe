@@ -11,6 +11,8 @@ import { format } from 'date-fns'
 import { DATE_FORMAT_EXTENDED } from '@/util/date'
 import { RoleValue } from '@/components/tournament/registration/types'
 import { getRegistrationStatusBadgeClasses } from '@/lib/registrationStatusUi'
+import { useTournamentStore, type TournamentDetails } from '@/stores/tournamentStore'
+import TournamentCheckinButton from '@/components/tournament/TournamentCheckinButton.vue'
 
 interface RegistrationDetailsResponse {
   tournamentTitle: string
@@ -35,11 +37,19 @@ interface RegistrationDetailsResponse {
 
 const { t } = useI18n()
 const route = useRoute()
+const tournamentStore = useTournamentStore()
 
 const registrationId = computed(() => String(route.params.registrationId ?? ''))
 const registrationDetails = ref<RegistrationDetailsResponse | null>(null)
+const tournament = ref<TournamentDetails | null>(null)
 const loading = ref(false)
 const errorMessage = ref<string | null>(null)
+
+const showCheckinButton = computed(
+  () =>
+    registrationDetails.value?.status === 'ACCEPTED' &&
+    tournament.value?.numeric_id,
+)
 
 const formatDate = (value?: string) => {
   if (!value) {
@@ -124,6 +134,14 @@ const loadRegistrationDetails = async () => {
 
   if (response.success) {
     registrationDetails.value = response.data ?? null
+    if (registrationDetails.value?.tournamentSefTitle) {
+      const tournamentResponse = await tournamentStore.fetchTournament(
+        registrationDetails.value.tournamentSefTitle,
+      )
+      if (tournamentResponse.success && tournamentResponse.data) {
+        tournament.value = tournamentResponse.data
+      }
+    }
   } else {
     errorMessage.value = t('errors.unknown')
   }
@@ -181,6 +199,13 @@ watch(registrationId, loadRegistrationDetails)
             >
           </div>
         </CardHeader>
+        <div v-if="showCheckinButton" class="px-6 py-4">
+          <TournamentCheckinButton
+            :tournament-id="tournament!.numeric_id"
+            :checkin-from="tournament!.registration?.checkin?.from"
+            :checkin-to="tournament!.registration?.checkin?.to"
+          />
+        </div>
         <div class="h-px bg-border/70"></div>
         <CardContent class="space-y-6 py-6">
           <div
