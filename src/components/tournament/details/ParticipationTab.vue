@@ -168,7 +168,11 @@ const props = defineProps<Props>()
         <Alert v-if="registration.checkin">
           <AlertTitle>{{ t('tournament.participation.checkin') }}</AlertTitle>
           <AlertDescription>
-            <p>{{ registration.checkin.from }} — {{ registration.checkin.to }}</p>
+            <p v-if="registration.checkin.from || registration.checkin.to">
+              <span v-if="registration.checkin.from">{{ format(registration.checkin.from, DATE_FORMAT_EXTENDED) }}</span>
+              <span v-if="registration.checkin.from && registration.checkin.to"> — </span>
+              <span v-if="registration.checkin.to">{{ format(registration.checkin.to, DATE_FORMAT_EXTENDED) }}</span>
+            </p>
             <p v-if="registration.checkin.platform">
               {{ t('tournament.participation.check-in-platform') }}:
               <a

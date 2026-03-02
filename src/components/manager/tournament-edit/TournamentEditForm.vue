@@ -174,7 +174,7 @@ const removeScheduleItem = (index: number) => {
 const syncPrizePool = () => {
   setFormValue('prize_pool', {
     currency: prizeCurrency.value,
-    places: prizePlaces.value.length ? prizePlaces.value : undefined,
+    places: prizePlaces.value,
   })
 }
 
@@ -243,9 +243,12 @@ const fieldToTab: Record<string, string> = {
   rules: 'rules',
 }
 
+const formSubmissionAttempts = form.useStore((s) => s.submissionAttempts)
+const formValues = form.useStore((s) => s.values)
+
 const tabsWithErrors = computed(() => {
-  if (form.state.submissionAttempts === 0) return new Set<string>()
-  const result = tournamentEditSchema.safeParse(form.state.values)
+  if (formSubmissionAttempts.value === 0) return new Set<string>()
+  const result = tournamentEditSchema.safeParse(formValues.value)
   if (result.success) return new Set<string>()
   const errorTabs = new Set<string>()
   for (const issue of result.error.issues) {
@@ -416,8 +419,8 @@ const tabsWithErrors = computed(() => {
             <div class="space-y-2">
               <p class="text-sm font-medium">{{ t('manager.tournament_edit.sections.checkin') }}</p>
               <div class="grid gap-3 md:grid-cols-2">
-                <div class="space-y-1"><FieldLabel>{{ t('manager.tournament_edit.fields.from') }}</FieldLabel><Input type="time" :model-value="parseTime(registration.checkin?.from)" @update:model-value="(value) => { registration.checkin = { ...(registration.checkin ?? {}), from: String(value) }; syncRegistration() }" /></div>
-                <div class="space-y-1"><FieldLabel>{{ t('manager.tournament_edit.fields.to') }}</FieldLabel><Input type="time" :model-value="parseTime(registration.checkin?.to)" @update:model-value="(value) => { registration.checkin = { ...(registration.checkin ?? {}), to: String(value) }; syncRegistration() }" /></div>
+                <div class="space-y-1"><FieldLabel>{{ t('manager.tournament_edit.fields.from') }}</FieldLabel><DateTimePickerField :model-value="registration.checkin?.from" @update:model-value="(value) => { registration.checkin = { ...(registration.checkin ?? {}), from: value }; syncRegistration() }" /></div>
+                <div class="space-y-1"><FieldLabel>{{ t('manager.tournament_edit.fields.to') }}</FieldLabel><DateTimePickerField :model-value="registration.checkin?.to" @update:model-value="(value) => { registration.checkin = { ...(registration.checkin ?? {}), to: value }; syncRegistration() }" /></div>
                 <div class="space-y-1"><FieldLabel>{{ t('manager.tournament_edit.fields.platform') }}</FieldLabel><Input :model-value="registration.checkin?.platform" @update:model-value="(value) => { registration.checkin = { ...(registration.checkin ?? {}), platform: String(value) }; syncRegistration() }" /></div>
                 <div class="space-y-1"><FieldLabel>{{ t('manager.tournament_edit.fields.platform_url') }}</FieldLabel><Input :model-value="registration.checkin?.platform_url" @update:model-value="(value) => { registration.checkin = { ...(registration.checkin ?? {}), platform_url: String(value) }; syncRegistration() }" /></div>
               </div>

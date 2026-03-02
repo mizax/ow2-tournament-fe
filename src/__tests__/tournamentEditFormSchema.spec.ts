@@ -9,7 +9,7 @@ describe('tournamentEditSchema', () => {
     format: 'Online',
     type: 'Online Tournament',
     schedule: [{ day: 1, date: '2026-02-21', stage: 'Групповой этап', start_time: '16:00' }],
-    prize_pool: {},
+    prize_pool: { places: [] },
   }
 
   it('passes with minimal valid data', () => {

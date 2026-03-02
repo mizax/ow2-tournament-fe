@@ -19,6 +19,7 @@ vi.mock('vue-i18n', () => ({
 
 vi.mock('@/services/apiService', () => ({
   fetchWithAuth: vi.fn(),
+  fetchWithoutAuth: vi.fn().mockResolvedValue({ success: false }),
 }))
 
 const fetchWithAuthMock = vi.mocked(fetchWithAuth)

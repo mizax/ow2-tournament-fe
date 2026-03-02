@@ -21,7 +21,7 @@ interface Props {
     schedule: Array<{ date: string }>
     prize_pool: {
       currency: string
-      places: Array<{ amount: number }>
+      places?: Array<{ amount: number }>
     }
     registration?: {
       start?: string
@@ -32,7 +32,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const totalPrize = props.tournament.prize_pool.places.reduce((acc, curr) => acc + curr.amount, 0)
+const totalPrize = props.tournament.prize_pool.places?.reduce((acc, curr) => acc + curr.amount, 0) ?? 0
 const startDate = props.tournament.schedule[0]?.date
 const endDate = props.tournament.schedule[props.tournament.schedule.length - 1]?.date
 

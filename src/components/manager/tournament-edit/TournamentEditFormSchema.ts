@@ -26,14 +26,14 @@ const eligibilitySchema = z.object({
   verification_battletag: z.string().optional(),
 })
 
+const isoDateTimeSchema = z.string().and(z.iso.datetime({ offset: true }))
+
 const checkinSchema = z.object({
-  from: z.string().optional(),
-  to: z.string().optional(),
+  from: isoDateTimeSchema.optional(),
+  to: isoDateTimeSchema.optional(),
   platform: z.string().optional(),
   platform_url: z.string().optional(),
 })
-
-const isoDateTimeSchema = z.string().and(z.iso.datetime({ offset: true }))
 
 const registrationConfigSchema = z.object({
   start: isoDateTimeSchema.optional(),
@@ -55,7 +55,7 @@ const prizePlaceSchema = z.object({
 
 const prizePoolSchema = z.object({
   currency: z.string().optional(),
-  places: z.array(prizePlaceSchema).optional(),
+  places: z.array(prizePlaceSchema),
 })
 
 const resultsPlacementSchema = z.object({

@@ -65,8 +65,8 @@ describe('ParticipationTab', () => {
         start: '2024-01-01T00:00:00Z',
         deadline: '2024-01-02T00:00:00Z',
         checkin: {
-          from: '10:00',
-          to: '11:00',
+          from: '2024-01-01T10:00:00+03:00',
+          to: '2024-01-01T11:00:00+03:00',
           platform: 'Discord',
           platform_url: 'https://discord.com',
         },
@@ -74,8 +74,6 @@ describe('ParticipationTab', () => {
     })
 
     expect(wrapper.text()).toContain('formatted-date')
-    expect(wrapper.text()).toContain('10:00')
-    expect(wrapper.text()).toContain('11:00')
     expect(wrapper.text()).toContain('Discord')
   })
 })
