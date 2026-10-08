@@ -4,7 +4,8 @@ import { fetchWithoutAuth } from '@/services/apiService'
 import type { Tournament } from '@/types/tournament'
 import TournamentCard from '@/components/tournament/TournamentCard.vue'
 import { useI18n } from 'vue-i18n'
-import { Trophy } from 'lucide-vue-next'
+import { ExternalLink, Trophy } from 'lucide-vue-next'
+import { Button } from '@/components/ui/button'
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 
 const { t } = useI18n()
@@ -62,6 +63,24 @@ onMounted(async () => {
 
 <template>
   <div class="w-full space-y-10">
+    <section
+      class="rounded-2xl border-2 border-primary/60 bg-primary/10 px-5 py-6 md:px-8 md:py-8"
+      role="status"
+    >
+      <p class="page-kicker">{{ t('home.archive_kicker') }}</p>
+      <h2 class="brand-title mt-2 text-2xl sm:text-3xl">{{ t('home.archive_title') }}</h2>
+      <p class="mt-3 max-w-3xl text-sm leading-6">{{ t('home.archive_text') }}</p>
+      <p class="mt-2 max-w-3xl text-sm font-semibold leading-6">{{ t('home.archive_respect') }}</p>
+      <div class="mt-5">
+        <Button as-child>
+          <a href="https://owt.craazzzyyfoxx.me/" target="_blank" rel="noopener">
+            {{ t('home.archive_cta') }}
+            <ExternalLink class="size-4" />
+          </a>
+        </Button>
+      </div>
+    </section>
+
     <section class="brand-panel relative overflow-hidden rounded-2xl px-5 py-6 md:px-8 md:py-8">
       <img
         src="@/assets/img/S21_Thumbnail.png"
